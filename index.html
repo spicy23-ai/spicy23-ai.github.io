@@ -319,8 +319,9 @@ await fetch(`${BACKEND_URL}/rate-book`, {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authToken}`
   },
-  body: JSON.stringify({ bookId, voteType }) // لا ترسل userUid
+  body: JSON.stringify({ bookId, voteType }) // بدون userUid
 });
+
 
 
     button.disabled = true;
@@ -404,7 +405,7 @@ const res = await fetch(`${BACKEND_URL}/get-pdf`, {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authToken}`
   },
-  body: JSON.stringify({ bookId, userUid })
+  body: JSON.stringify({ bookId })
 });
 
     const data = await res.json();
