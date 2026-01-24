@@ -319,8 +319,9 @@ await fetch(`${BACKEND_URL}/rate-book`, {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${authToken}`
   },
-  body: JSON.stringify({ bookId, voteType, userUid })
+  body: JSON.stringify({ bookId, voteType }) // لا ترسل userUid
 });
+
 
     button.disabled = true;
     button.classList.add(voteType === 'like' ? 'liked' : 'disliked');
