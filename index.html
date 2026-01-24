@@ -379,20 +379,27 @@ async function downloadPdf(bookId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bookId, userUid })
     });
-    const data = await res.json();
-    if (!res.ok) return alert(data.error || "Access denied");
 
-    // إنشاء رابط مؤقت للتحميل بصيغة PDF
-    const link = document.createElement("a");
-    link.href = data.pdfUrl;
-    link.download = `${bookId}.pdf`;  // <-- هنا اسم الملف + صيغة PDF
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!res.ok) {
+      const err = await res.json();
+      return alert(err.error || "Download failed");
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${bookId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    window.URL.revokeObjectURL(url);
 
   } catch (err) {
     console.error(err);
-    alert("Failed to download PDF.");
+    alert("Failed to download PDF");
   }
 }
 
