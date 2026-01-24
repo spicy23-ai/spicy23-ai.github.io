@@ -228,20 +228,10 @@ async function onIncompletePaymentFound(incompletePayment) {
 }
 // ================= LOGIN =================
 document.getElementById("loginBtn").onclick = async () => {
-  if (!Pi || !Pi.authenticate) return alert("Open in Pi Browser to login.");
   try {
-    const authResult = await Pi.authenticate({
-      app_name: "Spicy", // نفس الاسم في Pi Developer Dashboard
-      onIncompletePaymentFound: (incompletePayment) => {
-        console.log("Pending payment detected:", incompletePayment);
-      }
-    });
-
+    const authResult = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
     user = authResult.user;
     userUid = user.uid;
-
-    const authToken = authResult.auth_token || authResult.client_token;
-    sessionStorage.setItem("piAuthToken", authToken);
 
     document.getElementById("welcome").innerText = `Welcome, ${user.username}!`;
     document.getElementById("login").classList.add("hidden");
@@ -251,12 +241,9 @@ document.getElementById("loginBtn").onclick = async () => {
     loadMyPurchases();
     loadMySales();
   } catch (err) {
-    console.error(err);
-    alert("Login failed. Make sure you're in Pi Browser and try again.");
+    alert("Login failed. Open in Pi Browser.");
   }
 };
-
-
 
 function logout() {
   location.reload();
@@ -283,11 +270,9 @@ document.getElementById("saveBookBtn").onclick = saveBook;
   btn.innerText = "Saving...";
 
   try {
-   const authToken = sessionStorage.getItem("piAuthToken");
     const res = await fetch(`${BACKEND_URL}/save-book`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      "Authorization": `Bearer ${authToken}`
       body: JSON.stringify({
         title, price, description, language, pageCount: finalPages,
         cover: coverUrl, pdf: pdfUrl, owner: user.username, ownerUid: userUid
@@ -316,16 +301,11 @@ document.getElementById("saveBookBtn").onclick = saveBook;
 async function rateBook(bookId, voteType, button) {
   if (!userUid) return alert("Login required");
   try {
-    const authToken = sessionStorage.getItem("piAuthToken");
-await fetch(`${BACKEND_URL}/rate-book`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ bookId, voteType, userUid })
-});
-
+    await fetch(`${BACKEND_URL}/rate-book`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, voteType, userUid })
+    });
 
     button.disabled = true;
     button.classList.add(voteType === 'like' ? 'liked' : 'disliked');
@@ -352,30 +332,23 @@ async function buy(bookId, price) {
     }, {
       // 🔹 الموافقة من السيرفر
       onReadyForServerApproval: async (paymentId) => {
-       const authToken = sessionStorage.getItem("piAuthToken");
-await fetch(`${BACKEND_URL}/approve-payment`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ paymentId })
-});
-
+        await fetch(`${BACKEND_URL}/approve-payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentId })
+        });
       },
 
       // 🔹 الإكمال من السيرفر (بدون bookId و userUid)
       onReadyForServerCompletion: async (paymentId, txid) => {
-        const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/complete-payment`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ paymentId, txid })
-});
-
+        const res = await fetch(`${BACKEND_URL}/complete-payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentId,
+            txid
+          })
+        });
 
         if (!res.ok) {
           alert("Payment failed");
@@ -401,16 +374,11 @@ const res = await fetch(`${BACKEND_URL}/complete-payment`, {
 // ================= DOWNLOAD PDF =================
 async function downloadPdf(bookId) {
   try {
-    const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/get-pdf`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ bookId, userUid })
-});
-
+    const res = await fetch(`${BACKEND_URL}/get-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, userUid })
+    });
     const data = await res.json();
     if (!res.ok) return alert(data.error || "Access denied");
 
