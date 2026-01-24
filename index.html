@@ -228,13 +228,17 @@ async function onIncompletePaymentFound(incompletePayment) {
 }
 // ================= LOGIN =================
 document.getElementById("loginBtn").onclick = async () => {
+  if (!Pi || !Pi.authenticate) return alert("Open in Pi Browser to login.");
   try {
-    const authResult = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
+    const authResult = await Pi.authenticate({
+      app_name: "Spicy",
+      onIncompletePaymentFound: onIncompletePaymentFound
+    });
+
     user = authResult.user;
     userUid = user.uid;
-    
-    // 🔑 احفظ الـ Token الذي سنرسله للسيرفر
-    const authToken = authResult.client_token;  // هذا token خاص بالمستخدم
+
+    const authToken = authResult.auth_token || authResult.client_token;
     sessionStorage.setItem("piAuthToken", authToken);
 
     document.getElementById("welcome").innerText = `Welcome, ${user.username}!`;
@@ -245,9 +249,11 @@ document.getElementById("loginBtn").onclick = async () => {
     loadMyPurchases();
     loadMySales();
   } catch (err) {
-    alert("Login failed. Open in Pi Browser.");
+    console.error(err);
+    alert("Login failed. Open in Pi Browser and try again.");
   }
 };
+
 
 
 function logout() {
