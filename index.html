@@ -234,7 +234,8 @@ document.getElementById("loginBtn").onclick = async () => {
     userUid = user.uid;
     
     // 🔑 احفظ الـ Token الذي سنرسله للسيرفر
-    const authToken = authResult.client_token;  // هذا token خاص بالمستخدم
+    const authToken = authResult.accessToken;
+  // هذا token خاص بالمستخدم
     sessionStorage.setItem("piAuthToken", authToken);
 
     document.getElementById("welcome").innerText = `Welcome, ${user.username}!`;
@@ -284,7 +285,7 @@ const res = await fetch(`${BACKEND_URL}/save-book`, {
   },
   body: JSON.stringify({
     title, price, description, language, pageCount: finalPages,
-    cover: coverUrl, pdf: pdfUrl, owner: user.username, ownerUid: userUid
+    cover: coverUrl, pdf: pdfUrl
   })
 });
 
