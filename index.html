@@ -129,34 +129,68 @@ let pdfUrl = "";
 let pageCount = "Unknown";
 
 // ================= CLOUDINARY =================
-const coverWidget = cloudinary.createUploadWidget({
-  cloudName: "ddafftpwc",
-  uploadPreset: "spicy2004",
-  folder: "covers",
-  resourceType: "image",
-  clientAllowedFormats: ["jpg", "jpeg", "png", "webp"]
-}, (error, result) => {
-  if (!error && result && result.event === "success") {
-    coverUrl = result.info.secure_url;
-    document.getElementById("coverStatus").innerText = "Cover uploaded!";
-    checkSaveReady();
-  }
-});
+document.getElementById("uploadCoverBtn").onclick = () => {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*"; // فقط صور
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-const pdfWidget = cloudinary.createUploadWidget({
-  cloudName: "ddafftpwc",
-  uploadPreset: "spicy2004",
-  folder: "pdfs",
-  resourceType: "raw",
-  clientAllowedFormats: ["pdf"]
-}, (error, result) => {
-  if (!error && result && result.event === "success") {
-    pdfUrl = result.info.secure_url;
-    pageCount = result.info.pages || "Unknown";
-    document.getElementById("pdfStatus").innerText = "PDF uploaded!" + (result.info.pages ? ` (Pages: ${result.info.pages})` : "");
-    checkSaveReady();
-  }
-});
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64 = reader.result; // الصورة كـBase64
+      // أرسلها للBack-end
+      const res = await fetch(`${BACKEND_URL}/upload-cover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        coverUrl = data.url;
+        document.getElementById("coverStatus").innerText = "Cover uploaded!";
+        checkSaveReady();
+      } else {
+        alert("Upload failed");
+      }
+    };
+  };
+  fileInput.click();
+};
+
+document.getElementById("uploadPdfBtn").onclick = () => {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "application/pdf"; // فقط PDF
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64 = reader.result;
+      const res = await fetch(`${BACKEND_URL}/upload-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: base64 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        pdfUrl = data.url;
+        pageCount = data.pages || "Unknown";
+        document.getElementById("pdfStatus").innerText = "PDF uploaded!";
+        checkSaveReady();
+      } else {
+        alert("Upload failed");
+      }
+    };
+  };
+  fileInput.click();
+};
+
 
 document.getElementById("uploadCoverBtn").onclick = () => coverWidget.open();
 document.getElementById("uploadPdfBtn").onclick = () => pdfWidget.open();
