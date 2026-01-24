@@ -499,11 +499,15 @@ async function loadMyPurchases() {
   if (!userUid) return box.innerHTML = "<p>Please log in.</p>";
 
   try {
-    const res = await fetch(`${BACKEND_URL}/my-purchases`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userUid })
-    });
+  const authToken = sessionStorage.getItem("piAuthToken");
+const res = await fetch(`${BACKEND_URL}/my-purchases`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authToken}`
+  }
+});
+
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
 
@@ -560,7 +564,15 @@ async function loadMySales() {
     const res = await fetch(`${BACKEND_URL}/my-sales`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user.username })
+     const authToken = sessionStorage.getItem("piAuthToken");
+const res = await fetch(`${BACKEND_URL}/my-sales`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authToken}`
+  }
+
+
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
@@ -619,12 +631,18 @@ async function requestPayout() {
   headers: {
     "Content-Type": "application/json"
   },
+const authToken = sessionStorage.getItem("piAuthToken");
+const res = await fetch(`${BACKEND_URL}/request-payout`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authToken}`
+  },
   body: JSON.stringify({
-    username: user.username,
-    walletAddress: walletAddress.trim(),
-    earnings: totalEarnings.toFixed(2)
+    walletAddress: walletAddress.trim()
   })
 });
+
 
 const data = await res.json();
 
