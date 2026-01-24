@@ -117,7 +117,7 @@ input, textarea, select{padding:8px;margin:5px;width:90%;max-width:400px;}
 
 <script>
 // ================= BACKEND URL =================
-const BACKEND_URL = "https://pi-backend-c8nz.onrender.com";
+const BACKEND_URL = "https://pi-backend-77pg.onrender.com";
 
 // ================= PI SDK =================
 Pi.init({ version: "2.0", sandbox: false });
@@ -171,7 +171,7 @@ async function onIncompletePaymentFound(incompletePayment) {
   console.log("Incomplete payment found:", incompletePayment);
 
   try {
-    const response = await fetch("https://pi-backend-c8nz.onrender.com/complete-payment", {
+    const response = await fetch("https://pi-backend-77pg.onrender.com/complete-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -540,7 +540,7 @@ async function requestPayout() {
   payoutBtn.disabled = true;
 
   try {
-    const res = await fetch("https://pi-backend-c8nz.onrender.com/request-payout", {
+    const res = await fetch("https://pi-backend-77pg.onrender.com/request-payout", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
