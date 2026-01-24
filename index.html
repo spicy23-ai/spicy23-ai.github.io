@@ -192,8 +192,7 @@ document.getElementById("uploadPdfBtn").onclick = () => {
 };
 
 
-document.getElementById("uploadCoverBtn").onclick = () => coverWidget.open();
-document.getElementById("uploadPdfBtn").onclick = () => pdfWidget.open();
+
 
 function checkSaveReady() {
   document.getElementById("saveBookBtn").disabled = !(coverUrl && pdfUrl && user);
