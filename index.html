@@ -231,8 +231,10 @@ document.getElementById("loginBtn").onclick = async () => {
   if (!Pi || !Pi.authenticate) return alert("Open in Pi Browser to login.");
   try {
     const authResult = await Pi.authenticate({
-      app_name: "Spicy",
-      onIncompletePaymentFound: onIncompletePaymentFound
+      app_name: "Spicy", // نفس الاسم في Pi Developer Dashboard
+      onIncompletePaymentFound: (incompletePayment) => {
+        console.log("Pending payment detected:", incompletePayment);
+      }
     });
 
     user = authResult.user;
@@ -250,7 +252,7 @@ document.getElementById("loginBtn").onclick = async () => {
     loadMySales();
   } catch (err) {
     console.error(err);
-    alert("Login failed. Open in Pi Browser and try again.");
+    alert("Login failed. Make sure you're in Pi Browser and try again.");
   }
 };
 
