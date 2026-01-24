@@ -373,15 +373,29 @@ async function buy(bookId, price) {
 
 // ================= DOWNLOAD PDF =================
 async function downloadPdf(bookId) {
-  const res = await fetch(`${BACKEND_URL}/get-pdf`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookId, userUid })
-  });
-  const data = await res.json();
-  if (!res.ok) return alert(data.error || "Access denied");
-  window.open(data.pdfUrl, "_blank");
+  try {
+    const res = await fetch(`${BACKEND_URL}/get-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, userUid })
+    });
+    const data = await res.json();
+    if (!res.ok) return alert(data.error || "Access denied");
+
+    // إنشاء رابط مؤقت للتحميل بصيغة PDF
+    const link = document.createElement("a");
+    link.href = data.pdfUrl;
+    link.download = `${bookId}.pdf`;  // <-- هنا اسم الملف + صيغة PDF
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to download PDF.");
+  }
 }
+
 
 // ================= LOAD BOOKS =================
 async function loadBooks() {
