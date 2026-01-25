@@ -450,6 +450,7 @@ const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
   body: JSON.stringify({ bookId: b.id })
 });
 
+
       const ratingsJson = await ratingsRes.json();
       const { likes = 0, dislikes = 0, userVote = null } = ratingsJson.success ? ratingsJson : {};
 
