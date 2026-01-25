@@ -440,11 +440,16 @@ async function loadBooks() {
     if (books.length === 0) return box.innerHTML = "<p>No books available.</p>";
 
     for (const b of books) {
-      const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId: b.id })
-      });
+      const authToken = sessionStorage.getItem("piAuthToken");
+const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${authToken}`
+  },
+  body: JSON.stringify({ bookId: b.id })
+});
+
       const ratingsJson = await ratingsRes.json();
       const { likes = 0, dislikes = 0, userVote = null } = ratingsJson.success ? ratingsJson : {};
 
