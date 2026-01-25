@@ -620,61 +620,44 @@ async function loadMySales() {
 
 // ================= REQUEST PAYOUT =================
 async function requestPayout() {
-  if (!user) {
-    alert("Login required");
+  const walletAddress = prompt("Enter your Pi Wallet address:");
+
+  if (!walletAddress || walletAddress.trim() === "") {
+    alert("Wallet address is required.");
     return;
   }
 
-  const totalText = document.getElementById("totalEarnings").innerText;
-  const amount = parseFloat(totalText.replace(/[^\d.]/g, ""));
-
-  if (isNaN(amount) || amount < 5) {
-    alert("Minimum payout is 5 Pi");
-    return;
-  }
+  const payoutBtn = document.getElementById("payoutBtn");
+  payoutBtn.disabled = true;
 
   try {
-    await Pi.createPayment({
-      amount: amount,
-      memo: "Spicy Library - Earnings Withdrawal",
-      metadata: { type: "payout" }
-    }, {
-      onReadyForServerApproval: async (paymentId) => {
-        const authToken = sessionStorage.getItem("piAuthToken");
-        await fetch(`${BACKEND_URL}/approve-payment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authToken}`
-          },
-          body: JSON.stringify({ paymentId })
-        });
+    const authToken = sessionStorage.getItem("piAuthToken");
+
+    const res = await fetch(`${BACKEND_URL}/request-payout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${authToken}`
       },
-
-      onReadyForServerCompletion: async (paymentId, txid) => {
-        const authToken = sessionStorage.getItem("piAuthToken");
-        await fetch(`${BACKEND_URL}/complete-payment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authToken}`
-          },
-          body: JSON.stringify({ paymentId, txid })
-        });
-
-        alert("✅ Earnings withdrawn successfully!");
-        loadMySales();
-      },
-
-      onCancel: () => alert("❌ Withdrawal cancelled"),
-      onError: (e) => alert("Payment error")
+      body: JSON.stringify({
+        walletAddress: walletAddress.trim()
+      })
     });
 
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || "Request failed");
+    }
+
+    alert("Payout request sent successfully!");
+    loadMySales();
+
   } catch (e) {
-    alert("Open the app in Pi Browser");
+    alert("Failed to send payout request.");
+  } finally {
+    payoutBtn.disabled = false;
   }
 }
-
 
 
 // ================= TABS & SEARCH & TOGGLE =================
