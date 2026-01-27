@@ -5,40 +5,11 @@
 <title>Book</title>
 
 <style>
-body {
-  background: #111;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
-}
-img {
-  width: 250px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-button {
-  padding: 10px 20px;
-  background: #ff4500;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 10px;
-}
-button.share {
-  background: #00aaff;
-}
-.info {
-  font-size: 14px;
-  color: #ccc;
-  margin: 5px 0;
-}
-.stats {
-  font-size: 14px;
-  color: #0f9;
-  margin: 8px 0;
-}
+body{background:#111;color:#fff;font-family:Arial;text-align:center;padding:20px;}
+img{width:250px;border-radius:8px;}
+button{padding:10px 20px;background:#ff4500;color:#fff;border:none;border-radius:6px;cursor:pointer;margin:10px;}
+button.share{background:#00aaff;}
+.info{font-size:14px;color:#ccc;margin:5px 0;}
 </style>
 </head>
 
@@ -47,7 +18,7 @@ button.share {
 <div id="content">Loading book...</div>
 
 <script>
-const BACKEND_URL = "https://pi-backend-c8nz.onrender.com";
+const BACKEND_URL = "https://pi-backend-77pg.onrender.com";
 const MAIN_SITE = "https://spicy23-ai.github.io";
 
 const params = new URLSearchParams(window.location.search);
@@ -66,23 +37,8 @@ async function loadBook() {
 
     const b = data.book;
 
-    // ===== ratings =====
-    let likes = 0, dislikes = 0;
-    try {
-      const r = await fetch(`${BACKEND_URL}/book-ratings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId })
-      });
-      const rj = await r.json();
-      if (rj.success) {
-        likes = rj.likes || 0;
-        dislikes = rj.dislikes || 0;
-      }
-    } catch {}
-
     document.getElementById("content").innerHTML = `
-      <img src="${b.cover}" alt="Cover">
+      <img src="${b.cover}">
       <h2>${b.title}</h2>
 
       <p class="info"><strong>Description:</strong> ${b.description || "No description"}</p>
@@ -91,31 +47,26 @@ async function loadBook() {
       <p class="info"><strong>Pages:</strong> ${b.pageCount || "Unknown"}</p>
       <p class="info"><strong>Price:</strong> ${b.price} Pi</p>
 
-      <p class="stats">👍 ${likes} &nbsp;&nbsp; 👎 ${dislikes}</p>
-
-      <button id="buyBtn">Buy with Pi 🪙</button>
-      <button id="shareBtn" class="share">Share 🔗</button>
+      <button onclick="goBuy()">Buy with Pi 🪙</button>
+      <button class="share" onclick="share()">Share 🔗</button>
     `;
-
-    // 🔁 تحويل للشراء من الصفحة الرئيسية
-    document.getElementById("buyBtn").onclick = () => {
-      window.location.href = `${MAIN_SITE}/index.html?buyBookId=${bookId}`;
-    };
-
-    // 🔗 مشاركة الرابط
-    document.getElementById("shareBtn").onclick = () => {
-      const url = window.location.href;
-      if (navigator.share) {
-        navigator.share({ title: b.title, url });
-      } else {
-        navigator.clipboard.writeText(url);
-        alert("✅ Link copied");
-      }
-    };
-
   } catch (e) {
     console.error(e);
     document.getElementById("content").innerText = "Error loading book";
+  }
+}
+
+function goBuy() {
+  window.location.href = `${MAIN_SITE}/index.html?buyBookId=${bookId}`;
+}
+
+function share() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: "Book", url });
+  } else {
+    navigator.clipboard.writeText(url);
+    alert("Link copied");
   }
 }
 
