@@ -478,6 +478,12 @@ const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
             <button class="like-btn ${userVote === 'like' ? 'liked' : ''}" onclick="rateBook('${b.id}', 'like', this)" ${userVote || !user ? 'disabled' : ''}>👍</button> ${likes}
             <button class="dislike-btn ${userVote === 'dislike' ? 'disliked' : ''}" onclick="rateBook('${b.id}', 'dislike', this)" ${userVote || !user ? 'disabled' : ''}>👎</button> ${dislikes}
           </div>
+
+<button onclick="openBook('${b.id}')">
+  📘 View Book
+</button>
+
+         
           <button onclick="buy('${b.id}', ${b.price})" ${!user ? 'disabled' : ''}>Buy with Pi</button>
         </div>`;
     }
@@ -766,7 +772,12 @@ window.addEventListener("message", (event) => {
 });
 
   
+function openBook(bookId) {
+  window.location.href =
+    "https://spicy23-ai.github.io/book.html?id=" + bookId;
+}
 
+  
   
 </script>
   <!-- Modal for Privacy Policy / Terms -->
