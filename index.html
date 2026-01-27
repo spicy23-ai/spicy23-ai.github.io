@@ -742,6 +742,32 @@ function closeModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
+
+// ================= BOOK REDIRECT FROM book.html =================
+window.addEventListener("message", (event) => {
+  // 🔐 تأكد من المصدر (صفحة الكتاب)
+  if (!event.origin.includes("github.io")) return;
+
+  const msg = event.data;
+  if (!msg || msg.type !== "BUY_BOOK") return;
+
+  const { bookId, price } = msg;
+
+  // 1️⃣ افتح تب المتجر
+  openTab("store");
+
+  // 2️⃣ انتظر تحميل الكتب ثم نفّذ الشراء
+  const waitForUser = setInterval(() => {
+    if (user && userUid) {
+      clearInterval(waitForUser);
+      buy(bookId, price); // 👈 استعمل نفس دالة الشراء الأصلية
+    }
+  }, 500);
+});
+
+  
+
+  
 </script>
   <!-- Modal for Privacy Policy / Terms -->
 <div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;">
