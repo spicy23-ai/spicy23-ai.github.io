@@ -149,7 +149,9 @@ async function loadBook() {
 
     document.getElementById("title").innerText = b.title;
     document.getElementById("cover").src = b.cover;
-    document.getElementById("price").innerText = `Price: ${b.price} Pi`;
+    bookPrice = Number(b.price);
+document.getElementById("price").innerText = `Price: ${bookPrice} Pi`;
+
     document.getElementById("description").innerText = b.description || "No description";
     document.getElementById("language").innerText = b.language ? `Language: ${b.language}` : "";
     document.getElementById("pages").innerText = b.pageCount !== "Unknown" ? `Pages: ${b.pageCount}` : "";
@@ -208,7 +210,8 @@ document.getElementById("buyBtn").onclick = async () => {
     userUid = user.uid;
   }
 
-  const price = parseFloat(document.getElementById("price").innerText) || 0;
+ const price = bookPrice;
+
   if (!confirm(`Buy this book for ${price} Pi?`)) return;
 
   await Pi.createPayment({
