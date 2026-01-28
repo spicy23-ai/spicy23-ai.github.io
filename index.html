@@ -592,6 +592,12 @@ async function loadMySales() {
   }
 }
 
+function isValidPiWallet(address) {
+  return typeof address === "string" && address.length === 56;
+}
+
+
+  
 // ================= REQUEST PAYOUT =================
 async function requestPayout() {
   const totalEarnings = parseFloat(
