@@ -128,17 +128,6 @@ let coverUrl = "";
 let pdfUrl = "";
 let pageCount = "Unknown";
 
-  let ALL_BOOKS = [];
-
-
-
-// 🔹 قراءة الكتاب القادم من صفحة book
-const params = new URLSearchParams(window.location.search);
-
-
-  
-  
-
 // ================= CLOUDINARY =================
 document.getElementById("uploadCoverBtn").onclick = () => {
   const fileInput = document.createElement("input");
@@ -437,32 +426,6 @@ const res = await fetch(`${BACKEND_URL}/get-pdf`, {
 }
 
 
-function autoBuyIfNeeded() {
-  const params = new URLSearchParams(window.location.search);
-  const buyBookId = params.get("buyBookId");
-  if (!buyBookId) return;
-
-  if (!user || !userUid) return; // لم يسجل دخول بعد
-  if (!ALL_BOOKS.length) return; // الكتب لم تُحمّل
-
-  const book = ALL_BOOKS.find(b => b.id === buyBookId);
-  if (!book) {
-    alert("Book not found");
-    return;
-  }
-
-  // افتح تب المتجر
-  openTab("store");
-
-  // نفّذ الشراء
-  buy(book.id, book.price);
-
-  // نظف الرابط حتى لا يعيد الشراء
-  history.replaceState({}, "", "index.html");
-}
-
-  
-
 // ================= LOAD BOOKS =================
 async function loadBooks() {
   const box = document.getElementById("books");
@@ -472,9 +435,7 @@ async function loadBooks() {
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
 
-   ALL_BOOKS = json.books;
-const books = ALL_BOOKS;
-
+    const books = json.books;
     box.innerHTML = "";
     if (books.length === 0) return box.innerHTML = "<p>No books available.</p>";
 
@@ -517,21 +478,11 @@ const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
             <button class="like-btn ${userVote === 'like' ? 'liked' : ''}" onclick="rateBook('${b.id}', 'like', this)" ${userVote || !user ? 'disabled' : ''}>👍</button> ${likes}
             <button class="dislike-btn ${userVote === 'dislike' ? 'disliked' : ''}" onclick="rateBook('${b.id}', 'dislike', this)" ${userVote || !user ? 'disabled' : ''}>👎</button> ${dislikes}
           </div>
-
-<button onclick="openBook('${b.id}')">
-  📘 View Book
-</button>
-
-         
           <button onclick="buy('${b.id}', ${b.price})" ${!user ? 'disabled' : ''}>Buy with Pi</button>
         </div>`;
     }
   } catch (e) {
     box.innerHTML = "<p>Error loading books. Retrying...</p>";
-   
-    
-    autoBuyIfNeeded();
-
     setTimeout(loadBooks, 5000);
   }
 }
@@ -815,12 +766,7 @@ window.addEventListener("message", (event) => {
 });
 
   
-function openBook(bookId) {
-  window.location.href =
-    "https://spicy23-ai.github.io/book.html?id=" + bookId;
-}
 
-  
   
 </script>
   <!-- Modal for Privacy Policy / Terms -->
