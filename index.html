@@ -240,6 +240,25 @@ document.getElementById("loginBtn").onclick = async () => {
     loadBooks();
     loadMyPurchases();
     loadMySales();
+
+// تحقق إذا جاء المستخدم من book.html مع طلب شراء
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const buyId = params.get("buy");
+  if (buyId && userUid) {
+    // جلب سعر الكتاب من backend
+    fetch(`${BACKEND_URL}/book?id=${buyId}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.book) {
+          buy(json.book.id, json.book.price);
+        }
+      });
+  }
+});
+
+
+  
   } catch (err) {
     alert("Login failed. Open in Pi Browser.");
   }
@@ -444,6 +463,10 @@ async function loadBooks() {
             <button class="dislike-btn ${userVote === 'dislike' ? 'disliked' : ''}" onclick="rateBook('${b.id}', 'dislike', this)" ${userVote || !user ? 'disabled' : ''}>👎</button> ${dislikes}
           </div>
           <button onclick="buy('${b.id}', ${b.price})" ${!user ? 'disabled' : ''}>Buy with Pi</button>
+
+<button onclick="window.location.href='book.html?id=${b.id}'">View Book Details</button>
+
+          
         </div>`;
     }
   } catch (e) {
