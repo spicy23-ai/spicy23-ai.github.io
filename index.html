@@ -232,11 +232,6 @@ document.getElementById("loginBtn").onclick = async () => {
     const authResult = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
     user = authResult.user;
     userUid = user.uid;
-    
-    // 🔑 احفظ الـ Token الذي سنرسله للسيرفر
-    const authToken = authResult.accessToken;
-  // هذا token خاص بالمستخدم
-    sessionStorage.setItem("piAuthToken", authToken);
 
     document.getElementById("welcome").innerText = `Welcome, ${user.username}!`;
     document.getElementById("login").classList.add("hidden");
@@ -249,7 +244,6 @@ document.getElementById("loginBtn").onclick = async () => {
     alert("Login failed. Open in Pi Browser.");
   }
 };
-
 
 function logout() {
   location.reload();
@@ -276,19 +270,14 @@ document.getElementById("saveBookBtn").onclick = saveBook;
   btn.innerText = "Saving...";
 
   try {
-    const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/save-book`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({
-    title, price, description, language, pageCount: finalPages,
-    cover: coverUrl, pdf: pdfUrl
-  })
-});
-
+    const res = await fetch(`${BACKEND_URL}/save-book`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title, price, description, language, pageCount: finalPages,
+        cover: coverUrl, pdf: pdfUrl, owner: user.username, ownerUid: userUid
+      })
+    });
 
     if (!res.ok) throw new Error("Upload failed");
 
@@ -312,17 +301,11 @@ const res = await fetch(`${BACKEND_URL}/save-book`, {
 async function rateBook(bookId, voteType, button) {
   if (!userUid) return alert("Login required");
   try {
-   const authToken = sessionStorage.getItem("piAuthToken");
-await fetch(`${BACKEND_URL}/rate-book`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ bookId, voteType }) // بدون userUid
-});
-
-
+    await fetch(`${BACKEND_URL}/rate-book`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, voteType, userUid })
+    });
 
     button.disabled = true;
     button.classList.add(voteType === 'like' ? 'liked' : 'disliked');
@@ -345,34 +328,27 @@ async function buy(bookId, price) {
       amount: price,
       memo: "Spicy Library - Book Purchase",
       // 🔐 metadata فقط (يستخدمها backend)
-      metadata: { bookId }
+      metadata: { bookId, userUid }
     }, {
       // 🔹 الموافقة من السيرفر
       onReadyForServerApproval: async (paymentId) => {
-        const authToken = sessionStorage.getItem("piAuthToken");
-await fetch(`${BACKEND_URL}/approve-payment`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ paymentId })
-});
-
+        await fetch(`${BACKEND_URL}/approve-payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentId })
+        });
       },
 
       // 🔹 الإكمال من السيرفر (بدون bookId و userUid)
       onReadyForServerCompletion: async (paymentId, txid) => {
-       const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/complete-payment`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ paymentId, txid })
-});
-
+        const res = await fetch(`${BACKEND_URL}/complete-payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentId,
+            txid
+          })
+        });
 
         if (!res.ok) {
           alert("Payment failed");
@@ -398,16 +374,11 @@ const res = await fetch(`${BACKEND_URL}/complete-payment`, {
 // ================= DOWNLOAD PDF =================
 async function downloadPdf(bookId) {
   try {
-    const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/get-pdf`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ bookId })
-});
-
+    const res = await fetch(`${BACKEND_URL}/get-pdf`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, userUid })
+    });
     const data = await res.json();
     if (!res.ok) return alert(data.error || "Access denied");
 
@@ -440,17 +411,11 @@ async function loadBooks() {
     if (books.length === 0) return box.innerHTML = "<p>No books available.</p>";
 
     for (const b of books) {
-      const authToken = sessionStorage.getItem("piAuthToken");
-const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-  method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  },
-  body: JSON.stringify({ bookId: b.id })
-});
-
-
+      const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId: b.id, userUid })
+      });
       const ratingsJson = await ratingsRes.json();
       const { likes = 0, dislikes = 0, userVote = null } = ratingsJson.success ? ratingsJson : {};
 
@@ -507,15 +472,11 @@ async function loadMyPurchases() {
   if (!userUid) return box.innerHTML = "<p>Please log in.</p>";
 
   try {
-  const authToken = sessionStorage.getItem("piAuthToken");
-const res = await fetch(`${BACKEND_URL}/my-purchases`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${authToken}`
-  }
-});
-
+    const res = await fetch(`${BACKEND_URL}/my-purchases`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userUid })
+    });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
 
@@ -527,7 +488,7 @@ const res = await fetch(`${BACKEND_URL}/my-purchases`, {
       const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId: b.id })
+        body: JSON.stringify({ bookId: b.id, userUid })
       });
       const ratingsJson = await ratingsRes.json();
       const { likes = 0, dislikes = 0, userVote = null } = ratingsJson.success ? ratingsJson : {};
@@ -566,22 +527,14 @@ async function loadMySales() {
   const totalBox = document.getElementById("totalEarnings");
   box.innerHTML = "<p>Loading sales...</p>";
   totalBox.innerHTML = "";
-
-  const authToken = sessionStorage.getItem("piAuthToken");
-  if (!authToken) {
-    box.innerHTML = "<p>Please log in.</p>";
-    return;
-  }
+  if (!user) return box.innerHTML = "<p>Please log in.</p>";
 
   try {
     const res = await fetch(`${BACKEND_URL}/my-sales`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${authToken}`
-      }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: user.username })
     });
-
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
 
@@ -598,29 +551,32 @@ async function loadMySales() {
     for (const b of books) {
       const profit = (b.salesCount || 0) * b.price * 0.7;
       total += profit;
-
       box.innerHTML += `
         <div class="sales-book">
           <img src="${b.cover}" style="width:150px;border-radius:6px;">
           <h4>${b.title}</h4>
           <p>Price: ${b.price} Pi</p>
           <p>Sales: ${b.salesCount || 0}</p>
-          <div class="profit">Your earnings: ${profit.toFixed(2)} Pi</div>
+          <div class="profit">Your earnings: ${profit.toFixed(2)} Pi (70%)</div>
         </div>`;
     }
-
     totalBox.innerHTML = `<div class='total-profit'>Total earnings: ${total.toFixed(2)} Pi</div>`;
     document.getElementById("payoutBtn").disabled = total < 5;
-
   } catch (e) {
     box.innerHTML = "<p>Error loading sales.</p>";
   }
 }
 
-
 // ================= REQUEST PAYOUT =================
 async function requestPayout() {
-  const walletAddress = prompt("Enter your Pi Wallet address:");
+  const totalEarnings = parseFloat(document.getElementById("totalEarnings").innerText.replace("Total earnings: ", "").replace(" Pi", "")) || 0;
+
+  if (totalEarnings < 5) {
+    alert("Minimum payout is 5 Pi.\nWait for more sales before requesting withdrawal.");
+    return;
+  }
+
+  const walletAddress = prompt(`Your current earnings: ${totalEarnings.toFixed(2)} Pi\n\nEnter your Pi Wallet address to request payout:`);
 
   if (!walletAddress || walletAddress.trim() === "") {
     alert("Wallet address is required.");
@@ -631,34 +587,44 @@ async function requestPayout() {
   payoutBtn.disabled = true;
 
   try {
-    const authToken = sessionStorage.getItem("piAuthToken");
+    const res = await fetch("https://pi-backend-77pg.onrender.com/request-payout", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    username: user.username,
+    walletAddress: walletAddress.trim(),
+    earnings: totalEarnings.toFixed(2)
+  })
+});
 
-    const res = await fetch(`${BACKEND_URL}/request-payout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${authToken}`
-      },
-      body: JSON.stringify({
-        walletAddress: walletAddress.trim()
-      })
-    });
+const data = await res.json();
 
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || "Request failed");
-    }
+if (!res.ok || !data.success) {
+  throw new Error(data.error || "Request failed");
+}
 
-    alert("Payout request sent successfully!");
+alert(
+  "Payout request sent successfully!\n\n" +
+  "• Status: Pending\n" +
+  "• Minimum processing time: 1–30 days\n\n" +
+  "You will be contacted if needed."
+);
+
+loadMySales();
+
+
+    alert("Payout request sent successfully!\nYour earnings have been reset to zero.\nPayment will be processed within 1-30 days (usually 1-2 days).");
+
     loadMySales();
-
   } catch (e) {
-    alert("Failed to send payout request.");
+    console.error("Payout request error:", e);
+    alert("Failed to send request. Check your connection and try again.\nYour earnings are safe and not reset.");
   } finally {
     payoutBtn.disabled = false;
   }
 }
-
 
 // ================= TABS & SEARCH & TOGGLE =================
 function openTab(tabName) {
@@ -742,32 +708,6 @@ function closeModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
-
-// ================= BOOK REDIRECT FROM book.html =================
-window.addEventListener("message", (event) => {
-  // 🔐 تأكد من المصدر (صفحة الكتاب)
-  if (!event.origin.includes("github.io")) return;
-
-  const msg = event.data;
-  if (!msg || msg.type !== "BUY_BOOK") return;
-
-  const { bookId, price } = msg;
-
-  // 1️⃣ افتح تب المتجر
-  openTab("store");
-
-  // 2️⃣ انتظر تحميل الكتب ثم نفّذ الشراء
-  const waitForUser = setInterval(() => {
-    if (user && userUid) {
-      clearInterval(waitForUser);
-      buy(bookId, price); // 👈 استعمل نفس دالة الشراء الأصلية
-    }
-  }, 500);
-});
-
-  
-
-  
 </script>
   <!-- Modal for Privacy Policy / Terms -->
 <div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;">
