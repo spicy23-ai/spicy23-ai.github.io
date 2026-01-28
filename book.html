@@ -13,7 +13,7 @@ h1,h3 { margin:10px 0; }
 .like-btn, .dislike-btn { background:none; border:none; font-size:18px; cursor:pointer; margin:0 5px; }
 .like-btn.liked, .dislike-btn.disliked { opacity:0.6; }
 .notice { font-size:14px; color:#ccc; margin:10px 0; }
-button { padding:10px 20px; border:none; border-radius:6px; background:#ff4500; color:#fff; cursor:pointer; margin:5px; }
+button { padding:10px 20px; border:none; border-radius:6px; background:#ff4500; color:#fff; cursor:pointer; margin:5px; display:inline-flex; align-items:center; gap:5px; }
 button:disabled { background:#555; cursor:not-allowed; }
 </style>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -36,7 +36,11 @@ button:disabled { background:#555; cursor:not-allowed; }
   <span id="dislikeCount">0</span>
 </div>
 
-<button id="buyBtn">Buy this book</button>
+<!-- زر النسخ -->
+<button id="copyLinkBtn">🔗 Copy Link</button>
+
+<!-- زر الشراء مع رمز -->
+<button id="buyBtn">🛒 Buy this book</button>
 <p class="notice">Purchase happens in the main page</p>
 
 <script>
@@ -107,6 +111,14 @@ async function rate(voteType) {
     console.error(e);
   }
 }
+
+// ================= COPY LINK =================
+document.getElementById("copyLinkBtn").onclick = () => {
+  const link = window.location.href;
+  navigator.clipboard.writeText(link)
+    .then(() => alert("Book link copied! 🔗"))
+    .catch(err => alert("Failed to copy link"));
+};
 
 // ================= BUY =================
 document.getElementById("buyBtn").onclick = async () => {
