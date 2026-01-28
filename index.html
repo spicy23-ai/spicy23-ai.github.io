@@ -129,31 +129,43 @@ let pdfUrl = "";
 let pageCount = "Unknown";
 
 // ================= CLOUDINARY =================
+
 document.getElementById("uploadCoverBtn").onclick = () => {
+  const btn = document.getElementById("uploadCoverBtn");
+  btn.disabled = true; // ⬅ تعطيل الزر مباشرة
+
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "image/*"; // فقط صور
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      btn.disabled = false; // إعادة تفعيل الزر لو لم يختار ملف
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64 = reader.result; // الصورة كـBase64
-      // أرسلها للBack-end
-      const res = await fetch(`${BACKEND_URL}/upload-cover`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: base64 })
-      });
-      const data = await res.json();
-      if (data.success) {
-        coverUrl = data.url;
-        document.getElementById("coverStatus").innerText = "Cover uploaded!";
-        checkSaveReady();
-      } else {
+      try {
+        const res = await fetch(`${BACKEND_URL}/upload-cover`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          coverUrl = data.url;
+          document.getElementById("coverStatus").innerText = "Cover uploaded!";
+          checkSaveReady();
+        } else {
+          alert("Upload failed");
+        }
+      } catch (err) {
         alert("Upload failed");
+      } finally {
+        btn.disabled = false; // ⬅ إعادة تفعيل الزر بعد انتهاء الرفع
       }
     };
   };
@@ -161,37 +173,47 @@ document.getElementById("uploadCoverBtn").onclick = () => {
 };
 
 document.getElementById("uploadPdfBtn").onclick = () => {
+  const btn = document.getElementById("uploadPdfBtn");
+  btn.disabled = true; // ⬅ تعطيل الزر
+
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "application/pdf"; // فقط PDF
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      btn.disabled = false; // إعادة تفعيل الزر لو لم يختار ملف
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
       const base64 = reader.result;
-      const res = await fetch(`${BACKEND_URL}/upload-pdf`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: base64 })
-      });
-      const data = await res.json();
-      if (data.success) {
-        pdfUrl = data.url;
-        pageCount = data.pages || "Unknown";
-        document.getElementById("pdfStatus").innerText = "PDF uploaded!";
-        checkSaveReady();
-      } else {
+      try {
+        const res = await fetch(`${BACKEND_URL}/upload-pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file: base64 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          pdfUrl = data.url;
+          pageCount = data.pages || "Unknown";
+          document.getElementById("pdfStatus").innerText = "PDF uploaded!";
+          checkSaveReady();
+        } else {
+          alert("Upload failed");
+        }
+      } catch (err) {
         alert("Upload failed");
+      } finally {
+        btn.disabled = false; // ⬅ إعادة تفعيل الزر بعد انتهاء الرفع
       }
     };
   };
   fileInput.click();
 };
-
-
 
 
 function checkSaveReady() {
