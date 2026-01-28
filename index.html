@@ -242,18 +242,21 @@ document.getElementById("loginBtn").onclick = async () => {
     loadMySales();
 
 // تحقق إذا جاء المستخدم من book.html مع طلب شراء
-
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  const buy = params.get("buy"); // يجب أن يكون true
-  const bookId = params.get("id"); // رقم الكتاب من الرابط
-  const price = params.get("price"); // سعر الكتاب من الرابط
-
-  if (buy === "true" && bookId && userUid) {
-    // افتح نافذة الدفع مباشرة
-    buy(bookId, price);
+  const buyId = params.get("buy");
+  if (buyId && userUid) {
+    // جلب سعر الكتاب من backend
+    fetch(`${BACKEND_URL}/book?id=${buyId}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.book) {
+          buy(json.book.id, json.book.price);
+        }
+      });
   }
 });
+
 
 
 
