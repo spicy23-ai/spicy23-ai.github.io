@@ -2,46 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>📖 Book Details</title>
-<style>
-body { background:#111; color:#fff; font-family:Arial, sans-serif; text-align:center; margin:0; padding:20px; }
-img { max-width:300px; border-radius:6px; margin:10px 0; }
-h1,h3 { margin:10px 0; }
-.description { font-size:14px; color:#ccc; margin:10px 0; }
-.info { font-size:12px; color:#aaa; margin:5px 0; }
-.ratings { font-size:14px; margin:8px 0; }
-.like-btn, .dislike-btn { background:none; border:none; font-size:18px; cursor:pointer; margin:0 5px; }
-.like-btn.liked, .dislike-btn.disliked { opacity:0.6; }
-.notice { font-size:14px; color:#ccc; margin:10px 0; }
-button { padding:10px 20px; border:none; border-radius:6px; background:#ff4500; color:#fff; cursor:pointer; margin:5px; display:inline-flex; align-items:center; gap:5px; }
-button:disabled { background:#555; cursor:not-allowed; }
-</style>
+<title>Book</title>
+
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+<style>
+body {
+  background: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+}
+
+img {
+  width: 250px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 10px 0;
+}
+
+.description {
+  font-size: 14px;
+  color: #ccc;
+  margin: 10px 0;
+}
+
+.info {
+  font-size: 14px;
+  color: #aaa;
+  margin: 5px 0;
+}
+
+.stats {
+  font-size: 14px;
+  color: #0f9;
+  margin: 8px 0;
+}
+
+.ratings {
+  margin: 10px 0;
+}
+
+.like-btn,
+.dislike-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.like-btn.liked,
+.dislike-btn.disliked {
+  opacity: 0.6;
+}
+
+button {
+  padding: 10px 20px;
+  background: #ff4500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 8px;
+  width: 100%;
+  max-width: 280px;
+}
+
+button.share {
+  background: #00aaff;
+}
+
+button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.notice {
+  font-size: 13px;
+  color: #888;
+  margin-top: 8px;
+}
+</style>
 </head>
+
 <body>
 
-<h1 id="title">Loading...</h1>
-<img id="cover" src="" alt="Book cover">
-<p id="price"></p>
-<p class="description" id="description"></p>
-<p class="info" id="language"></p>
-<p class="info" id="pages"></p>
-<p class="info" id="owner"></p>
-<p class="info" id="sales"></p>
+<div class="container">
 
-<div class="ratings">
-  <button class="like-btn" id="likeBtn">👍</button>
-  <span id="likeCount">0</span>
-  <button class="dislike-btn" id="dislikeBtn">👎</button>
-  <span id="dislikeCount">0</span>
+  <img id="cover" src="" alt="Book cover">
+
+  <h1 id="title">Loading...</h1>
+
+  <p class="description" id="description"></p>
+
+  <p class="info" id="owner"></p>
+  <p class="info" id="language"></p>
+  <p class="info" id="pages"></p>
+  <p class="info" id="price"></p>
+  <p class="info" id="sales"></p>
+
+  <div class="ratings">
+    <button class="like-btn" id="likeBtn">👍</button>
+    <span id="likeCount">0</span>
+    &nbsp;
+    <button class="dislike-btn" id="dislikeBtn">👎</button>
+    <span id="dislikeCount">0</span>
+  </div>
+
+  <button id="buyBtn">Buy with Pi 🪙</button>
+  <button id="copyLinkBtn" class="share">Share Link 🔗</button>
+
+  <p class="notice">Purchase happens in the main page</p>
+
 </div>
-
-<!-- زر النسخ -->
-<button id="copyLinkBtn">🔗 Copy Link</button>
-
-<!-- زر الشراء مع رمز -->
-<button id="buyBtn">🛒 Buy this book</button>
-<p class="notice">Purchase happens in the main page</p>
 
 <script>
 const BACKEND_URL = "https://pi-backend-77pg.onrender.com";
@@ -49,11 +134,9 @@ let bookId = null;
 let user = null;
 let userUid = null;
 
-// Get book ID from URL
 const urlParams = new URLSearchParams(window.location.search);
 bookId = urlParams.get("id");
 
-// ================= PI SDK =================
 Pi.init({ version: "2.0", sandbox: false });
 
 // ================= LOAD BOOK =================
@@ -66,29 +149,33 @@ async function loadBook() {
 
     document.getElementById("title").innerText = b.title;
     document.getElementById("cover").src = b.cover;
-    document.getElementById("price").innerText = `${b.price} Pi`;
+    document.getElementById("price").innerText = `Price: ${b.price} Pi`;
     document.getElementById("description").innerText = b.description || "No description";
     document.getElementById("language").innerText = b.language ? `Language: ${b.language}` : "";
     document.getElementById("pages").innerText = b.pageCount !== "Unknown" ? `Pages: ${b.pageCount}` : "";
-    document.getElementById("owner").innerText = `By: ${b.owner}`;
+    document.getElementById("owner").innerText = `Author: ${b.owner}`;
     document.getElementById("sales").innerText = b.salesCount > 0 ? `Sales: ${b.salesCount}` : "";
 
-    // Load ratings
     const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bookId: b.id, userUid })
     });
+
     const ratingsJson = await ratingsRes.json();
     if (ratingsJson.success) {
       document.getElementById("likeCount").innerText = ratingsJson.likes || 0;
       document.getElementById("dislikeCount").innerText = ratingsJson.dislikes || 0;
-      if (ratingsJson.userVote === "like") document.getElementById("likeBtn").classList.add("liked");
-      if (ratingsJson.userVote === "dislike") document.getElementById("dislikeBtn").classList.add("disliked");
+
+      if (ratingsJson.userVote === "like")
+        document.getElementById("likeBtn").classList.add("liked");
+
+      if (ratingsJson.userVote === "dislike")
+        document.getElementById("dislikeBtn").classList.add("disliked");
     }
 
   } catch (e) {
-    alert("Failed to load book. Make sure ID is correct.");
+    alert("Failed to load book");
     console.error(e);
   }
 }
@@ -99,75 +186,55 @@ document.getElementById("dislikeBtn").onclick = () => rate("dislike");
 
 async function rate(voteType) {
   if (!userUid) return alert("Login required via Pi Browser");
-  try {
-    await fetch(`${BACKEND_URL}/rate-book`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId, voteType, userUid })
-    });
-    loadBook();
-  } catch (e) {
-    alert("Rating failed");
-    console.error(e);
-  }
+  await fetch(`${BACKEND_URL}/rate-book`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookId, voteType, userUid })
+  });
+  loadBook();
 }
 
 // ================= COPY LINK =================
 document.getElementById("copyLinkBtn").onclick = () => {
-  const link = window.location.href;
-  navigator.clipboard.writeText(link)
-    .then(() => alert("Book link copied! 🔗"))
-    .catch(err => alert("Failed to copy link"));
+  navigator.clipboard.writeText(window.location.href)
+    .then(() => alert("Link copied 🔗"));
 };
 
 // ================= BUY =================
 document.getElementById("buyBtn").onclick = async () => {
   if (!user) {
-    try {
-      const authResult = await Pi.authenticate(["username", "payments"]);
-      user = authResult.user;
-      userUid = user.uid;
-    } catch {
-      return alert("Login required in Pi Browser");
-    }
+    const authResult = await Pi.authenticate(["username", "payments"]);
+    user = authResult.user;
+    userUid = user.uid;
   }
 
   const price = parseFloat(document.getElementById("price").innerText) || 0;
   if (!confirm(`Buy this book for ${price} Pi?`)) return;
 
-  try {
-    await Pi.createPayment({
-      amount: price,
-      memo: "Spicy Library - Book Purchase",
-      metadata: { bookId, userUid }
-    }, {
-      onReadyForServerApproval: async (paymentId) => {
-        await fetch(`${BACKEND_URL}/approve-payment`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId, bookId, userUid })
-        });
-      },
-      onReadyForServerCompletion: async (paymentId, txid) => {
-        const res = await fetch(`${BACKEND_URL}/complete-payment`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId, txid, bookId, userUid })
-        });
-        if (!res.ok) return alert("Payment failed");
-        const data = await res.json();
-        window.open(data.pdfUrl, "_blank");
-        alert("Payment successful! The book is now open 📚");
-      },
-      onCancel: () => alert("Payment cancelled"),
-      onError: (err) => alert("Payment error: " + err.message)
-    });
-  } catch (e) {
-    alert("Use Pi Browser for payment.");
-  }
+  await Pi.createPayment({
+    amount: price,
+    memo: "Spicy Library - Book Purchase",
+    metadata: { bookId, userUid }
+  }, {
+    onReadyForServerApproval: async (paymentId) => {
+      await fetch(`${BACKEND_URL}/approve-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentId, bookId, userUid })
+      });
+    },
+    onReadyForServerCompletion: async (paymentId, txid) => {
+      const res = await fetch(`${BACKEND_URL}/complete-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentId, txid, bookId, userUid })
+      });
+      const data = await res.json();
+      window.open(data.pdfUrl, "_blank");
+    }
+  });
 };
 
-// ================= INIT =================
 window.addEventListener("DOMContentLoaded", loadBook);
 </script>
 
