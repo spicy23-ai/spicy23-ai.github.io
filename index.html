@@ -594,17 +594,36 @@ async function loadMySales() {
 
 // ================= REQUEST PAYOUT =================
 async function requestPayout() {
-  const totalEarnings = parseFloat(document.getElementById("totalEarnings").innerText.replace("Total earnings: ", "").replace(" Pi", "")) || 0;
+  const totalEarnings = parseFloat(
+    document.getElementById("totalEarnings")
+      .innerText
+      .replace("Total earnings: ", "")
+      .replace(" Pi", "")
+  ) || 0;
 
   if (totalEarnings < 5) {
-    alert("Minimum payout is 5 Pi.\nWait for more sales before requesting withdrawal.");
+    alert("Minimum payout is 5 Pi.");
     return;
   }
 
-  const walletAddress = prompt(`Your current earnings: ${totalEarnings.toFixed(2)} Pi\n\nEnter your Pi Wallet address to request payout:`);
+  const walletAddress = prompt(
+    `Your current earnings: ${totalEarnings.toFixed(2)} Pi\n\n` +
+    `Enter your Pi Wallet address:`
+  );
 
-  if (!walletAddress || walletAddress.trim() === "") {
+  if (!walletAddress) {
     alert("Wallet address is required.");
+    return;
+  }
+
+  // ✅ التحقق من محفظة Pi
+  if (!isValidPiWallet(walletAddress.trim())) {
+    alert(
+      "❌ Invalid Pi Wallet Address\n\n" +
+      "• Address must be exactly 56 characters\n" +
+      "• Only uppercase letters and numbers\n\n" +
+      "Example: GB7XK... (56 chars)"
+    );
     return;
   }
 
@@ -612,40 +631,29 @@ async function requestPayout() {
   payoutBtn.disabled = true;
 
   try {
-    const res = await fetch("https://pi-backend-77pg.onrender.com/request-payout", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    username: user.username,
-    walletAddress: walletAddress.trim(),
-    earnings: totalEarnings.toFixed(2)
-  })
-});
+    const res = await fetch(`${BACKEND_URL}/request-payout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: user.username,
+        walletAddress: walletAddress.trim()
+      })
+    });
 
-const data = await res.json();
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || "Request failed");
+    }
 
-if (!res.ok || !data.success) {
-  throw new Error(data.error || "Request failed");
-}
-
-alert(
-  "Payout request sent successfully!\n\n" +
-  "• Status: Pending\n" +
-  "• Minimum processing time: 1–30 days\n\n" +
-  "You will be contacted if needed."
-);
-
-loadMySales();
-
-
-    alert("Payout request sent successfully!\nYour earnings have been reset to zero.\nPayment will be processed within 1-30 days (usually 1-2 days).");
+    alert(
+      "✅ Payout request sent successfully!\n\n" +
+      "Status: Pending\n" +
+      "Processing time: 1–30 days"
+    );
 
     loadMySales();
   } catch (e) {
-    console.error("Payout request error:", e);
-    alert("Failed to send request. Check your connection and try again.\nYour earnings are safe and not reset.");
+    alert("❌ Failed to send payout request.");
   } finally {
     payoutBtn.disabled = false;
   }
