@@ -1192,10 +1192,7 @@ if (!savedWallet) {
     return;
   }
 
-  localStorage.setItem(
-    "piWallet",
-    walletAddress
-  );
+
   await fetch(
   `${BACKEND_URL}/save-wallet`,
   {
