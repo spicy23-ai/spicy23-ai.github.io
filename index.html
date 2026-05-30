@@ -1163,9 +1163,54 @@ async function login() {
     );
 
     user = authResult.user;
-    userUid = user.uid;
-    alert(JSON.stringify(authResult, null, 2));
+userUid = user.uid;
 
+// أول تسجيل دخول فقط
+let savedWallet =
+  localStorage.getItem("piWallet");
+
+if (!savedWallet) {
+
+  let walletAddress = prompt(
+    "Enter your Pi Wallet Address"
+  );
+
+  if (!walletAddress) {
+    alert("Wallet address required");
+    return;
+  }
+
+  walletAddress = walletAddress.trim();
+
+  if (
+    walletAddress.length !== 56 ||
+    !walletAddress.startsWith("G")
+  ) {
+    alert(
+      "Invalid Pi wallet address"
+    );
+    return;
+  }
+
+  localStorage.setItem(
+    "piWallet",
+    walletAddress
+  );
+  await fetch(
+  `${BACKEND_URL}/save-wallet`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type":
+      "application/json"
+    },
+    body: JSON.stringify({
+      userUid,
+      walletAddress
+    })
+  }
+);
+}
     document.getElementById("welcome").innerText =
       `Welcome, ${user.username}!`;
 
@@ -1749,11 +1794,7 @@ async function requestPayout() {
     return;
   }
 
-  let walletAddress = prompt(
-    "Enter your Pi wallet address"
-  );
 
-  if (!walletAddress) return;
 
   try {
 
@@ -1766,8 +1807,7 @@ async function requestPayout() {
         },
 body: JSON.stringify({
   username: user.username,
-  userUid: userUid,
-  walletAddress
+  userUid: userUid
 })
       }
     );
