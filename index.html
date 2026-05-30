@@ -1158,13 +1158,13 @@ async function login() {
   try {
 
     const authResult = await Pi.authenticate(
-      ["username", "payments"],
-      onIncompletePaymentFound
-    );
+  ["username", "payments"],
+  onIncompletePaymentFound
+);
 
-    user = authResult.user;
+user = authResult.user;
 userUid = user.uid;
-
+window.accessToken = authResult.accessToken;
 // أول تسجيل دخول فقط
 let savedWallet =
   localStorage.getItem("piWallet");
@@ -1201,11 +1201,11 @@ if (!savedWallet) {
   {
     method: "POST",
     headers: {
-      "Content-Type":
-      "application/json"
+      "Content-Type":"application/json"
     },
     body: JSON.stringify({
       userUid,
+      accessToken: window.accessToken,
       walletAddress
     })
   }
