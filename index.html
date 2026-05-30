@@ -1164,7 +1164,7 @@ async function login() {
 
     user = authResult.user;
     userUid = user.uid;
-    console.log(authResult);
+    alert(JSON.stringify(authResult));
 
     document.getElementById("welcome").innerText =
       `Welcome, ${user.username}!`;
