@@ -1806,8 +1806,8 @@ async function requestPayout() {
           "Content-Type": "application/json"
         },
 body: JSON.stringify({
-  username: user.username,
-  userUid: userUid
+  userUid: userUid,
+  accessToken: window.accessToken
 })
       }
     );
