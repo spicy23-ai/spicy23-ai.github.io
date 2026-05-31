@@ -424,7 +424,7 @@ border:1px solid #444;
 <script>
 const BACKEND_URL = "https://pi-backend-77pg.onrender.com";  let userUid = null;
 let currentUser = null;
-const ALLOWED_ORIGIN = "https://spicy23-ai.github.io"; // موقعك
+const ALLOWED_ORIGIN = "https://spicylibrary.space"; // موقعك
 
 // ================= LANGUAGES =================
 
@@ -643,7 +643,7 @@ ${b.description || "No description"}
   document.getElementById("buyBtn").onclick = () => {
 
   window.location.href =
-    `https://spicy23-ai.github.io/index.html?buyBookId=${b.id}`;
+    `https://spicylibrary.space/index.html?buyBookId=${b.id}`;
 
 };
 
@@ -787,7 +787,7 @@ userUid = localStorage.getItem("userUid");
 // استقبال نتيجة الدفع من index.html
 window.addEventListener("message", (event) => {
 
-  if (event.origin !== "https://spicy23-ai.github.io")
+  if (event.origin !== "https://spicylibrary.space")
     return;
 
   const msg = event.data;
@@ -798,7 +798,7 @@ window.addEventListener("message", (event) => {
 
     // تحويل المستخدم للتطبيق
     window.location.href =
-      "https://spicy23-ai.github.io/index.html";
+      "https://spicylibrary.space/index.html";
 
   }
 
