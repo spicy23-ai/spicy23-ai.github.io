@@ -422,7 +422,8 @@ border:1px solid #444;
 <div id="content">Loading book...</div>
 
 <script>
-const BACKEND_URL = "https://pi-backend-77pg.onrender.com";
+const BACKEND_URL = "https://pi-backend-77pg.onrender.com";  let userUid = null;
+let currentUser = null;
 const ALLOWED_ORIGIN = "https://spicy23-ai.github.io"; // موقعك
 
 // ================= LANGUAGES =================
@@ -507,6 +508,36 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
+async function loginPi() {
+
+  try {
+
+    Pi.init({ version: "2.0" });
+
+    const auth = await Pi.authenticate(
+      ["username"],
+      () => {}
+    );
+
+    currentUser = auth.user;
+    userUid = auth.user.uid;
+
+    localStorage.setItem(
+      "userUid",
+      userUid
+    );
+
+    return true;
+
+  } catch(err) {
+
+    console.error(err);
+    alert("Login failed");
+
+    return false;
+  }
+}
+  
   loadBook();
 }
   
@@ -662,10 +693,13 @@ if(userUid){
 
 async function sendVote(voteType){
 
-  if(!userUid){
-    alert("Login required");
-    return;
-  }
+ if(!userUid){
+
+  const ok = await loginPi();
+
+  if(!ok) return;
+
+}
 
   try{
 
@@ -729,7 +763,7 @@ document
 }
 
 window.addEventListener("load", () => {
-
+userUid = localStorage.getItem("userUid");
   const savedLang =
     localStorage.getItem("appLanguage") || "en";
 
