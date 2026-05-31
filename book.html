@@ -252,6 +252,35 @@ overflow:hidden;
   font-weight:bold;
 }
 
+.rating-actions{
+  margin-top:20px;
+}
+
+.rating-btn{
+  padding:12px 20px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+  margin:5px;
+  transition:.3s;
+}
+
+.like-btn{
+  background:#16a34a;
+  color:white;
+}
+
+.dislike-btn{
+  background:#dc2626;
+  color:white;
+}
+
+.rating-btn.active{
+  box-shadow:0 0 20px rgba(255,255,255,.35);
+  transform:scale(1.05);
+}
+  
 /* Buttons */
 
 .actions{
@@ -553,7 +582,20 @@ ${b.description || "No description"}
 </div>
 
 <div class="stats">
-👍 ${likes} &nbsp;&nbsp; | &nbsp;&nbsp; 👎 ${dislikes}
+👍 <span id="likesCount">${likes}</span>
+&nbsp;&nbsp; |
+&nbsp;&nbsp;
+👎 <span id="dislikesCount">${dislikes}</span>
+</div>
+
+<div class="rating-actions">
+<button id="likeBtn" class="rating-btn like-btn">
+👍 Like
+</button>
+
+<button id="dislikeBtn" class="rating-btn dislike-btn">
+👎 Dislike
+</button>
 </div>
 
 <div class="actions">
@@ -571,6 +613,114 @@ ${b.description || "No description"}
     `https://spicy23-ai.github.io/index.html?buyBookId=${b.id}`;
 
 };
+
+    // تسجيل دخول Pi
+
+let userUid = null;
+
+try{
+  Pi.init({ version: "2.0" });
+
+  const auth = await Pi.authenticate(
+    ["username"],
+    () => {}
+  );
+
+  userUid = auth.user.uid;
+
+}catch(err){
+  console.error(err);
+}
+
+// تحميل تصويت المستخدم الحالي
+
+if(userUid){
+
+  try{
+
+    const r = await fetch(
+      `${BACKEND_URL}/book-ratings`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          bookId:b.id,
+          userUid
+        })
+      }
+    );
+
+    const j = await r.json();
+
+    if(j.userVote==="like"){
+      document
+        .getElementById("likeBtn")
+        .classList.add("active");
+    }
+
+    if(j.userVote==="dislike"){
+      document
+        .getElementById("dislikeBtn")
+        .classList.add("active");
+    }
+
+  }catch(err){
+    console.error(err);
+  }
+
+}
+
+// إرسال التصويت
+
+async function sendVote(voteType){
+
+  if(!userUid){
+    alert("Login required");
+    return;
+  }
+
+  try{
+
+    const res = await fetch(
+      `${BACKEND_URL}/rate-book`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          bookId:b.id,
+          voteType,
+          userUid
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+      loadBook();
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+
+}
+
+document
+.getElementById("likeBtn")
+.onclick = () => sendVote("like");
+
+document
+.getElementById("dislikeBtn")
+.onclick = () => sendVote("dislike");
     // زر مشاركة الرابط
     document.getElementById("shareBtn").onclick = () => {
       const bookUrl = window.location.href;
