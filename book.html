@@ -508,6 +508,9 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
+ loadBook();
+}
+  
 async function loginPi() {
 
   try {
@@ -538,8 +541,7 @@ async function loginPi() {
   }
 }
   
-  loadBook();
-}
+ 
   
 const params = new URLSearchParams(window.location.search);
 const bookId = params.get("id");
@@ -647,7 +649,7 @@ ${b.description || "No description"}
 
     // تسجيل دخول Pi
 
-const userUid = localStorage.getItem("userUid");
+userUid = localStorage.getItem("userUid");
 
 // تحميل تصويت المستخدم الحالي
 
@@ -699,6 +701,7 @@ async function sendVote(voteType){
 
   if(!ok) return;
 
+  userUid = localStorage.getItem("userUid");
 }
 
   try{
