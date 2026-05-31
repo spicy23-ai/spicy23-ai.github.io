@@ -616,21 +616,7 @@ ${b.description || "No description"}
 
     // تسجيل دخول Pi
 
-let userUid = null;
-
-try{
-  Pi.init({ version: "2.0" });
-
-  const auth = await Pi.authenticate(
-    ["username"],
-    () => {}
-  );
-
-  userUid = auth.user.uid;
-
-}catch(err){
-  console.error(err);
-}
+const userUid = localStorage.getItem("userUid");
 
 // تحميل تصويت المستخدم الحالي
 
