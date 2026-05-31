@@ -1163,6 +1163,8 @@ async function login() {
 
     user = authResult.user;
     userUid = user.uid;
+    localStorage.setItem("userUid", user.uid);
+localStorage.setItem("username", user.username);
     window.accessToken = authResult.accessToken;
 
     // ✅ تحقق من وجود المحفظة على السيرفر
