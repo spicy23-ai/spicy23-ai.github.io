@@ -2135,7 +2135,7 @@ function closeModal() {
 // استمع لرسائل من book.html
 window.addEventListener("message", async (event) => {
   // تأكد أن الرسالة من موقعك فقط
-  if(event.origin !== "https://spicy23-ai.github.io") return;
+  if(event.origin !== "https://spicylibrary.space") return;
 
   const msg = event.data;
 
@@ -2197,7 +2197,7 @@ window.addEventListener("message", async (event) => {
           window.openedBook.postMessage({
             type: "PAYMENT_SUCCESS",
             bookId: msg.bookId
-          }, "https://spicy23-ai.github.io");
+          }, "https://spicylibrary.space");
 
           // فتح تبويب المشتريات تلقائياً
           openTab("purchases");
@@ -2210,7 +2210,7 @@ window.addEventListener("message", async (event) => {
 
           window.openedBook.postMessage({
             type: "PAYMENT_CANCELLED"
-          }, "https://spicy23-ai.github.io");
+          }, "https://spicylibrary.space");
 
         },
 
@@ -2219,7 +2219,7 @@ window.addEventListener("message", async (event) => {
           window.openedBook.postMessage({
             type: "PAYMENT_FAILED",
             error: err.message
-          }, "https://spicy23-ai.github.io");
+          }, "https://spicylibrary.space");
 
         }
 
