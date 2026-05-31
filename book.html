@@ -2,270 +2,283 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>📖 Book Details</title>
-
+<title>Book</title>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
 <style>
 body {
-  background:#0f0f0f;
-  color:#fff;
+  background: #111;
+  color: #fff;
   font-family: Arial, sans-serif;
-  text-align:center;
-  margin:0;
-  padding:20px;
+  text-align: center;
+  padding: 20px;
 }
-
-.card {
-  max-width:420px;
-  margin:auto;
-  background:#161616;
-  border-radius:12px;
-  padding:20px;
-  box-shadow:0 0 25px rgba(0,0,0,0.6);
-}
-
 img {
-  width:260px;
-  border-radius:10px;
-  margin-bottom:15px;
+  width: 250px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
-
-h1 {
-  font-size:22px;
-  margin:10px 0;
-}
-
-.price {
-  font-size:18px;
-  color:#ff9800;
-  margin:10px 0;
-}
-
-.description {
-  font-size:14px;
-  color:#ccc;
-  margin:10px 0;
-}
-
-.info {
-  font-size:13px;
-  color:#aaa;
-  margin:5px 0;
-}
-
-.ratings {
-  margin:12px 0;
-}
-
-.like-btn,
-.dislike-btn {
-  background:none;
-  border:none;
-  font-size:20px;
-  cursor:pointer;
-  margin:0 5px;
-}
-
-.like-btn.liked,
-.dislike-btn.disliked {
-  opacity:0.6;
-}
-
 button {
-  width:100%;
-  max-width:260px;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#ff4500;
-  color:#fff;
-  cursor:pointer;
-  margin:6px 0;
-  font-size:15px;
+  padding: 10px 20px;
+  background: #ff4500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 10px;
 }
-
-button.secondary {
-  background:#0099ff;
+button.share {
+  background: #00aaff;
 }
-
-button:disabled {
-  background:#555;
-  cursor:not-allowed;
+.info {
+  font-size: 14px;
+  color: #ccc;
+  margin: 5px 0;
 }
-
-.notice {
-  font-size:13px;
-  color:#888;
-  margin-top:8px;
+.stats {
+  font-size: 14px;
+  color: #0f9;
+  margin: 5px 0;
 }
 </style>
 </head>
-
 <body>
 
-<div class="card">
+<select id="languageSwitcher" onchange="changeLanguage()" style="
+padding:8px 12px;
+border-radius:12px;
+margin:10px;
+background:#222;
+color:white;
+border:1px solid #444;
+">
+  <option value="en">English</option>
+  <option value="ar">العربية</option>
+  <option value="fr">Français</option>
+  <option value="zh">中文</option>
+</select>
 
-  <img id="cover" src="" alt="Book cover">
-
-  <h1 id="title">Loading...</h1>
-
-  <div class="price" id="price">0 Pi</div>
-
-  <p class="description" id="description"></p>
-
-  <p class="info" id="owner"></p>
-  <p class="info" id="language"></p>
-  <p class="info" id="pages"></p>
-  <p class="info" id="sales"></p>
-
-  <div class="ratings">
-    <button class="like-btn" id="likeBtn">👍</button>
-    <span id="likeCount">0</span>
-    &nbsp;
-    <button class="dislike-btn" id="dislikeBtn">👎</button>
-    <span id="dislikeCount">0</span>
-  </div>
-
-  <button id="buyBtn">🛒 Buy this book</button>
-  <button id="copyLinkBtn" class="secondary">🔗 Copy Link</button>
-
-  <p class="notice">Purchase happens in the main page</p>
-
-</div>
+<div id="content">Loading book...</div>
 
 <script>
 const BACKEND_URL = "https://pi-backend-77pg.onrender.com";
+const ALLOWED_ORIGIN = "https://spicy23-ai.github.io"; // موقعك
 
-let bookId = null;
-let user = null;
-let userUid = null;
-let bookPrice = 0;
+// ================= LANGUAGES =================
 
-// ================= GET BOOK ID =================
-const urlParams = new URLSearchParams(window.location.search);
-bookId = urlParams.get("id");
+let currentLang =
+  localStorage.getItem("appLanguage") || "en";
 
-// ================= PI SDK =================
-Pi.init({ version: "2.0", sandbox: false });
+const translations = {
 
-// ================= LOAD BOOK =================
-async function loadBook() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/book?id=${bookId}`);
-    const json = await res.json();
-    if (!json.success) throw new Error(json.error);
+  en: {
+    loading: "Loading book...",
+    notFound: "Book not found",
+    description: "Description",
+    author: "Author",
+    language: "Language",
+    pages: "Pages",
+    price: "Price",
+    likes: "Likes",
+    dislikes: "Dislikes",
+    buy: "Buy with Pi 🪙",
+    share: "Share Link 🔗",
+    copied: "✅ Link copied to clipboard",
+    copyManual: "⚠️ Copy manually:"
+  },
 
-    const b = json.book;
+  ar: {
+    loading: "جاري تحميل الكتاب...",
+    notFound: "الكتاب غير موجود",
+    description: "الوصف",
+    author: "المؤلف",
+    language: "اللغة",
+    pages: "الصفحات",
+    price: "السعر",
+    likes: "الإعجابات",
+    dislikes: "عدم الإعجاب",
+    buy: "شراء عبر Pi 🪙",
+    share: "مشاركة الرابط 🔗",
+    copied: "✅ تم نسخ الرابط",
+    copyManual: "⚠️ انسخ الرابط يدوياً:"
+  },
 
-    bookPrice = Number(b.price);
+  fr: {
+    loading: "Chargement du livre...",
+    notFound: "Livre introuvable",
+    description: "Description",
+    author: "Auteur",
+    language: "Langue",
+    pages: "Pages",
+    price: "Prix",
+    likes: "Likes",
+    dislikes: "Dislikes",
+    buy: "Acheter avec Pi 🪙",
+    share: "Partager le lien 🔗",
+    copied: "✅ Lien copié",
+    copyManual: "⚠️ Copiez manuellement :"
+  },
 
-    document.getElementById("title").innerText = b.title;
-    document.getElementById("cover").src = b.cover;
-    document.getElementById("price").innerText = `${bookPrice} Pi`;
-    document.getElementById("description").innerText = b.description || "No description";
-    document.getElementById("language").innerText = b.language ? `Language: ${b.language}` : "";
-    document.getElementById("pages").innerText = b.pageCount !== "Unknown" ? `Pages: ${b.pageCount}` : "";
-    document.getElementById("owner").innerText = `By: ${b.owner}`;
-    document.getElementById("sales").innerText = b.salesCount > 0 ? `Sales: ${b.salesCount}` : "";
-
-    const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId: b.id, userUid })
-    });
-
-    const ratingsJson = await ratingsRes.json();
-    if (ratingsJson.success) {
-      document.getElementById("likeCount").innerText = ratingsJson.likes || 0;
-      document.getElementById("dislikeCount").innerText = ratingsJson.dislikes || 0;
-
-      if (ratingsJson.userVote === "like")
-        document.getElementById("likeBtn").classList.add("liked");
-
-      if (ratingsJson.userVote === "dislike")
-        document.getElementById("dislikeBtn").classList.add("disliked");
-    }
-
-  } catch (e) {
-    alert("Failed to load book");
-    console.error(e);
+  zh: {
+    loading: "正在加载书籍...",
+    notFound: "未找到书籍",
+    description: "描述",
+    author: "作者",
+    language: "语言",
+    pages: "页数",
+    price: "价格",
+    likes: "点赞",
+    dislikes: "点踩",
+    buy: "使用 Pi 购买 🪙",
+    share: "分享链接 🔗",
+    copied: "✅ 链接已复制",
+    copyManual: "⚠️ 请手动复制："
   }
-}
+};
 
-// ================= RATE =================
-document.getElementById("likeBtn").onclick = () => rate("like");
-document.getElementById("dislikeBtn").onclick = () => rate("dislike");
+function changeLanguage() {
 
-async function rate(voteType) {
-  if (!userUid) return alert("Login required via Pi Browser");
+  currentLang =
+    document.getElementById("languageSwitcher").value;
 
-  await fetch(`${BACKEND_URL}/rate-book`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookId, voteType, userUid })
-  });
+  localStorage.setItem("appLanguage", currentLang);
+
+  document.body.style.direction =
+    currentLang === "ar" ? "rtl" : "ltr";
 
   loadBook();
 }
+  
+const params = new URLSearchParams(window.location.search);
+const bookId = params.get("id");
 
-// ================= COPY LINK =================
-document.getElementById("copyLinkBtn").onclick = () => {
-  navigator.clipboard.writeText(window.location.href)
-    .then(() => alert("Book link copied 🔗"));
-};
+if (!bookId) {
+  document.getElementById("content").innerText =
+  translations[currentLang].notFound;
+}
 
-// ================= BUY (✅ يعمل مثل الملف القديم) =================
-document.getElementById("buyBtn").onclick = async () => {
-  if (!user) {
+// جلب بيانات الكتاب من السيرفر
+async function loadBook() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/book?id=${bookId}`);
+    const data = await res.json();
+    if (!data.success) throw new Error();
+
+    const b = data.book;
+
+    // جلب التقييمات (لايك و غير لايك)
+    let likes = 0, dislikes = 0;
     try {
-      const authResult = await Pi.authenticate(["username", "payments"]);
-      user = authResult.user;
-      userUid = user.uid;
-    } catch {
-      return alert("Login required in Pi Browser");
+      const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId: b.id })
+      });
+      const ratingsJson = await ratingsRes.json();
+      if (ratingsJson.success) {
+        likes = ratingsJson.likes || 0;
+        dislikes = ratingsJson.dislikes || 0;
+      }
+    } catch(e) {
+      console.error("Error loading ratings:", e);
     }
-  }
 
-  if (!bookPrice || bookPrice <= 0) {
-    return alert("Invalid book price");
-  }
+const t = translations[currentLang];
+    
+    document.getElementById("content").innerHTML = `
+      <img src="${b.cover}" alt="Cover">
+      <h2>${b.title}</h2>
+      <p class="info"><strong>${t.description}:</strong> ${b.description || "No description"}</p>
+     <p class="info"><strong>${t.author}:</strong> ${b.owner}</p>
+      <p class="info"><strong>${t.language}:</strong> ${b.language || "Unknown"}</p>
+      <p class="info"><strong>${t.pages}:</strong> ${b.pageCount || "Unknown"}</p>
+      <p class="info"><strong>${t.price}:</strong> ${b.price} Pi</p>
+      <p class="stats">
+👍 ${t.likes}: ${likes} |
+👎 ${t.dislikes}: ${dislikes}
+</p>
+      <button id="buyBtn">${t.buy}</button>
+      <button id="shareBtn" class="share">${t.share}</button>
+    `;
 
-  if (!confirm(`Buy this book for ${bookPrice} Pi?`)) return;
+    // فتح الصفحة الرئيسية مع نفس الكتاب عند الشراء
+  document.getElementById("buyBtn").onclick = () => {
 
-  await Pi.createPayment({
-    amount: bookPrice,
-    memo: "Spicy Library - Book Purchase",
-    metadata: { bookId, userUid }
-  }, {
-    onReadyForServerApproval: async (paymentId) => {
-      await fetch(`${BACKEND_URL}/approve-payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId, bookId, userUid })
-      });
-    },
-    onReadyForServerCompletion: async (paymentId, txid) => {
-      const res = await fetch(`${BACKEND_URL}/complete-payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId, txid, bookId, userUid })
-      });
+  window.location.href =
+    `https://spicy23-ai.github.io/index.html?buyBookId=${b.id}`;
 
-      if (!res.ok) return alert("Payment failed");
-
-      const data = await res.json();
-      window.open(data.pdfUrl, "_blank");
-      alert("Payment successful! 📚");
-    },
-    onCancel: () => alert("Payment cancelled"),
-    onError: (err) => alert("Payment error: " + err.message)
-  });
 };
+    // زر مشاركة الرابط
+    document.getElementById("shareBtn").onclick = () => {
+      const bookUrl = window.location.href;
+      if (navigator.share) {
+        navigator.share({
+          title: b.title,
+          url: bookUrl
+        }).catch(console.error);
+      } else {
+        navigator.clipboard.writeText(bookUrl)
+          .then(() => alert(t.copied))
+          .catch(() => alert(t.copyManual + " " + bookUrl));
+      }
+    };
 
-// ================= INIT =================
-window.addEventListener("DOMContentLoaded", loadBook);
+  } catch(e) {
+    console.error(e);
+    document.getElementById("content").innerText = "Error loading book";
+  }
+}
+
+window.addEventListener("load", () => {
+
+  const savedLang =
+    localStorage.getItem("appLanguage") || "en";
+
+  document.getElementById("languageSwitcher").value =
+    savedLang;
+
+  currentLang = savedLang;
+
+  document.body.style.direction =
+    currentLang === "ar" ? "rtl" : "ltr";
+
+  loadBook();
+});
+
+ 
+
+
+// استقبال نتيجة الدفع من index.html
+window.addEventListener("message", (event) => {
+
+  if (event.origin !== "https://spicy23-ai.github.io")
+    return;
+
+  const msg = event.data;
+
+  if (msg.type === "PAYMENT_SUCCESS") {
+
+    alert("✅ Payment successful!");
+
+    // تحويل المستخدم للتطبيق
+    window.location.href =
+      "https://spicy23-ai.github.io/index.html";
+
+  }
+
+  if (msg.type === "PAYMENT_FAILED") {
+
+    alert("❌ Payment failed");
+
+  }
+
+  if (msg.type === "PAYMENT_CANCELLED") {
+
+    alert("⚠️ Payment cancelled");
+
+  }
+
+});
+
 </script>
-
 </body>
 </html>
