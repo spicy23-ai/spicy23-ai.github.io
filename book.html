@@ -159,7 +159,7 @@ if (!bookId) {
 // جلب بيانات الكتاب من السيرفر
 async function loadBook() {
   try {
-    const res = await fetch(`${BACKEND_URL}/book?id=${bookId}`);
+    const res = await fetch(`${BACKEND_URL}/book/${bookId}`);
     const data = await res.json();
     if (!data.success) throw new Error();
 
