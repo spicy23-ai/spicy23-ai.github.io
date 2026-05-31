@@ -1552,7 +1552,7 @@ window.addEventListener("load", () => {
     // ابحث عن الكتاب في المتجر
     const attemptBuy = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/book/${buyBookId}`);
+        const res = await fetch(`${BACKEND_URL}/book?id=${buyBookId}`);
         const data = await res.json();
         if (!data.success) throw new Error("Book not found");
 
