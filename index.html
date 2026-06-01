@@ -1359,10 +1359,13 @@ async function buy(bookId, price) {
 
         const data = await res.json();
         window.open(data.pdfUrl, "_blank");
-        alert("Payment successful! The book is now open 📚");
+alert("Payment successful! The book is now open 📚");
 
-        // ✅ تنظيف أي pending نهائيًا
-        location.reload();
+// تحديث المشتريات
+await loadMyPurchases();
+
+// فتح تبويب المشتريات مباشرة
+openTab("purchases");
       },
 
       onCancel: () => alert("Payment cancelled"),
