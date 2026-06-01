@@ -1045,7 +1045,8 @@ document.getElementById("uploadCoverBtn").onclick = () => {
    if (!file) return;
 btn.disabled = true;
     
-
+document.getElementById("coverStatus").innerText =
+"⏳ Uploading cover... Please wait";
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
@@ -1059,12 +1060,15 @@ btn.disabled = true;
         const data = await res.json();
         if (data.success) {
           coverUrl = data.url;
-          document.getElementById("coverStatus").innerText = "Cover uploaded!";
+         document.getElementById("coverStatus").innerText =
+"✅ Cover uploaded successfully!";
           checkSaveReady();
         } else {
           alert("Upload failed");
         }
       } catch (err) {
+        document.getElementById("coverStatus").innerText =
+"❌ Upload failed";
         alert("Upload failed");
       } finally {
         btn.disabled = false; // ⬅ إعادة تفعيل الزر بعد انتهاء الرفع
@@ -1087,7 +1091,8 @@ if (!file) return;
 
 btn.disabled = true;
     
-    
+    document.getElementById("pdfStatus").innerText =
+"⏳ Uploading PDF... Please wait";
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1103,12 +1108,15 @@ btn.disabled = true;
         if (data.success) {
           pdfUrl = data.url;
           pageCount = data.pages || "Unknown";
-          document.getElementById("pdfStatus").innerText = "PDF uploaded!";
+          document.getElementById("pdfStatus").innerText =
+"✅ PDF uploaded successfully!";
           checkSaveReady();
         } else {
           alert("Upload failed");
         }
       } catch (err) {
+        document.getElementById("pdfStatus").innerText =
+"❌ Upload failed";
         alert("Upload failed");
       } finally {
         btn.disabled = false; // ⬅ إعادة تفعيل الزر بعد انتهاء الرفع
