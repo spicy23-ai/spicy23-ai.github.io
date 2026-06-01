@@ -1035,17 +1035,16 @@ let pageCount = "Unknown";
 
 document.getElementById("uploadCoverBtn").onclick = () => {
   const btn = document.getElementById("uploadCoverBtn");
-  btn.disabled = true; // ⬅ تعطيل الزر مباشرة
+  
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "image/*"; // فقط صور
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      btn.disabled = false; // إعادة تفعيل الزر لو لم يختار ملف
-      return;
-    }
+   if (!file) return;
+btn.disabled = true;
+    
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1077,17 +1076,18 @@ document.getElementById("uploadCoverBtn").onclick = () => {
 
 document.getElementById("uploadPdfBtn").onclick = () => {
   const btn = document.getElementById("uploadPdfBtn");
-  btn.disabled = true; // ⬅ تعطيل الزر
+ 
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "application/pdf"; // فقط PDF
   fileInput.onchange = async (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      btn.disabled = false; // إعادة تفعيل الزر لو لم يختار ملف
-      return;
-    }
+if (!file) return;
+
+btn.disabled = true;
+    
+    
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
