@@ -906,7 +906,8 @@ max-width:160px;
 
 <div id="app" class="hidden">
 
-   <div id="addBook" class="hidden">
+   <div id="addBookPage" class="tab-content">
+  <div id="addBook">
       <h3>Add Book</h3>
       <input id="title" placeholder="Book title" required>
       <input id="price" type="number" min="0.1" step="0.1" placeholder="Price (Pi)" required>
@@ -934,17 +935,19 @@ max-width:160px;
         I confirm that I own all rights to this book
       </label><br><br>
       <button id="saveBookBtn" disabled>Save Book</button>
-    </div>
+      </div>
+</div>
 
   
   <h3 id="welcome"></h3>
-  <button onclick="toggleAdd()">➕ Add Book</button>
+ 
   <button onclick="logout()">Logout</button>
 
   <div>
-    <button class="tab-btn active" onclick="openTab('store')">Store</button>
-    <button class="tab-btn" onclick="openTab('purchases')">My Purchases</button>
-    <button class="tab-btn" onclick="openTab('sales')">My Sales</button>
+   <button class="tab-btn active" onclick="openTab('store')">Store</button>
+<button class="tab-btn" onclick="openTab('addBookPage')">Add Book</button>
+<button class="tab-btn" onclick="openTab('purchases')">My Purchases</button>
+<button class="tab-btn" onclick="openTab('sales')">My Sales</button>
   </div>
 
   <div id="store" class="tab-content active">
@@ -1324,7 +1327,7 @@ document.getElementById("saveBookBtn").onclick = saveBook;
     if (!res.ok) throw new Error("Upload failed");
 
     alert(translations[currentLang].bookPending);
-    toggleAdd();
+   openTab("store");
     coverUrl = pdfUrl = "";
     document.getElementById("coverStatus").innerText = "";
     document.getElementById("pdfStatus").innerText = "";
@@ -1951,10 +1954,7 @@ function filterBooks(type, btn) {
 }
   
 
-function toggleAdd() {
-  if (!user) return alert("Login required");
-  document.getElementById("addBook").classList.toggle("hidden");
-}
+
 
 function openBook(bookId) {
   window.open(`book.html?id=${bookId}`, "_blank");
