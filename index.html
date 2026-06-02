@@ -1291,7 +1291,7 @@ document.getElementById("saveBookBtn").onclick = saveBook;
 
     if (!res.ok) throw new Error("Upload failed");
 
-    alert("Book uploaded successfully!");
+    alert(translations[currentLang].bookPending);
     toggleAdd();
     coverUrl = pdfUrl = "";
     document.getElementById("coverStatus").innerText = "";
@@ -2333,7 +2333,9 @@ termsTitle: "Terms of Service",
     download: "Download PDF",
 
     loadingBooks: "Loading books...",
-    noBooks: "No books available."
+    noBooks: "No books available.",
+  bookPending:
+    "✅ Book submitted successfully!\n\nYour book is under review and will be published after approval."
   },
 
   ar: {
@@ -2374,7 +2376,9 @@ termsTitle: "شروط الاستخدام",
     download: "تحميل PDF",
 
     loadingBooks: "جاري تحميل الكتب...",
-    noBooks: "لا توجد كتب."
+    noBooks: "لا توجد كتب.",
+    bookPending:
+    "✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه."
   },
 
   fr: {
@@ -2416,7 +2420,9 @@ termsTitle: "Conditions d'utilisation",
     download: "Télécharger PDF",
 
     loadingBooks: "Chargement des livres...",
-    noBooks: "Aucun livre disponible."
+    noBooks: "Aucun livre disponible.",
+     bookPending:
+    "✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification et sera publié après approbation."
   },
 
   zh: {
@@ -2458,7 +2464,9 @@ termsTitle: "服务条款",
     download: "下载 PDF",
 
     loadingBooks: "正在加载书籍...",
-    noBooks: "暂无书籍。"
+    noBooks: "暂无书籍。",
+    bookPending:
+    "✅ 图书提交成功！\n\n您的图书正在审核中，通过审核后将发布。"
   }
 
 };
