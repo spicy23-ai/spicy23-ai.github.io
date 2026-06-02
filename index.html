@@ -838,6 +838,38 @@ textarea{
   animation:fadeUp 0.8s ease;
 }
 
+  /* ===== STORE FLOAT BUTTON ===== */
+
+#storeFloatBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:45px;
+  height:45px;
+
+  border:none;
+  border-radius:50%;
+
+  font-size:20px;
+  cursor:pointer;
+
+  display:none;
+
+  z-index:9999;
+
+  background:linear-gradient(
+    135deg,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+
+  color:white;
+
+  box-shadow:0 0 20px rgba(139,92,246,0.4);
+}
+  
 </style>
 </head>
 <body>
@@ -2551,7 +2583,31 @@ window.addEventListener("load", () => {
     t.termsService;
 });
 
-    
+    // زر المتجر العائم
+
+window.addEventListener("scroll", () => {
+
+  const btn =
+    document.getElementById("storeFloatBtn");
+
+  if (window.scrollY > 500) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+  }
+
+});
+
+function goToStoreTop() {
+
+  openTab("store");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
   
 </script>
   <!-- Modal for Privacy Policy / Terms -->
@@ -2563,7 +2619,12 @@ window.addEventListener("load", () => {
   </div>
 </div>
 
-
+<button
+  id="storeFloatBtn"
+  onclick="goToStoreTop()"
+>
+🏪
+</button>
 
   
 </body>
