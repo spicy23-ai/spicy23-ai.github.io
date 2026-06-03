@@ -1561,20 +1561,10 @@ async function renderBooks(booksArray) {
 
   for (const b of booksArray) {
 
-    const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId: b.id, userUid })
-    });
-
-    const ratingsJson = await ratingsRes.json();
-
-    const {
-      likes = 0,
-      dislikes = 0,
-      userVote = null
-    } = ratingsJson.success ? ratingsJson : {};
-
+    const likes = b.likes || 0;
+const dislikes = b.dislikes || 0;
+const userVote = null;
+    
     const desc = b.description
       ? b.description.substring(0, 100) + "..."
       : "No description";
@@ -1748,18 +1738,10 @@ async function loadMyPurchases() {
 
     for (const b of books) {
 
-      const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId: b.id, userUid })
-      });
-
-      const ratingsJson = await ratingsRes.json();
-
-      const {
-        likes = 0,
-        dislikes = 0,
-        userVote = null
+      const likes = b.likes || 0;
+const dislikes = b.dislikes || 0;
+const userVote = null;
+      
       } = ratingsJson.success ? ratingsJson : {};
 
       const desc = b.description
