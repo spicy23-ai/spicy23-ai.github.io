@@ -1268,8 +1268,10 @@ localStorage.setItem("username", user.username);
 
     // تحميل البيانات
     loadBooks();
-    loadMyPurchases();
-    loadMySales();
+loadMyPurchases();
+loadMySales();
+
+checkNotifications();
 
   } catch (err) {
     console.error(err);
@@ -1284,6 +1286,64 @@ function logout() {
   location.reload();
 }
 
+
+  async function checkNotifications() {
+
+  try {
+
+    const res = await fetch(
+      `${BACKEND_URL}/my-notifications`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userUid
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    for (const n of data.notifications) {
+
+      const key =
+        "review_" + n.id;
+
+      if (localStorage.getItem(key)) {
+        continue;
+      }
+
+      if (n.approved) {
+
+        alert(
+          `✅ Your book "${n.title}" has been approved.\n\n${n.reviewMessage}`
+        );
+
+      } else {
+
+        alert(
+          `❌ Your book "${n.title}" was rejected.\n\n${n.reviewMessage}`
+        );
+
+      }
+
+      localStorage.setItem(
+        key,
+        "shown"
+      );
+    }
+
+  } catch (e) {
+    console.error(e);
+  }
+
+}
+
+  
 // ================= SAVE BOOK =================
 document.getElementById("saveBookBtn").onclick = saveBook;
   async function saveBook() {
