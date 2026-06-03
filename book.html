@@ -560,22 +560,8 @@ async function loadBook() {
 
     const b = data.book;
 
-    // جلب التقييمات (لايك و غير لايك)
-    let likes = 0, dislikes = 0;
-    try {
-      const ratingsRes = await fetch(`${BACKEND_URL}/book-ratings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId: b.id })
-      });
-      const ratingsJson = await ratingsRes.json();
-      if (ratingsJson.success) {
-        likes = ratingsJson.likes || 0;
-        dislikes = ratingsJson.dislikes || 0;
-      }
-    } catch(e) {
-      console.error("Error loading ratings:", e);
-    }
+    const likes = b.likes || 0;
+const dislikes = b.dislikes || 0;
 
 const t = translations[currentLang];
     
