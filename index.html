@@ -1813,8 +1813,10 @@ async function loadMySales() {
 
     box.innerHTML = "";
     for (const b of books) {
-      const profit = (b.salesCount || 0) * b.price * 0.7;
-      totalEarnings += profit;
+     const profit =
+  Number(b.withdrawableEarnings || 0);
+
+totalEarnings += profit;
 
       box.innerHTML += `
         <div class="sales-book">
