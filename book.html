@@ -529,7 +529,11 @@ async function loginPi() {
       "userUid",
       userUid
     );
-
+localStorage.setItem(
+  "accessToken",
+  auth.accessToken
+);
+    
     return true;
 
   } catch(err) {
@@ -562,7 +566,6 @@ async function loadBook() {
 
     const likes = b.likes || 0;
 const dislikes = b.dislikes || 0;
-
 const t = translations[currentLang];
     
     document.getElementById("content").innerHTML = `
@@ -681,7 +684,10 @@ if(userUid){
 
 async function sendVote(voteType){
 
- if(!userUid){
+ if(
+  !userUid ||
+  !localStorage.getItem("accessToken")
+){
 
   const ok = await loginPi();
 
@@ -690,6 +696,15 @@ async function sendVote(voteType){
   userUid = localStorage.getItem("userUid");
 }
 
+  console.log(
+    "userUid:",
+    userUid,
+    "token:",
+    localStorage.getItem("accessToken")
+  );
+
+
+  
   try{
 
     const res = await fetch(
@@ -702,16 +717,24 @@ async function sendVote(voteType){
         body:JSON.stringify({
           bookId:b.id,
           voteType,
-          userUid
+          userUid,
+          accessToken:
+            localStorage.getItem("accessToken")
         })
       }
     );
 
     const data = await res.json();
 
+    console.log(data);
+
     if(data.success){
 
       loadBook();
+
+    }else{
+
+      alert(data.error || "Vote failed");
 
     }
 
@@ -720,13 +743,10 @@ async function sendVote(voteType){
     console.error(err);
 
   }
-
 }
-
 document
 .getElementById("likeBtn")
 .onclick = () => sendVote("like");
-
 document
 .getElementById("dislikeBtn")
 .onclick = () => sendVote("dislike");
@@ -784,7 +804,7 @@ window.addEventListener("message", (event) => {
 
     // تحويل المستخدم للتطبيق
     window.location.href =
-      "https://spicylibrary.space/index.html";
+      "https://spicylibrary.sapce/index.html";
 
   }
 
