@@ -1298,9 +1298,10 @@ function logout() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          userUid
-        })
+       body: JSON.stringify({
+  userUid,
+  accessToken: window.accessToken
+})
       }
     );
 
@@ -1379,9 +1380,17 @@ document.getElementById("saveBookBtn").onclick = saveBook;
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title, price, description, language, pageCount: finalPages,
-        cover: coverUrl, pdf: pdfUrl, owner: user.username, ownerUid: userUid
-      })
+  title,
+  price,
+  description,
+  language,
+  pageCount: finalPages,
+  cover: coverUrl,
+  pdf: pdfUrl,
+  owner: user.username,
+  ownerUid: userUid,
+  accessToken: window.accessToken
+})
     });
 
     if (!res.ok) throw new Error("Upload failed");
@@ -1409,7 +1418,12 @@ async function rateBook(bookId, voteType, button) {
     await fetch(`${BACKEND_URL}/rate-book`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId, voteType, userUid })
+      body: JSON.stringify({
+  bookId,
+  voteType,
+  userUid,
+  accessToken: window.accessToken
+})
     });
 
     button.disabled = true;
@@ -1484,7 +1498,11 @@ async function downloadPdf(bookId) {
   const res = await fetch(`${BACKEND_URL}/get-pdf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookId, userUid })
+    body: JSON.stringify({
+  bookId,
+  userUid,
+  accessToken: window.accessToken
+})
   });
   const data = await res.json();
   if (!res.ok) return alert(data.error || "Access denied");
@@ -1717,7 +1735,10 @@ async function loadMyPurchases() {
     const res = await fetch(`${BACKEND_URL}/my-purchases`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userUid })
+      body: JSON.stringify({
+  userUid,
+  accessToken: window.accessToken
+})
     });
 
     const json = await res.json();
@@ -1838,7 +1859,11 @@ async function loadMySales() {
     const res = await fetch(`${BACKEND_URL}/my-sales`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user.username })
+      body: JSON.stringify({
+  username: user.username,
+  userUid,
+  accessToken: window.accessToken
+})
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
