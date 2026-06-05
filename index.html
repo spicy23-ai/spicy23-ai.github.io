@@ -1638,14 +1638,14 @@ const userVote = null;
           </button> ${dislikes}
         </div>
 
-      ${
+     ${
   purchasedBookIds.has(b.id)
     ? `
       <button
         onclick="openTab('purchases')"
         style="background:#16a34a;"
       >
-        ✅ You Own This Book
+        ${t.ownBook}
       </button>
     `
     : `
@@ -2456,7 +2456,8 @@ termsTitle: "Terms of Service",
     loadingBooks: "Loading books...",
     noBooks: "No books available.",
   bookPending:
-    "✅ Book submitted successfully!\n\nYour book is under review and will be published after approval."
+    "✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",
+    ownBook: "✅ You Own This Book"
   },
 
   ar: {
@@ -2499,7 +2500,8 @@ termsTitle: "شروط الاستخدام",
     loadingBooks: "جاري تحميل الكتب...",
     noBooks: "لا توجد كتب.",
     bookPending:
-    "✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه."
+    "✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه.",
+    ownBook: "✅ أنت تملك هذا الكتاب"
   },
 
   fr: {
@@ -2543,7 +2545,8 @@ termsTitle: "Conditions d'utilisation",
     loadingBooks: "Chargement des livres...",
     noBooks: "Aucun livre disponible.",
      bookPending:
-    "✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification et sera publié après approbation."
+    "✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification et sera publié après approbation.",
+    ownBook: "✅ Vous possédez ce livre"
   },
 
   zh: {
@@ -2587,7 +2590,8 @@ termsTitle: "服务条款",
     loadingBooks: "正在加载书籍...",
     noBooks: "暂无书籍。",
     bookPending:
-    "✅ 图书提交成功！\n\n您的图书正在审核中，通过审核后将发布。"
+    "✅ 图书提交成功！\n\n您的图书正在审核中，通过审核后将发布。",
+    ownBook: "✅ 您拥有这本书"
   }
 
 };
