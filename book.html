@@ -628,17 +628,63 @@ ${b.description || "No description"}
 </div>
 `;
 
+userUid = localStorage.getItem("userUid");
+    
     // فتح الصفحة الرئيسية مع نفس الكتاب عند الشراء
-  document.getElementById("buyBtn").onclick = () => {
+  const buyBtn =
+  document.getElementById("buyBtn");
 
-  window.location.href =
-    `https://spicylibrary.space/index.html?buyBookId=${b.id}`;
+if(userUid){
 
-};
+  try{
 
+    const checkRes = await fetch(
+      `${BACKEND_URL}/check-purchase`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          userUid,
+          bookId:b.id
+        })
+      }
+    );
+
+    const checkData =
+      await checkRes.json();
+
+    if(checkData.purchased){
+
+      buyBtn.textContent =
+        "✅ Purchased";
+
+      buyBtn.disabled = true;
+
+      buyBtn.style.opacity = "0.6";
+
+    }else{
+
+      buyBtn.onclick = () => {
+
+        window.location.href =
+          `https://spicylibrary.online/index.html?buyBookId=${b.id}`;
+
+      };
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+
+}
     // تسجيل دخول Pi
 
-userUid = localStorage.getItem("userUid");
+
 
 // تحميل تصويت المستخدم الحالي
 
