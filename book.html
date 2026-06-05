@@ -657,12 +657,11 @@ if(userUid){
 
     if(checkData.purchased){
 
-      buyBtn.textContent =
-        "✅ Purchased";
-
-      buyBtn.disabled = true;
-
-      buyBtn.style.opacity = "0.6";
+     buyBtn.textContent = "✅ Purchased 📚 Go to My purchases";
+buyBtn.onclick = () => {
+  window.location.href =
+    "https://spicylibrary.online/index.html?tab=purchases";
+};
 
     }else{
 
