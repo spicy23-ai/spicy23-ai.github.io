@@ -1390,7 +1390,7 @@ document.getElementById("saveBookBtn").onclick = saveBook;
   pdf: pdfUrl,
   owner: user.username,
   ownerUid: userUid,
-  accessToken: window.accessToken
+ accessToken
 })
     });
 
@@ -1881,9 +1881,8 @@ async function loadMySales() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-  username: user.username,
-  userUid,
-  accessToken: window.accessToken
+    userUid: user.uid,
+    accessToken
 })
     });
     const json = await res.json();
