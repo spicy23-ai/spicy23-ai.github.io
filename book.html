@@ -111,7 +111,6 @@ overflow:hidden;
   width:280px;
 
   max-width:100%;
-
   border-radius:24px;
 
   box-shadow:
@@ -157,7 +156,6 @@ overflow:hidden;
 .book-title{
 
   font-size:42px;
-
   font-weight:900;
 
   margin:25px 0 15px;
@@ -401,6 +399,7 @@ body::after{
   }
 
 }
+ 
 </style>
 </head>
 <body>
@@ -424,6 +423,8 @@ border:1px solid #444;
 <script>
 const BACKEND_URL = "https://pi-backend-77pg.onrender.com";  let userUid = null;
 let currentUser = null;
+  let accessToken =
+  localStorage.getItem("accessToken");
 const ALLOWED_ORIGIN = "https://spicylibrary.space"; // موقعك
 
 // ================= LANGUAGES =================
@@ -443,7 +444,7 @@ const translations = {
     price: "Price",
     likes: "Likes",
     dislikes: "Dislikes",
-    buy: "Buy with Pi 🪙",
+    buy: "buy with Pi 🪙",
     share: "Share Link 🔗",
     copied: "✅ Link copied to clipboard",
     copyManual: "⚠️ Copy manually:",
@@ -549,13 +550,13 @@ localStorage.setItem(
   "accessToken",
   auth.accessToken
 );
-    
+    accessToken = auth.accessToken;
     return true;
 
   } catch(err) {
 
     console.error(err);
-    alert("Login failed");
+    alert("try again");
 
     return false;
   }
@@ -673,7 +674,7 @@ if(userUid){
 
     if(checkData.purchased){
 
-     buyBtn.innerHTML =
+    buyBtn.innerHTML =
 `${t.purchased}<br>${t.goToPurchases}`;
 buyBtn.onclick = () => {
   window.location.href =
@@ -698,6 +699,7 @@ buyBtn.onclick = () => {
   }
 
 }
+
     // تسجيل دخول Pi
 
 
@@ -748,7 +750,7 @@ async function sendVote(voteType){
 
  if(
   !userUid ||
-  !localStorage.getItem("accessToken")
+  !accessToken
 ){
 
   const ok = await loginPi();
@@ -780,13 +782,23 @@ async function sendVote(voteType){
           bookId:b.id,
           voteType,
           userUid,
-          accessToken:
-            localStorage.getItem("accessToken")
+          accessToken: accessToken
         })
       }
     );
 
     const data = await res.json();
+
+    if (data.error === "Invalid access token") {
+
+  localStorage.removeItem("accessToken");
+
+  accessToken = null;
+
+  await loginPi();
+
+  return sendVote(voteType);
+}
 
     console.log(data);
 
@@ -866,7 +878,7 @@ window.addEventListener("message", (event) => {
 
     // تحويل المستخدم للتطبيق
     window.location.href =
-      "https://spicylibrary.sapce/index.html";
+      "https://spicylibrary.space/index.html";
 
   }
 
