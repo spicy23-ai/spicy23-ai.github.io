@@ -646,6 +646,7 @@ ${t.dislikeBtn}
 `;
 
 userUid = localStorage.getItem("userUid");
+    accessToken = localStorage.getItem("accessToken");
     
     // فتح الصفحة الرئيسية مع نفس الكتاب عند الشراء
   const buyBtn =
@@ -656,18 +657,19 @@ if(userUid){
   try{
 
     const checkRes = await fetch(
-      `${BACKEND_URL}/check-purchase`,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          userUid,
-          bookId:b.id
-        })
-      }
-    );
+  `${BACKEND_URL}/check-purchase`,
+  {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      userUid,
+      bookId:b.id,
+      accessToken
+    })
+  }
+);
 
     const checkData =
       await checkRes.json();
@@ -717,10 +719,11 @@ if(userUid){
         headers:{
           "Content-Type":"application/json"
         },
-        body:JSON.stringify({
-          bookId:b.id,
-          userUid
-        })
+       body:JSON.stringify({
+  bookId:b.id,
+  userUid,
+  accessToken
+})
       }
     );
 
