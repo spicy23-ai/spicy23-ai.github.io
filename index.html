@@ -1658,12 +1658,12 @@ const userVote = null;
       </button>
     `
     : `
-      <button
-        onclick="buy('${b.id}', ${b.price})"
-        ${!user ? 'disabled' : ''}
-      >
-        ${t.buy}
-      </button>
+     <button
+  onclick="buy('${b.id}', ${b.price})"
+  ${!user ? 'disabled' : ''}
+>
+  ${t.buy} - ${b.price} Pi
+</button>
     `
 }
 
