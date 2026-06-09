@@ -1532,7 +1532,7 @@ async function buy(bookId, price) {
 
         const data = await res.json();
         window.open(data.pdfUrl, "_blank");
-alert("Payment successful! The book is now open 📚");
+showToast("Payment successful! 📚 The book is now open");
 
 // تحديث المشتريات
 await loadMyPurchases();
@@ -1541,8 +1541,8 @@ renderBooks(allBooksData);
 openTab("purchases");
       },
 
-      onCancel: () => alert("Payment cancelled"),
-      onError: (err) => alert("Payment error: " + err.message)
+      onCancel: () => showToast("Payment cancelled"),
+      onError: (err) => showToast("Payment error: " + err.message)
     });
   } catch (e) {
     alert("Use Pi Browser for payment.");
@@ -2005,13 +2005,11 @@ body: JSON.stringify({
     const data = await res.json();
 
     if (!data.success) {
-      alert(data.error || "Payout failed");
+      showToast(data.error || "Payout failed");
       return;
     }
 
-    alert(
-      `✅ ${data.amount} Pi sent successfully!\n\nTXID:\n${data.txid}`
-    );
+    showToast(`✅ ${data.amount} Pi sent successfully`);
 
     loadMySales();
 
