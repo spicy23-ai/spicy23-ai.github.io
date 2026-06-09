@@ -874,13 +874,12 @@ window.addEventListener("message", (event) => {
 
   if (msg.type === "PAYMENT_SUCCESS") {
 
-    alert("✅ Payment successful!");
+  alert("✅ Payment successful!");
 
-    // تحويل المستخدم للتطبيق
-    window.location.href =
-      "https://spicylibrary.space/index.html";
+  // إعادة فحص هل الكتاب تم شراؤه
+  loadBook();
 
-  }
+}
 
   if (msg.type === "PAYMENT_FAILED") {
 
