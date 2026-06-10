@@ -399,7 +399,39 @@ body::after{
   }
 
 }
- 
+
+
+
+  .modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:99999;
+}
+
+.modal-box{
+  background:#0f172a;
+  width:90%;
+  max-width:400px;
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 0 30px rgba(139,92,246,.25);
+}
+
+.modal-box button{
+  margin-top:20px;
+  width:100%;
+}
+
+.hidden{
+  display:none;
+}
+  
 </style>
 </head>
 <body>
@@ -877,7 +909,10 @@ window.addEventListener("message", (event) => {
 
   if (msg.type === "PAYMENT_SUCCESS") {
 
-  alert("✅ Payment successful!");
+  openModal(
+  "🎉 Purchase Successful",
+  "Your book has been purchased successfully."
+);
 
   // إعادة فحص هل الكتاب تم شراؤه
   loadBook();
@@ -886,18 +921,58 @@ window.addEventListener("message", (event) => {
 
   if (msg.type === "PAYMENT_FAILED") {
 
-    alert("❌ Payment failed");
+    openModal(
+  "❌ Payment Failed",
+  "The payment could not be completed."
+);
 
   }
 
   if (msg.type === "PAYMENT_CANCELLED") {
 
-    alert("⚠️ Payment cancelled");
+    openModal(
+  "⚠️ Payment Cancelled",
+  "The payment was cancelled."
+);
 
   }
 
 });
 
+function openModal(title,text){
+
+  document.getElementById("modalTitle").innerText=title;
+
+  document.getElementById("modalText").innerText=text;
+
+  document.getElementById("modal").classList.remove("hidden");
+
+}
+
+function closeModal(){
+
+  document.getElementById("modal").classList.add("hidden");
+
+}
+
+  
 </script>
+
+<div id="modal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <h2 id="modalTitle"></h2>
+
+    <p id="modalText"></p>
+
+    <button onclick="closeModal()">
+      OK
+    </button>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
