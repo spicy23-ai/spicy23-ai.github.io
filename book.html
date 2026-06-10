@@ -1132,24 +1132,9 @@ document
 }
 
 window.addEventListener("load", async () => {
+  try {
 
-  userUid = localStorage.getItem("userUid");
-  accessToken = localStorage.getItem("accessToken");
-
-  const savedLang =
-    localStorage.getItem("appLanguage") || "en";
-
-  document.getElementById("languageSwitcher").value =
-    savedLang;
-
-  currentLang = savedLang;
-
-  document.body.style.direction =
-    currentLang === "ar" ? "rtl" : "ltr";
-
-  // إذا لم يكن المستخدم مسجلاً قم بتسجيله مباشرة
-  if (!userUid || !accessToken) {
-
+    // 1. حاول تسجيل الدخول مباشرة
     const ok = await loginPi();
 
     if (ok) {
@@ -1157,11 +1142,15 @@ window.addEventListener("load", async () => {
       accessToken = localStorage.getItem("accessToken");
     }
 
+    // 2. بعدها مباشرة حمّل الكتاب
+    await loadBook();
+
+  } catch (err) {
+    console.error(err);
+
+    // حتى لو فشل login، نعرض الكتاب (اختياري)
+    await loadBook();
   }
-
-  // بعد تسجيل الدخول يتم تحميل الكتاب
-  loadBook();
-
 });
 
  
