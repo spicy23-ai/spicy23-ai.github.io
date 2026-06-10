@@ -1490,7 +1490,10 @@ document.getElementById("saveBookBtn").onclick = saveBook;
 
     if (!res.ok) throw new Error("Upload failed");
 
-    alert(translations[currentLang].bookPending);
+    openModal(
+  "📚 Book Submitted",
+  translations[currentLang].bookPending
+);
    openTab("store");
     coverUrl = pdfUrl = "";
     document.getElementById("coverStatus").innerText = "";
