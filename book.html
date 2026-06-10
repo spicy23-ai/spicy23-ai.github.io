@@ -255,12 +255,54 @@ overflow:hidden;
 
   border-radius:20px;
 
-  background:
-  rgba(255,255,255,.04);
+  background:rgba(255,255,255,.04);
 
   color:#dbeafe;
 
   line-height:1.7;
+
+  text-align:left;
+
+}
+
+.description-text{
+
+  display:-webkit-box;
+
+  -webkit-line-clamp:2;
+
+  -webkit-box-orient:vertical;
+
+  overflow:hidden;
+
+}
+
+.description-text.expanded{
+
+  display:block;
+
+}
+
+.read-more{
+
+  margin-top:12px;
+
+  display:inline-block;
+
+  color:#00f5ff;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:.3s;
+
+}
+
+.read-more:hover{
+
+  color:#8b5cf6;
+
 }
 
 /* Info Grid */
@@ -803,7 +845,20 @@ const t = translations[currentLang];
 <h1 class="book-title">${b.title}</h1>
 
 <div class="description-box">
+
+<div id="bookDescription" class="description-text">
 ${b.description || "No description"}
+</div>
+
+<div
+id="readMoreBtn"
+class="read-more"
+onclick="toggleDescription()">
+
+Read More ▼
+
+</div>
+
 </div>
 
 <div class="info-grid">
@@ -1120,6 +1175,29 @@ window.addEventListener("message", (event) => {
 
 });
 
+function toggleDescription(){
+
+const text =
+document.getElementById("bookDescription");
+
+const btn =
+document.getElementById("readMoreBtn");
+
+text.classList.toggle("expanded");
+
+if(text.classList.contains("expanded")){
+
+btn.innerHTML="Show Less ▲";
+
+}else{
+
+btn.innerHTML="Read More ▼";
+
+}
+
+}
+
+  
 function openModal(title,text){
 
   document.getElementById("modalTitle").innerText=title;
