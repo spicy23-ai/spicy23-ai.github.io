@@ -1532,7 +1532,10 @@ async function buy(bookId, price) {
 
         const data = await res.json();
         window.open(data.pdfUrl, "_blank");
-showToast("Payment successful! 📚 The book is now open");
+openModal(
+  "🎉 Purchase Successful",
+  "Your book is now available in My Purchases 📚"
+);
 
 // تحديث المشتريات
 await loadMyPurchases();
@@ -2009,7 +2012,7 @@ body: JSON.stringify({
       return;
     }
 
-    showToast(`✅ ${data.amount} Pi sent successfully`);
+   openModal("Payout Successful", `TXID:\n${data.txid}`);
 
     loadMySales();
 
