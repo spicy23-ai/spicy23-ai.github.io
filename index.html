@@ -938,13 +938,29 @@ display:flex;
 
 
 #modal .modal-content-box{
-    background:#111;
-    color:#fff;
+
+    background:linear-gradient(
+        180deg,
+        rgba(15,23,42,0.98),
+        rgba(2,6,23,0.98)
+    );
+
+    color:white;
+
     margin:80px auto;
-    padding:25px;
-    border-radius:18px;
+
+    padding:30px;
+
+    border-radius:24px;
+
     width:90%;
     max-width:500px;
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(20px);
+
+    box-shadow:0 0 40px rgba(139,92,246,0.25);
 
     height:auto;
     max-height:80vh;
@@ -952,8 +968,14 @@ display:flex;
     overflow-y:auto;
 
     display:flex;
+
     flex-direction:column;
-    gap:15px;
+
+    gap:18px;
+
+    text-align:center;
+
+    animation:fadeUp .3s ease;
 }
   
 </style>
@@ -2833,7 +2855,23 @@ function goToStoreTop() {
  <div class="modal-content-box">
     <h2 id="modal-title"></h2>
     <pre id="modal-content" style="white-space:pre-wrap;"></pre>
-    <button onclick="closeModal()" style="padding:10px 20px;margin-top:10px;background:#ff4500;color:#fff;border:none;border-radius:6px;cursor:pointer;">Close</button>
+    <button
+onclick="closeModal()"
+style="
+padding:14px 26px;
+margin-top:15px;
+border:none;
+border-radius:16px;
+cursor:pointer;
+font-size:15px;
+font-weight:700;
+color:white;
+background:linear-gradient(135deg,#00f5ff,#8b5cf6,#ff4ecd);
+box-shadow:0 0 20px rgba(139,92,246,0.35);
+transition:0.3s;
+">
+Close
+</button>
   </div>
 </div>
 
