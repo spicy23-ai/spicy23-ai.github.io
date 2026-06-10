@@ -1131,8 +1131,11 @@ document
   }
 }
 
-window.addEventListener("load", () => {
-userUid = localStorage.getItem("userUid");
+window.addEventListener("load", async () => {
+
+  userUid = localStorage.getItem("userUid");
+  accessToken = localStorage.getItem("accessToken");
+
   const savedLang =
     localStorage.getItem("appLanguage") || "en";
 
@@ -1144,7 +1147,21 @@ userUid = localStorage.getItem("userUid");
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
+  // إذا لم يكن المستخدم مسجلاً قم بتسجيله مباشرة
+  if (!userUid || !accessToken) {
+
+    const ok = await loginPi();
+
+    if (ok) {
+      userUid = localStorage.getItem("userUid");
+      accessToken = localStorage.getItem("accessToken");
+    }
+
+  }
+
+  // بعد تسجيل الدخول يتم تحميل الكتاب
   loadBook();
+
 });
 
  
