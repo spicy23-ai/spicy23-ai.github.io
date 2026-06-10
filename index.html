@@ -896,12 +896,28 @@ textarea{
 
 .modal-box{
   background:#0f172a;
-  padding:20px;
+  padding:18px 20px;
   border-radius:16px;
-  width:90%;
-  max-width:400px;
+
+  /* ✨ أهم تعديل */
+  width: fit-content;
+  max-width: 90%;
+  min-width: 260px;
+
   text-align:center;
   border:1px solid rgba(255,255,255,0.1);
+
+  /* يمنع الطول الكبير */
+  max-height: 80vh;
+  overflow-y: auto;
+
+  box-shadow: 0 0 25px rgba(0,245,255,0.15);
+}
+
+  #confirmText, #modal-content{
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .modal-actions{
