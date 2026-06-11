@@ -996,6 +996,23 @@ display:flex;
 
     animation:fadeUp .3s ease;
 }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
   
 </style>
 </head>
@@ -1416,7 +1433,26 @@ checkNotifications();
 }
 
 // ربط زر تسجيل الدخول
-document.getElementById("loginBtn").onclick = login;
+const loginBtn = document.getElementById("loginBtn");
+
+loginBtn.onclick = async function () {
+  loginBtn.disabled = true;
+
+  // حفظ النص الأصلي
+  const oldText = loginBtn.innerHTML;
+
+  // إظهار spinner
+  loginBtn.innerHTML = `Logging in <span class="spinner"></span>`;
+
+  try {
+    await login(); // نفس الدالة بدون تغيير
+
+  } finally {
+    // إعادة الزر لحالته الطبيعية إذا فشل أو انتهى
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = oldText;
+  }
+};
 
 function logout() {
   location.reload();
