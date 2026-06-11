@@ -334,28 +334,47 @@ textarea{
 
 .like-btn,
 .dislike-btn{
-
-  background:none;
-
   border:none;
-
-  font-size:22px;
-
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
   cursor:pointer;
-
   margin:0 5px;
+  transition:0.25s;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
 
-  box-shadow:none;
+.like-btn{
+  color:#22c55e;
+}
+
+.dislike-btn{
+  color:#ef4444;
 }
 
 .like-btn:hover{
-
-  transform:scale(1.2);
+  transform:scale(1.15);
+  background:rgba(34,197,94,0.15);
+  box-shadow:0 0 15px rgba(34,197,94,0.4);
 }
 
 .dislike-btn:hover{
+  transform:scale(1.15);
+  background:rgba(239,68,68,0.15);
+  box-shadow:0 0 15px rgba(239,68,68,0.4);
+}
 
-  transform:scale(1.2);
+.like-btn:disabled,
+.dislike-btn:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+  transform:none;
 }
 
 /* ===== NOTICE ===== */
