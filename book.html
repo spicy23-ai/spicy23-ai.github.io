@@ -968,6 +968,23 @@ ${t.dislikeBtn}
 </div>
 `;
 
+// ربط زر تسجيل الدخول بعد إنشائه
+document.getElementById("loginBtn").onclick = async () => {
+  await loginPi();
+  loadBook();
+};
+
+// إذا كان المستخدم مسجلاً مسبقاً
+if (userUid) {
+  document.getElementById("loginBtn").innerText = "Logged in";
+  document.getElementById("loginBtn").disabled = true;
+
+  if (currentUser && currentUser.username) {
+    document.getElementById("userLabel").innerText =
+      "👋 " + currentUser.username;
+  }
+}
+  
 userUid = localStorage.getItem("userUid");
     accessToken = localStorage.getItem("accessToken");
     
@@ -1297,10 +1314,7 @@ function closeModal(){
 }
 
 
-document.getElementById("loginBtn").onclick = async () => {
-  await loginPi();
-  loadBook();
-};
+
   
   
 </script>
