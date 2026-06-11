@@ -1429,7 +1429,9 @@ checkNotifications();
  } catch (err) {
   console.error(err);
 
-  openModal(
+ window.modalType = "login";
+
+openModal(
   "⚠️ Login Required",
   "Please login again and ensure that you are accessing the app through Pi Browser"
 );
@@ -2443,8 +2445,12 @@ function openModal(title, content) {
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
 
-  // إعادة تحميل الصفحة بعد إغلاق النافذة
-  window.location.href = "https://spicylibrary.online";
+  // إعادة تحميل الموقع فقط إذا كانت نافذة تسجيل الدخول
+  if (window.modalType === "login") {
+    window.location.href = "https://spicylibrary.online";
+  }
+
+  window.modalType = null;
 }
 
 
