@@ -753,7 +753,9 @@ const translations = {
     likeBtn: "👍 Like",
   dislikeBtn: "👎 Dislike",
   purchased: "✅ Purchased",
-  goToPurchases: "📚 Go to My Purchases"
+  goToPurchases: "📚 Go to My Purchases",
+    readMore: "Read More ▼",
+readLess: "Show Less ▲"
   },
 
   ar: {
@@ -775,7 +777,9 @@ const translations = {
     likeBtn: "👍 إعجاب",
   dislikeBtn: "👎 عدم إعجاب",
   purchased: "✅ تم الشراء",
-  goToPurchases: "📚 الذهاب إلى مشترياتي"
+  goToPurchases: "📚 الذهاب إلى مشترياتي",
+    readMore: "عرض المزيد ▼",
+readLess: "عرض أقل ▲"
   },
 
   fr: {
@@ -797,7 +801,9 @@ const translations = {
     likeBtn: "👍 J'aime",
   dislikeBtn: "👎 Je n'aime pas",
   purchased: "✅ Acheté",
-  goToPurchases: "📚 Aller à mes achats"
+  goToPurchases: "📚 Aller à mes achats",
+    readMore: "Voir plus ▼",
+readLess: "Voir moins ▲"
   },
 
   zh: {
@@ -819,9 +825,12 @@ const translations = {
     likeBtn: "👍 点赞",
   dislikeBtn: "👎 点踩",
   purchased: "✅ 已购买",
-  goToPurchases: "📚 前往我的购买"
+  goToPurchases: "📚 前往我的购买",
+    readMore: "阅读更多 ▼",
+readLess: "收起 ▲"
   }
 };
+
 
 function changeLanguage() {
 
@@ -932,9 +941,7 @@ ${b.description || "No description"}
 id="readMoreBtn"
 class="read-more"
 onclick="toggleDescription()">
-
-Read More ▼
-
+${t.readMore}
 </div>
 
 </div>
@@ -1313,11 +1320,11 @@ text.classList.toggle("expanded");
 
 if(text.classList.contains("expanded")){
 
-btn.innerHTML="Show Less ▲";
+btn.innerHTML = t.readLess;
 
 }else{
 
-btn.innerHTML="Read More ▼";
+btn.innerHTML = t.readMore;
 
 }
 
