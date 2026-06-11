@@ -994,6 +994,10 @@ document.getElementById("loginBtn").onclick = async () => {
   loadBook();
 };
 
+// اجعل الزر يعرض "تسجيل الدخول" افتراضياً
+document.getElementById("loginBtn").innerText =
+  translations[currentLang].login;
+  
 // إذا كان المستخدم مسجلاً مسبقاً
 if (userUid) {
   document.getElementById("loginBtn").innerText =
