@@ -56,7 +56,8 @@ body::after{
   z-index:-1;
 }
 
-/* ===== HEADER ===== */
+
+  /* ===== HEADER ===== */
 
 .app-header{
 
@@ -513,8 +514,6 @@ body::after{
 
 }
 
-
-
   .modal{
   position:fixed;
   inset:0;
@@ -635,7 +634,8 @@ body::after{
   display:none;
 }
 
-#loginBtn{
+
+  #loginBtn{
   padding:10px 14px;
   border-radius:12px;
   border:none;
@@ -653,7 +653,7 @@ body::after{
 }
 
 
-.header-center{
+         .header-center{
   flex:1;
   display:flex;
   justify-content:center;
@@ -667,7 +667,7 @@ body::after{
   align-items:center;
 }
 
-  .login-bar{
+.login-bar{
   display:flex;
   justify-content:center;
   align-items:center;
@@ -687,9 +687,7 @@ body::after{
 
 <img src="logo.png">
 
-<span class="app-name">
-Spicy Library
-</span>
+<span class="app-name">Spicy Library</span>
 
 </a>
 
@@ -711,6 +709,7 @@ border:1px solid #444;
 </div>
   
 </div>
+
 <div id="content">Loading book...</div>
 
 <script>
@@ -724,9 +723,7 @@ const ALLOWED_ORIGIN = "https://spicylibrary.space"; // موقعك
 
 let currentLang =
   localStorage.getItem("appLanguage") || "en";
-
-
-  window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("languageSwitcher").value =
     currentLang;
@@ -735,7 +732,6 @@ let currentLang =
     translations[currentLang].login;
 
 });
-
 const translations = {
 
   en: {
@@ -761,8 +757,8 @@ const translations = {
   },
 
   ar: {
-    login: "تسجيل الدخول عبر Pi",
-     logged: "تم تسجيل الدخول",
+   login: "تسجيل الدخول عبر Pi",
+    logged: "تم تسجيل الدخول",
     loading: "جاري تحميل الكتاب...",
     notFound: "الكتاب غير موجود",
     description: "الوصف",
@@ -837,17 +833,8 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
-const loginBtn = document.getElementById("loginBtn");
-
-if (loginBtn) {
-  if (userUid && accessToken) {
-    loginBtn.innerText =
-      "✅ " + translations[currentLang].logged;
-  } else {
-    loginBtn.innerText =
-      translations[currentLang].login;
-  }
-}
+document.getElementById("loginBtn").innerText =
+  translations[currentLang].login;
   
  loadBook();
 }
@@ -888,13 +875,13 @@ if (buyBtn) {
   buyBtn.disabled = false;
   buyBtn.style.opacity = "1";
 }
-    
+  
     return true;
 
   } catch(err) {
 
     console.error(err);
-   
+    
 
     return false;
   }
@@ -925,7 +912,8 @@ const t = translations[currentLang];
     
     document.getElementById("content").innerHTML = `
 <div class="book-card">
-<div class="login-bar">
+
+  <div class="login-bar">
   <button id="loginBtn"></button>
   <span id="userLabel"></span>
 </div>
@@ -1008,7 +996,9 @@ document.getElementById("loginBtn").onclick = async () => {
 
 // إذا كان المستخدم مسجلاً مسبقاً
 if (userUid) {
-  document.getElementById("loginBtn").innerText = "Logged in";
+  document.getElementById("loginBtn").innerText =
+    "✅ " + translations[currentLang].logged;
+
   document.getElementById("loginBtn").disabled = true;
 
   if (currentUser && currentUser.username) {
@@ -1023,11 +1013,13 @@ userUid = localStorage.getItem("userUid");
     // فتح الصفحة الرئيسية مع نفس الكتاب عند الشراء
   const buyBtn =
   document.getElementById("buyBtn");
-if (!userUid || !accessToken) {
+
+    if (!userUid || !accessToken) {
   buyBtn.disabled = true;
   buyBtn.innerText = "Login required";
   buyBtn.style.opacity = "0.5";
 }
+
 if(userUid){
 
   try{
@@ -1095,7 +1087,7 @@ if(userUid){
         headers:{
           "Content-Type":"application/json"
         },
-       body:JSON.stringify({
+        body:JSON.stringify({
   bookId:b.id,
   userUid,
   accessToken
@@ -1274,13 +1266,12 @@ window.addEventListener("message", (event) => {
 
   const msg = event.data;
 
-  if (msg.type === "PAYMENT_SUCCESS") {
+ if (msg.type === "PAYMENT_SUCCESS") {
 
   openModal(
   "🎉 Purchase Successful",
   "Your book has been purchased successfully."
 );
-
   // إعادة فحص هل الكتاب تم شراؤه
   loadBook();
 
@@ -1329,7 +1320,7 @@ btn.innerHTML="Read More ▼";
 }
 
   
-function openModal(title,text){
+  function openModal(title,text){
 
   document.getElementById("modalTitle").innerText=title;
 
@@ -1347,7 +1338,6 @@ function closeModal(){
 
 
 
-  
   
 </script>
 
