@@ -725,9 +725,21 @@ const ALLOWED_ORIGIN = "https://spicylibrary.space"; // موقعك
 let currentLang =
   localStorage.getItem("appLanguage") || "en";
 
+
+  window.addEventListener("DOMContentLoaded", () => {
+
+  document.getElementById("languageSwitcher").value =
+    currentLang;
+
+  document.getElementById("loginBtn").innerText =
+    translations[currentLang].login;
+
+});
+
 const translations = {
 
   en: {
+    login: "Login with Pi",
     loading: "Loading book...",
     notFound: "Book not found",
     description: "Description",
@@ -748,6 +760,7 @@ const translations = {
   },
 
   ar: {
+    login: "تسجيل الدخول عبر Pi",
     loading: "جاري تحميل الكتاب...",
     notFound: "الكتاب غير موجود",
     description: "الوصف",
@@ -768,6 +781,7 @@ const translations = {
   },
 
   fr: {
+    login: "Connexion avec Pi",
     loading: "Chargement du livre...",
     notFound: "Livre introuvable",
     description: "Description",
@@ -788,6 +802,7 @@ const translations = {
   },
 
   zh: {
+    login: "使用 Pi 登录",
     loading: "正在加载书籍...",
     notFound: "未找到书籍",
     description: "描述",
@@ -818,6 +833,9 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
+document.getElementById("loginBtn").innerText =
+  translations[currentLang].login;
+  
  loadBook();
 }
   
@@ -845,7 +863,8 @@ localStorage.setItem(
 );
     accessToken = auth.accessToken;
 
-document.getElementById("loginBtn").innerText = "Logged in";
+document.getElementById("loginBtn").innerText =
+  "✅ " + translations[currentLang].login;
 document.getElementById("loginBtn").disabled = true;
 
 document.getElementById("userLabel").innerText =
@@ -894,7 +913,7 @@ const t = translations[currentLang];
     document.getElementById("content").innerHTML = `
 <div class="book-card">
 <div class="login-bar">
-  <button id="loginBtn">Login with Pi</button>
+  <button id="loginBtn"></button>
   <span id="userLabel"></span>
 </div>
 
