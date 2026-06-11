@@ -1437,15 +1437,17 @@ function logout() {
 
       if (n.approved) {
 
-        alert(
-          `✅ Your book "${n.title}" has been approved.\n\n${n.reviewMessage}`
-        );
+        openModal(
+  "✅ Book Approved",
+  `Your book "${n.title}" has been approved.\n\n${n.reviewMessage}`
+);
 
       } else {
 
-        alert(
-          `❌ Your book "${n.title}" was rejected.\n\n${n.reviewMessage}`
-        );
+        openModal(
+  "❌ Book Rejected",
+  `Your book "${n.title}" was rejected.\n\n${n.reviewMessage}`
+);
 
       }
 
