@@ -652,6 +652,21 @@ body::after{
   color:#00f5ff;
 }
 
+
+.header-center{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+}
+
+.header-right{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+}
+  
   
 </style>
 </head>
@@ -671,23 +686,25 @@ Spicy Library
 
 </a>
 
-<select id="languageSwitcher" onchange="changeLanguage()" style="
+<div class="header-center">
+  <button id="loginBtn">Login with Pi</button>
+  <span id="userLabel"></span>
+</div>
+
+<div class="header-right">
+  <select id="languageSwitcher" onchange="changeLanguage()" style="
 padding:8px 12px;
 border-radius:12px;
 background:#222;
 color:white;
 border:1px solid #444;
 ">
-
-<option value="en">English</option>
-<option value="ar">العربية</option>
-<option value="fr">Français</option>
-<option value="zh">中文</option>
-
-</select>
-
-<button id="loginBtn">Login with Pi</button>
-<span id="userLabel"></span>
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+    <option value="fr">Français</option>
+    <option value="zh">中文</option>
+  </select>
+</div>
   
 </div>
 <div id="content">Loading book...</div>
