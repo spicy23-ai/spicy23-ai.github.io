@@ -740,6 +740,7 @@ const translations = {
 
   en: {
     login: "Login with Pi",
+    logged: "Logged in",
     loading: "Loading book...",
     notFound: "Book not found",
     description: "Description",
@@ -761,6 +762,7 @@ const translations = {
 
   ar: {
     login: "تسجيل الدخول عبر Pi",
+     logged: "تم تسجيل الدخول",
     loading: "جاري تحميل الكتاب...",
     notFound: "الكتاب غير موجود",
     description: "الوصف",
@@ -782,6 +784,7 @@ const translations = {
 
   fr: {
     login: "Connexion avec Pi",
+    logged: "Connecté",
     loading: "Chargement du livre...",
     notFound: "Livre introuvable",
     description: "Description",
@@ -803,6 +806,7 @@ const translations = {
 
   zh: {
     login: "使用 Pi 登录",
+    logged: "已登录",
     loading: "正在加载书籍...",
     notFound: "未找到书籍",
     description: "描述",
@@ -833,8 +837,17 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
-document.getElementById("loginBtn").innerText =
-  translations[currentLang].login;
+const loginBtn = document.getElementById("loginBtn");
+
+if (loginBtn) {
+  if (userUid && accessToken) {
+    loginBtn.innerText =
+      "✅ " + translations[currentLang].logged;
+  } else {
+    loginBtn.innerText =
+      translations[currentLang].login;
+  }
+}
   
  loadBook();
 }
@@ -864,7 +877,7 @@ localStorage.setItem(
     accessToken = auth.accessToken;
 
 document.getElementById("loginBtn").innerText =
-  "✅ " + translations[currentLang].login;
+  "✅ " + translations[currentLang].logged;
 document.getElementById("loginBtn").disabled = true;
 
 document.getElementById("userLabel").innerText =
