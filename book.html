@@ -634,6 +634,24 @@ body::after{
 .hidden{
   display:none;
 }
+
+#loginBtn{
+  padding:10px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  background:#00f5ff;
+  color:#000;
+  margin-left:10px;
+}
+
+#userLabel{
+  margin-left:10px;
+  font-weight:700;
+  color:#00f5ff;
+}
+
   
 </style>
 </head>
@@ -668,6 +686,9 @@ border:1px solid #444;
 
 </select>
 
+<button id="loginBtn">Login with Pi</button>
+<span id="userLabel"></span>
+  
 </div>
 <div id="content">Loading book...</div>
 
@@ -802,14 +823,25 @@ localStorage.setItem(
   auth.accessToken
 );
     accessToken = auth.accessToken;
+
+document.getElementById("loginBtn").innerText = "Logged in";
+document.getElementById("loginBtn").disabled = true;
+
+document.getElementById("userLabel").innerText =
+"👋 " + auth.user.username;
+
+const buyBtn = document.getElementById("buyBtn");
+if (buyBtn) {
+  buyBtn.disabled = false;
+  buyBtn.style.opacity = "1";
+}
+    
     return true;
 
   } catch(err) {
 
     console.error(err);
-    openModal(
-"Please try again."
-);
+   
 
     return false;
   }
@@ -917,7 +949,11 @@ userUid = localStorage.getItem("userUid");
     // فتح الصفحة الرئيسية مع نفس الكتاب عند الشراء
   const buyBtn =
   document.getElementById("buyBtn");
-
+if (!userUid || !accessToken) {
+  buyBtn.disabled = true;
+  buyBtn.innerText = "Login required";
+  buyBtn.style.opacity = "0.5";
+}
 if(userUid){
 
   try{
@@ -1235,6 +1271,12 @@ function closeModal(){
 
 }
 
+
+document.getElementById("loginBtn").onclick = async () => {
+  await loginPi();
+  loadBook();
+};
+  
   
 </script>
 
