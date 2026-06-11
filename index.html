@@ -1429,10 +1429,13 @@ checkNotifications();
  } catch (err) {
   console.error(err);
 
-  alert("Please login again and ensure that you are accessing the app through Pi Browser");
+  openModal(
+  "⚠️ Login Required",
+  "Please login again and ensure that you are accessing the app through Pi Browser"
+);
 
   // بعد الضغط على OK سيتم إعادة تحميل الموقع
-  window.location.href = "https://spicylibrary.online";
+  window.location.href = "https://spicylibrary.space";
 }
 }
 
