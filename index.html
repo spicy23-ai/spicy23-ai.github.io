@@ -2111,7 +2111,13 @@ document.getElementById("payoutBtn").disabled = totalEarnings < 5;
 
 // ================= REQUEST PAYOUT (SIMULATED) =================
 async function requestPayout() {
+const btn = document.getElementById("payoutBtn");
 
+  btn.disabled = true;
+
+  const oldText = btn.innerHTML;
+
+  btn.innerHTML = `Processing <span class="spinner"></span>`;
   if (totalEarnings < 5) {
     showToast("Minimum payout is 5 Pi");
     return;
@@ -2146,12 +2152,19 @@ body: JSON.stringify({
 
     loadMySales();
 
-  } catch (e) {
+ } catch (e) {
 
-    console.error(e);
+  console.error(e);
 
-    alert("Payout failed");
-  }
+  alert("Payout failed");
+
+} finally {
+
+  btn.disabled = false;
+
+  btn.innerHTML = oldText;
+
+}
 }
 
 
