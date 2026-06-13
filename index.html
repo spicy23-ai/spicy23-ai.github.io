@@ -1013,6 +1013,27 @@ display:flex;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+  .book-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+}
+
+.comments-link{
+  color:#00f5ff;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.comments-link:hover{
+  color:#ff4ecd;
+  text-decoration:underline;
+}
   
 </style>
 </head>
@@ -1845,9 +1866,21 @@ const userVote = null;
     `
 }
 
-       <button onclick="openBook('${b.id}')">
-         ${t.view}
-       </button>
+       <div class="book-actions">
+
+  <button onclick="openBook('${b.id}')">
+    ${t.view}
+  </button>
+
+  <span
+    class="comments-link"
+    id="comments-count-${b.id}"
+    onclick="showComments('${b.id}')"
+  >
+    💬 ...
+  </span>
+
+</div>
 
       </div>
     `;
@@ -1856,6 +1889,8 @@ const userVote = null;
   }
 
   box.innerHTML = html;
+
+  booksArray.forEach(loadCommentsCount);
 
   isRenderingBooks = false;
 }
@@ -2932,6 +2967,96 @@ function goToStoreTop() {
     top: 0,
     behavior: "smooth"
   });
+
+}
+
+  async function loadCommentsCount(book){
+
+  try{
+
+    const res = await fetch(
+      `${BACKEND_URL}/comments?bookId=${book.id}`
+    );
+
+    const data = await res.json();
+
+    const el = document.getElementById(
+      `comments-count-${book.id}`
+    );
+
+    if(el && data.success){
+
+      el.innerHTML = `💬 ${data.comments.length}`;
+
+    }
+
+  }catch(e){
+
+    console.log(e);
+
+  }
+
+}
+
+  async function showComments(bookId){
+
+  try{
+
+    const res = await fetch(
+      `${BACKEND_URL}/comments?bookId=${bookId}`
+    );
+
+    const data = await res.json();
+
+    let html = "";
+
+    if(!data.success || data.comments.length===0){
+
+      html =
+      "<div style='padding:20px;text-align:center;'>No comments yet.</div>";
+
+    }else{
+
+      data.comments.forEach(c=>{
+
+        html += `
+        <div style="
+          padding:12px;
+          margin-bottom:10px;
+          background:rgba(255,255,255,.05);
+          border-radius:12px;
+        ">
+          <div style="
+            color:#00f5ff;
+            font-weight:bold;
+            margin-bottom:5px;
+          ">
+            ${c.username}
+          </div>
+
+          <div style="color:white;">
+            ${c.text}
+          </div>
+        </div>
+        `;
+
+      });
+
+    }
+
+    openModal(
+      "Comments",
+      html
+    );
+
+  }catch(e){
+
+    openModal(
+      "Comments",
+      "<div style='padding:20px;text-align:center;'>Failed to load comments.</div>"
+    );
+
+  }
 
 }
   
