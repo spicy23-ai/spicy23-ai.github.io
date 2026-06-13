@@ -525,6 +525,7 @@ body::after{
 }
 
 .modal-box{
+
   background:
   linear-gradient(
     180deg,
@@ -533,8 +534,9 @@ body::after{
   );
 
   width:90%;
-  max-width:430px;
-  min-height:auto;
+  max-width:700px;
+
+  max-height:70vh;   /* ارتفاع النافذة */
 
   padding:25px;
 
@@ -542,10 +544,6 @@ body::after{
 
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
-  align-items:center;
-
-  text-align:center;
 
   border:1px solid rgba(255,255,255,.08);
 
@@ -554,8 +552,9 @@ body::after{
   box-shadow:
     0 0 40px rgba(139,92,246,.25),
     0 0 80px rgba(0,245,255,.08);
-}
 
+  overflow:hidden;
+}
   #modalTitle{
 
   font-size:28px;
@@ -585,10 +584,18 @@ body::after{
 
   line-height:1.7;
 
-  margin-bottom:25px;
+  margin-bottom:20px;
 
+  max-height:45vh;
+
+  overflow-y:auto;
+
+  overflow-x:hidden;
+
+  padding-right:8px;
+
+  width:100%;
 }
-
 .modal-box button{
 
   width:100%;
@@ -674,6 +681,51 @@ body::after{
   gap:12px;
   margin-bottom:20px;
 }
+
+.comment-actions{
+margin-top:20px;
+}
+
+.comment-btn{
+
+padding:9px 16px;
+
+font-size:14px;
+
+border:none;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-weight:700;
+
+margin:5px;
+
+background:#8b5cf6;
+
+color:white;
+
+transition:.3s;
+}
+
+.comment-btn:hover{
+transform:scale(1.05);
+}
+
+.comment-box{
+background:rgba(255,255,255,.05);
+padding:12px;
+border-radius:14px;
+margin-top:12px;
+text-align:left;
+}
+
+.comment-user{
+color:#00f5ff;
+font-weight:bold;
+margin-bottom:5px;
+}
   
 </style>
 </head>
@@ -754,6 +806,11 @@ const translations = {
   dislikeBtn: "👎 Dislike",
   purchased: "✅ Purchased",
   goToPurchases: "📚 Go to My Purchases",
+    writeComment: "💬 Write Comment",
+viewComments: "👀 View Comments",
+    leaveComment: "Leave Comment",
+save: "Save",
+cancel: "Cancel",
     readMore: "Read More ▼",
 readLess: "Show Less ▲"
   },
@@ -778,6 +835,11 @@ readLess: "Show Less ▲"
   dislikeBtn: "👎 عدم إعجاب",
   purchased: "✅ تم الشراء",
   goToPurchases: "📚 الذهاب إلى مشترياتي",
+    writeComment: "💬 كتابة تعليق",
+viewComments: "👀 عرض التعليقات",
+    leaveComment: "إضافة تعليق",
+save: "حفظ",
+cancel: "إلغاء",
     readMore: "عرض المزيد ▼",
 readLess: "عرض أقل ▲"
   },
@@ -802,6 +864,11 @@ readLess: "عرض أقل ▲"
   dislikeBtn: "👎 Je n'aime pas",
   purchased: "✅ Acheté",
   goToPurchases: "📚 Aller à mes achats",
+    writeComment: "💬 Écrire un commentaire",
+viewComments: "👀 Voir les commentaires",
+    leaveComment: "Laisser un commentaire",
+save: "Enregistrer",
+cancel: "Annuler",
     readMore: "Voir plus ▼",
 readLess: "Voir moins ▲"
   },
@@ -826,11 +893,15 @@ readLess: "Voir moins ▲"
   dislikeBtn: "👎 点踩",
   purchased: "✅ 已购买",
   goToPurchases: "📚 前往我的购买",
+    writeComment: "💬 写评论",
+viewComments: "👀 查看评论",
+    leaveComment: "发表评论",
+save: "保存",
+cancel: "取消",
     readMore: "阅读更多 ▼",
 readLess: "收起 ▲"
   }
 };
-
 
 function changeLanguage() {
 
@@ -842,10 +913,25 @@ function changeLanguage() {
   document.body.style.direction =
     currentLang === "ar" ? "rtl" : "ltr";
 
-document.getElementById("loginBtn").innerText =
-  translations[currentLang].login;
-  
- loadBook();
+  // زر تسجيل الدخول
+  if (document.getElementById("loginBtn")) {
+    document.getElementById("loginBtn").innerText =
+      translations[currentLang].login;
+  }
+
+  // نافذة التعليق
+  if (document.getElementById("commentTitle")) {
+    document.getElementById("commentTitle").innerText =
+      translations[currentLang].leaveComment;
+
+    document.getElementById("saveCommentBtn").innerText =
+      translations[currentLang].save;
+
+    document.getElementById("cancelCommentBtn").innerText =
+      translations[currentLang].cancel;
+  }
+
+  loadBook();
 }
   
 async function loginPi() {
@@ -909,7 +995,12 @@ if (!bookId) {
 // جلب بيانات الكتاب من السيرفر
 async function loadBook() {
   try {
-    const res = await fetch(`${BACKEND_URL}/book?id=${bookId}`);
+    const res = await fetch(
+  `${BACKEND_URL}/book?id=${bookId}&_=${Date.now()}`,
+  {
+    cache: "no-store"
+  }
+);
     const data = await res.json();
     if (!data.success) throw new Error();
 
@@ -986,7 +1077,17 @@ ${t.likeBtn}
 ${t.dislikeBtn}
 </button>
 </div>
+<div class="comment-actions">
 
+<button id="addCommentBtn" class="comment-btn">
+${t.writeComment}
+</button>
+
+<button id="viewCommentsBtn" class="comment-btn">
+${t.viewComments}
+</button>
+
+</div>
 <div class="actions">
 <button id="buyBtn">${t.buy}</button>
 <button id="shareBtn">${t.share}</button>
@@ -994,16 +1095,37 @@ ${t.dislikeBtn}
 
 </div>
 `;
+setTimeout(() => {
+  document.getElementById("viewCommentsBtn").onclick = async () => {
 
+    const res = await fetch(`${BACKEND_URL}/comments?bookId=${bookId}`);
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    let html = "";
+
+    data.comments.forEach(c => {
+      html += `
+        <div class="comment-box">
+          <div class="comment-user">${c.username}</div>
+          <div>${c.text}</div>
+        </div>
+      `;
+    });
+
+    openModal("💬 Comments", html);
+  };
+}, 0);
 // ربط زر تسجيل الدخول بعد إنشائه
 document.getElementById("loginBtn").onclick = async () => {
   await loginPi();
   loadBook();
 };
-
 // اجعل الزر يعرض "تسجيل الدخول" افتراضياً
 document.getElementById("loginBtn").innerText =
   translations[currentLang].login;
+
   
 // إذا كان المستخدم مسجلاً مسبقاً
 if (userUid) {
@@ -1209,6 +1331,14 @@ document
 document
 .getElementById("dislikeBtn")
 .onclick = () => sendVote("dislike");
+
+    document
+.getElementById("addCommentBtn")
+.onclick = () => {
+
+  openCommentModal();
+
+};
     // زر مشاركة الرابط
     document.getElementById("shareBtn").onclick = () => {
       const bookUrl = window.location.href;
@@ -1333,11 +1463,11 @@ btn.innerHTML = t.readMore;
 }
 
   
-  function openModal(title,text){
+ function openModal(title,text){
 
-  document.getElementById("modalTitle").innerText=title;
+  document.getElementById("modalTitle").innerText = title;
 
-  document.getElementById("modalText").innerText=text;
+  document.getElementById("modalText").innerHTML = text; // 👈 مهم جداً
 
   document.getElementById("modal").classList.remove("hidden");
 
@@ -1350,7 +1480,62 @@ function closeModal(){
 }
 
 
+function openCommentModal(){
 
+document
+.getElementById("commentModal")
+.classList.remove("hidden");
+
+}
+
+function closeCommentModal(){
+
+document
+.getElementById("commentModal")
+.classList.add("hidden");
+
+}
+
+async function saveComment() {
+
+  const text = document.getElementById("commentText").value;
+
+  if (!text) return;
+
+  const res = await fetch(`${BACKEND_URL}/add-comment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      bookId,
+      userUid,
+      accessToken,
+      text
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+
+  closeCommentModal();
+
+  openModal("✅", "Comment added successfully");
+
+  // إعادة تحميل الصفحة بعد ثانية واحدة
+ setTimeout(() => {
+  window.location.href = window.location.href;
+}, 1000);
+
+} else {
+
+  openModal("❌", data.error);
+
+}
+}
+
+ 
   
 </script>
 
@@ -1369,6 +1554,35 @@ function closeModal(){
   </div>
 
 </div>
+
+  <div id="commentModal" class="modal hidden">
+
+<div class="modal-box">
+
+<h2 id="commentTitle">Leave Comment</h2>
+
+<textarea
+id="commentText"
+style="
+width:100%;
+height:120px;
+border-radius:12px;
+padding:10px;
+margin-top:15px;
+"></textarea>
+
+<button id="saveCommentBtn" onclick="saveComment()">
+Save
+</button>
+
+<button id="cancelCommentBtn" onclick="closeCommentModal()">
+Cancel
+</button>
+
+</div>
+
+</div>
+
   
 </body>
 </html>
