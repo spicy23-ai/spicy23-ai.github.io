@@ -937,10 +937,16 @@ display:flex;
   box-shadow: 0 0 25px rgba(0,245,255,0.15);
 }
 
-#confirmText, #modal-content{
+#confirmText{
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.5;
+}
+
+#modal-content{
+  word-break: break-word;
+  line-height: 1.5;
+  text-align:left;
 }
   
 .modal-actions{
@@ -3056,25 +3062,23 @@ if(checkData.success && !checkData.commented){
       data.comments.forEach(c=>{
 
         html += `
-        <div style="
-          padding:12px;
-          margin-bottom:10px;
-          background:rgba(255,255,255,.05);
-          border-radius:12px;
-        ">
-          <div style="
-            color:#00f5ff;
-            font-weight:bold;
-            margin-bottom:5px;
-          ">
-            ${c.username}
-          </div>
+<div style="margin:0;padding:0;">
+  <div style="
+    color:#00f5ff;
+    font-weight:bold;
+    font-size:13px;
+  ">
+    ${c.username}
+  </div>
 
-          <div style="color:white;">
-            ${c.text}
-          </div>
-        </div>
-        `;
+  <div style="
+    color:white;
+    margin-bottom:6px;
+  ">
+    ${c.text}
+  </div>
+</div>
+`;
 
       });
 
@@ -3158,7 +3162,7 @@ async function addComment(bookId){
 <div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;">
  <div class="modal-content-box">
     <h2 id="modal-title"></h2>
-    <pre id="modal-content" style="white-space:pre-wrap;"></pre>
+    <div id="modal-content"></div>
     <button
 onclick="closeModal()"
 style="
