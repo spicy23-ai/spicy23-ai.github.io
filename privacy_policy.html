@@ -70,9 +70,49 @@ ul{
   padding-left:25px;
 }
 
+   .top-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+
+  margin-bottom:25px;
+
+  cursor:pointer;
+}
+
+.top-logo img{
+  width:55px;
+  height:55px;
+  border-radius:14px;
+
+  box-shadow:0 0 20px rgba(139,92,246,0.4);
+}
+
+.top-logo span{
+  font-size:28px;
+  font-weight:900;
+
+  background:linear-gradient(
+    to right,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+} 
 </style>
 </head>
 <body>
+  <div class="top-logo" onclick="window.location.href='https://spicylibrary.online'">
+
+  <img src="banner.png" alt="Spicy Library">
+
+  <span>Spicy Library</span>
+
+</div>
 <div class="container">
 
 <h1>Privacy Policy</h1>
