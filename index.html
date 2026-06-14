@@ -3010,10 +3010,46 @@ function goToStoreTop() {
 
     let html = "";
 
+    // هل المستخدم علق من قبل؟
+const checkRes = await fetch(
+  `${BACKEND_URL}/has-comment?bookId=${bookId}&userUid=${userUid}`
+);
+
+const checkData = await checkRes.json();
+
+if(checkData.success && !checkData.commented){
+
+  html += `
+  <div style="margin-bottom:15px;">
+
+    <textarea
+      id="newComment"
+      placeholder="Write your comment..."
+      style="
+        width:100%;
+        height:80px;
+        border-radius:12px;
+        padding:10px;
+      ">
+    </textarea>
+
+    <button
+      style="margin-top:10px;"
+      onclick="addComment('${bookId}')">
+
+      Add Comment
+
+    </button>
+
+  </div>
+  `;
+
+}
+
     if(!data.success || data.comments.length===0){
 
-      html =
-      "<div style='padding:20px;text-align:center;'>No comments yet.</div>";
+      html +=
+"<div style='padding:20px;text-align:center;'>No comments yet.</div>";
 
     }else{
 
@@ -3055,6 +3091,63 @@ function goToStoreTop() {
       "Comments",
       "<div style='padding:20px;text-align:center;'>Failed to load comments.</div>"
     );
+
+  }
+
+}
+
+async function addComment(bookId){
+
+  const text =
+    document.getElementById("newComment").value.trim();
+
+  if(!text){
+
+    alert("Write a comment");
+
+    return;
+
+  }
+
+  const res = await fetch(
+
+    `${BACKEND_URL}/add-comment`,
+
+    {
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+
+        bookId,
+
+        userUid,
+
+        accessToken:window.accessToken,
+
+        text
+
+      })
+
+    }
+
+  );
+
+  const data = await res.json();
+
+  if(data.success){
+
+    showComments(bookId);
+
+    loadCommentsCount({id:bookId});
+
+  }else{
+
+    alert(data.error);
 
   }
 
