@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>服务条款 - Spicy Library</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Segoe UI',Tahoma,sans-serif;
+  background:
+    linear-gradient(135deg,#0f172a,#111827,#1e1b4b);
+  min-height:100vh;
+  padding:40px 20px;
+  color:white;
+  line-height:1.9;
+}
+
+/* LOGO */
+
+.top-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:25px;
+  cursor:pointer;
+}
+
+.top-logo img{
+  width:60px;
+  height:60px;
+  border-radius:16px;
+  box-shadow:0 0 20px rgba(0,245,255,.3);
+}
+
+.top-logo span{
+  font-size:32px;
+  font-weight:900;
+  background:linear-gradient(
+    to right,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* CARD */
+
+.container{
+  max-width:950px;
+  margin:auto;
+  padding:40px;
+  border-radius:30px;
+
+  background:rgba(255,255,255,.05);
+
+  backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 40px rgba(0,245,255,.12),
+  0 0 80px rgba(139,92,246,.18);
+
+  animation:fadeUp .8s ease;
+}
+
+/* TITLES */
+
+h1{
+  text-align:center;
+  font-size:48px;
+  margin-bottom:20px;
+
+  background:linear-gradient(
+    to right,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+h2{
+  color:#00f5ff;
+  margin-top:30px;
+  margin-bottom:10px;
+  font-size:24px;
+}
+
+h2:hover{
+  color:#ff4ecd;
+}
+
+/* TEXT */
+
+p,li{
+  color:#e5e7eb;
+  font-size:17px;
+}
+
+ul{
+  padding-right:25px;
+}
+
+li{
+  margin-bottom:8px;
+}
+
+/* CONTACT */
+
+a{
+  color:#00f5ff;
+  text-decoration:none;
+}
+
+a:hover{
+  color:#ff4ecd;
+}
+
+/* DATE BOX */
+
+.update-box{
+  background:rgba(255,255,255,.08);
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  margin-bottom:25px;
+}
+
+/* ANIMATION */
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .container{
+    padding:25px;
+  }
+
+  h1{
+    font-size:34px;
+  }
+
+  h2{
+    font-size:21px;
+  }
+
+  .top-logo span{
+    font-size:24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-logo" onclick="window.location.href='https://spicylibrary.space'">
+  <img src="banner.png">
+  <span>Spicy Library</span>
+</div>
+
+<div class="container">
+
+<h1>服务条款</h1>
+
+<div class="update-box">
+<strong>更新日期:</strong> 05-01-2026
+</div>
+<p>使用 <strong>Spicy Library</strong> 即表示您同意以下条款。</p>
+
+<h2>1. 服务说明</h2>
+<p>使用 Pi Network 的电子书买卖平台。</p>
+
+<h2>2. 账户</h2>
+<ul>
+  <li>仅支持 Pi 登录</li>
+  <li>用户负责账户安全</li>
+</ul>
+
+<h2>3. 内容版权</h2>
+<ul>
+  <li>作者保留所有权利</li>
+  <li>作者负责内容合法性</li>
+</ul>
+
+<h2>4. 支付</h2>
+<ul>
+  <li>仅使用 Pi 付款</li>
+  <li>不可退款</li>
+</ul>
+
+<h2>5. 收益</h2>
+<ul>
+  <li>作者获得 70%</li>
+  <li>最低提现 5 Pi</li>
+  <li>提款通常会即时处理。但在特殊情况下或出现技术问题时，处理时间可能需要 1 至 2 个工作日。</li>
+</ul>
+
+<h2>6. 禁止行为</h2>
+<ul>
+  <li>盗版内容</li>
+  <li>欺诈行为</li>
+  <li>攻击系统</li>
+</ul>
+
+<h2>7. 账户封禁</h2>
+<p>违规账户将被封禁。</p>
+
+<h2>8. 免责声明</h2>
+<p>服务按“原样”提供。</p>
+
+<h2>9. 修改</h2>
+<p>条款可能随时更新。</p>
+
+<h2>10. 联系方式</h2>
+<p>📧 spicylibrarysupport@gmail.com</p>
+
+</div>
+</body>
+</html>
