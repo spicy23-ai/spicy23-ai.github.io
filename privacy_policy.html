@@ -69,8 +69,7 @@ a:hover{
 ul{
   padding-left:25px;
 }
-
-   .top-logo{
+.top-logo{
   display:flex;
   align-items:center;
   justify-content:center;
@@ -102,7 +101,29 @@ ul{
 
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-} 
+}
+
+    .language-switcher{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.language-switcher select{
+  padding:10px 15px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  cursor:pointer;
+
+  background:rgba(255,255,255,0.12);
+  color:white;
+
+  backdrop-filter:blur(10px);
+}
+
+.language-switcher option{
+  color:black;
+}
 </style>
 </head>
 <body>
@@ -111,6 +132,21 @@ ul{
   <img src="banner.png" alt="Spicy Library">
 
   <span>Spicy Library</span>
+
+</div>
+
+  <div class="language-switcher">
+
+<select onchange="changeLanguage(this.value)">
+
+<option value="privacy.html">🇬🇧 English</option>
+<option value="privacy-ar.html">🇸🇦 العربية</option>
+
+<option value="privacy-fr.html">🇫🇷 Français</option>
+
+<option value="privacy-zh.html">🇨🇳 中文</option>
+
+</select>
 
 </div>
 <div class="container">
@@ -174,5 +210,11 @@ For any questions:
 </p>
 
 </div>
+
+  <script>
+function changeLanguage(page){
+  window.location.href = page;
+}
+</script>
 </body>
 </html>
