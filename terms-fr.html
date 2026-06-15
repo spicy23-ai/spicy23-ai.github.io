@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Conditions d'utilisation - Spicy Library</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Segoe UI',Tahoma,sans-serif;
+  background:
+    linear-gradient(135deg,#0f172a,#111827,#1e1b4b);
+  min-height:100vh;
+  padding:40px 20px;
+  color:white;
+  line-height:1.9;
+}
+
+/* LOGO */
+
+.top-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:25px;
+  cursor:pointer;
+}
+
+.top-logo img{
+  width:60px;
+  height:60px;
+  border-radius:16px;
+  box-shadow:0 0 20px rgba(0,245,255,.3);
+}
+
+.top-logo span{
+  font-size:32px;
+  font-weight:900;
+  background:linear-gradient(
+    to right,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* CARD */
+
+.container{
+  max-width:950px;
+  margin:auto;
+  padding:40px;
+  border-radius:30px;
+
+  background:rgba(255,255,255,.05);
+
+  backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow:
+  0 0 40px rgba(0,245,255,.12),
+  0 0 80px rgba(139,92,246,.18);
+
+  animation:fadeUp .8s ease;
+}
+
+/* TITLES */
+
+h1{
+  text-align:center;
+  font-size:48px;
+  margin-bottom:20px;
+
+  background:linear-gradient(
+    to right,
+    #00f5ff,
+    #8b5cf6,
+    #ff4ecd
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+h2{
+  color:#00f5ff;
+  margin-top:30px;
+  margin-bottom:10px;
+  font-size:24px;
+}
+
+h2:hover{
+  color:#ff4ecd;
+}
+
+/* TEXT */
+
+p,li{
+  color:#e5e7eb;
+  font-size:17px;
+}
+
+ul{
+  padding-right:25px;
+}
+
+li{
+  margin-bottom:8px;
+}
+
+/* CONTACT */
+
+a{
+  color:#00f5ff;
+  text-decoration:none;
+}
+
+a:hover{
+  color:#ff4ecd;
+}
+
+/* DATE BOX */
+
+.update-box{
+  background:rgba(255,255,255,.08);
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  margin-bottom:25px;
+}
+
+/* ANIMATION */
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .container{
+    padding:25px;
+  }
+
+  h1{
+    font-size:34px;
+  }
+
+  h2{
+    font-size:21px;
+  }
+
+  .top-logo span{
+    font-size:24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-logo" onclick="window.location.href='https://spicylibrary.space'">
+  <img src="banner.png">
+  <span>Spicy Library</span>
+</div>
+
+<div class="container">
+
+<h1>Conditions d'utilisation</h1>
+
+<div class="update-box">
+<strong>Dernière mise à jour :</strong> 05-01-2026
+</div>
+<p>En utilisant <strong>Spicy Library</strong>, vous acceptez ces conditions.</p>
+
+<h2>1. Service</h2>
+<p>Plateforme d'achat et de vente de livres numériques avec Pi Network.</p>
+
+<h2>2. Compte</h2>
+<ul>
+  <li>Connexion via Pi uniquement</li>
+  <li>L'utilisateur est responsable de son compte</li>
+</ul>
+
+<h2>3. Contenu</h2>
+<ul>
+  <li>Les auteurs gardent leurs droits</li>
+  <li>Responsabilité du contenu</li>
+</ul>
+
+<h2>4. Paiement</h2>
+<ul>
+  <li>Uniquement en Pi</li>
+  <li>Pas de remboursement</li>
+</ul>
+
+<h2>5. Gains</h2>
+<ul>
+  <li>70% pour l’auteur</li>
+  <li>Minimum 5 Pi</li>
+  <li>Les retraits sont généralement traités instantanément. Toutefois, dans des circonstances exceptionnelles ou en cas de problème technique, le traitement peut prendre jusqu’à 1 à 2 jours ouvrables.</li>
+</ul>
+
+<h2>6. Interdictions</h2>
+<ul>
+  <li>Contenu volé</li>
+  <li>Fraude</li>
+  <li>Hacking</li>
+</ul>
+
+<h2>7. Suspension</h2>
+<p>Nous pouvons suspendre les comptes.</p>
+
+<h2>8. Avertissement</h2>
+<p>Service fourni "tel quel".</p>
+
+<h2>9. Modifications</h2>
+<p>Les conditions peuvent changer.</p>
+
+<h2>10. Contact</h2>
+<p>📧 spicylibrarysupport@gmail.com</p>
+
+</div>
+</body>
+</html>
