@@ -1390,55 +1390,7 @@ async function login() {
 localStorage.setItem("username", user.username);
     window.accessToken = authResult.accessToken;
 
-    // ✅ تحقق من وجود المحفظة على السيرفر
-    const walletRes = await fetch(`${BACKEND_URL}/get-wallet`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userUid,
-        accessToken: window.accessToken
-      })
-    });
-
-    const walletData = await walletRes.json();
-
-    if (!walletData.success) {
-      alert("Failed to fetch wallet info from server.");
-      return;
-    }
-
-    if (!walletData.walletAddress) {
-      // اطلب من المستخدم إدخال المحفظة إذا لم توجد
-      let walletAddress = prompt("Enter your Pi Wallet Address");
-      if (!walletAddress) {
-        alert("Wallet address required");
-        return;
-      }
-
-      walletAddress = walletAddress.trim();
-
-      if (walletAddress.length !== 56 || !walletAddress.startsWith("G")) {
-        alert("Invalid Pi wallet address");
-        return;
-      }
-
-      // أرسل المحفظة إلى السيرفر
-      const saveRes = await fetch(`${BACKEND_URL}/save-wallet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userUid,
-          accessToken: window.accessToken,
-          walletAddress
-        })
-      });
-
-      const saveData = await saveRes.json();
-      if (!saveData.success) {
-        alert("Failed to save wallet on server.");
-        return;
-      }
-    }
+   
 
     // تحديث واجهة المستخدم بعد تسجيل الدخول
     document.getElementById("welcome").innerText =
@@ -2152,6 +2104,69 @@ document.getElementById("payoutBtn").disabled = totalEarnings < 5;
 
 // ================= REQUEST PAYOUT (SIMULATED) =================
 async function requestPayout() {
+
+// فحص وجود محفظة محفوظة
+
+const walletRes = await fetch(`${BACKEND_URL}/get-wallet`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    userUid,
+    accessToken: window.accessToken
+  })
+});
+
+const walletData = await walletRes.json();
+
+if (!walletData.success) {
+  alert("Failed to check wallet");
+  return;
+}
+
+if (!walletData.walletAddress) {
+
+  let walletAddress = prompt(
+    "Enter your Pi Wallet Address"
+  );
+
+  if (!walletAddress) {
+    alert("Wallet address required");
+    return;
+  }
+
+  walletAddress = walletAddress.trim();
+
+  if (
+    walletAddress.length !== 56 ||
+    !walletAddress.startsWith("G")
+  ) {
+    alert("Invalid Pi wallet address");
+    return;
+  }
+
+  const saveRes = await fetch(
+    `${BACKEND_URL}/save-wallet`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userUid,
+        accessToken: window.accessToken,
+        walletAddress
+      })
+    }
+  );
+
+  const saveData = await saveRes.json();
+
+  if (!saveData.success) {
+    alert("Failed to save wallet");
+    return;
+  }
+}
+  
 const btn = document.getElementById("payoutBtn");
 
   btn.disabled = true;
