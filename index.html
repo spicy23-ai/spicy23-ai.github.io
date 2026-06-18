@@ -2125,47 +2125,54 @@ if (!walletData.success) {
 
 if (!walletData.walletAddress) {
 
-  let walletAddress = prompt(
-    "Enter your Pi Wallet Address"
-  );
+  openWalletModal();
 
-  if (!walletAddress) {
-    alert("Wallet address required");
-    return;
-  }
+  document.getElementById("saveWalletBtn").onclick =
+  async function(){
 
-  walletAddress = walletAddress.trim();
+    let walletAddress =
+      document.getElementById("walletInput")
+      .value
+      .trim();
 
-  if (
-    walletAddress.length !== 56 ||
-    !walletAddress.startsWith("G")
-  ) {
-    alert("Invalid Pi wallet address");
-    return;
-  }
-
-  const saveRes = await fetch(
-    `${BACKEND_URL}/save-wallet`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        userUid,
-        accessToken: window.accessToken,
-        walletAddress
-      })
+    if(
+      walletAddress.length !== 56 ||
+      !walletAddress.startsWith("G")
+    ){
+      alert("Invalid Pi wallet address");
+      return;
     }
-  );
 
-  const saveData = await saveRes.json();
+    const saveRes = await fetch(
+      `${BACKEND_URL}/save-wallet`,
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          userUid,
+          accessToken:window.accessToken,
+          walletAddress
+        })
+      }
+    );
 
-  if (!saveData.success) {
-    alert("Failed to save wallet");
-    return;
-  }
+    const saveData = await saveRes.json();
+
+    if(!saveData.success){
+      alert("Failed to save wallet");
+      return;
+    }
+
+    closeWalletModal();
+
+    requestPayout();
+  };
+
+  return;
 }
+    
   
 const btn = document.getElementById("payoutBtn");
 
@@ -2678,6 +2685,18 @@ window.addEventListener("message", async (event) => {
   setTimeout(()=> t.classList.add("hidden"), 2500);
 }
 
+function openWalletModal(){
+  document
+    .getElementById("walletModal")
+    .classList.remove("hidden");
+}
+
+function closeWalletModal(){
+  document
+    .getElementById("walletModal")
+    .classList.add("hidden");
+}
+  
 function showConfirm(message){
   return new Promise(resolve=>{
     const modal = document.getElementById("confirmModal");
@@ -3236,6 +3255,30 @@ Close
       <button id="confirmYes">Yes</button>
       <button id="confirmNo">No</button>
     </div>
+  </div>
+</div>
+
+<div id="walletModal" class="modal hidden">
+  <div class="modal-box">
+
+    <h3>Pi Wallet</h3>
+
+    <input
+      id="walletInput"
+      type="text"
+      placeholder="Enter your Pi Wallet Address"
+    >
+
+    <div class="modal-actions">
+      <button id="saveWalletBtn">
+        Save
+      </button>
+
+      <button onclick="closeWalletModal()">
+        Cancel
+      </button>
+    </div>
+
   </div>
 </div>
   
