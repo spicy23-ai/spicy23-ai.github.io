@@ -1192,7 +1192,7 @@ max-width:160px;
       Request Payout
     </button>
 
-    <p style="
+    <p id="platformFeeText" style="
       margin-top:18px;
       color:#cbd5e1;
       font-size:14px;
@@ -1200,7 +1200,7 @@ max-width:160px;
       Platform fee: 30% – You get 70% of each sale
     </p>
 
-    <p style="
+    <p id="minimumPayoutText" style="
       color:#94a3b8;
       font-size:13px;
       margin-top:8px;
@@ -2779,6 +2779,8 @@ salesTitle: "My Sales & Earnings",
   bookPending:
     "✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",
     ownBook: "✅ You Own This Book",
+    platformFee: "Platform fee: 30% – You get 70% of each sale",
+minimumPayout: "Minimum payout: 5 Pi",
 totalEarnings: "Total earnings"
   },
 
@@ -2825,6 +2827,8 @@ salesTitle: "مبيعاتي وأرباحي",
     bookPending:
     "✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه.",
    ownBook: "✅ أنت تملك هذا الكتاب",
+    platformFee: "رسوم المنصة: 30٪ - تحصل على 70٪ من كل عملية بيع",
+minimumPayout: "الحد الأدنى للسحب: 5 Pi",
 totalEarnings: "إجمالي الأرباح"
   },
 
@@ -2872,6 +2876,8 @@ salesTitle: "Mes ventes et revenus",
      bookPending:
     "✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification et sera publié après approbation.",
     ownBook: "✅ Vous possédez ce livre",
+    platformFee: "Frais de plateforme : 30 % – Vous recevez 70 % de chaque vente",
+minimumPayout: "Retrait minimum : 5 Pi",
 totalEarnings: "Gains totaux"
   },
 
@@ -2919,6 +2925,8 @@ salesTitle: "我的销售与收入",
     bookPending:
     "✅ 图书提交成功！\n\n您的图书正在审核中，通过审核后将发布。",
     ownBook: "✅ 您拥有这本书",
+    platformFee: "平台费用：30％ - 您获得每笔销售的70％",
+minimumPayout: "最低提现金额：5 Pi",
 totalEarnings: "总收益"
   }
 
@@ -2950,6 +2958,12 @@ currentLang = lang;
 
   document.getElementById("payoutBtn").innerText =
   t.requestPayout;
+
+  document.getElementById("platformFeeText").innerText =
+  t.platformFee;
+
+document.getElementById("minimumPayoutText").innerText =
+  t.minimumPayout;
 
   // STORE
   document.querySelector("#store h3").innerText = t.allBooks;
