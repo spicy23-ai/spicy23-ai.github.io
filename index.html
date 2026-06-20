@@ -2070,7 +2070,13 @@ async function loadMySales() {
     const books = json.books;
     if (books.length === 0) {
       box.innerHTML = "<p>No books uploaded.</p>";
-      totalBox.innerHTML = "<div class='total-profit'>Total earnings: 0 Pi</div>";
+      const lang =
+  localStorage.getItem("appLanguage") || "en";
+
+totalBox.innerHTML =
+`<div class='total-profit'>
+${translations[lang].totalEarnings}: 0 Pi
+</div>`;
       document.getElementById("payoutBtn").disabled = true;
       return;
     }
@@ -2093,7 +2099,13 @@ totalEarnings += profit;
           <div class="profit">Your earnings: ${profit.toFixed(2)} Pi (70%)</div>
         </div>`;
     }
-    totalBox.innerHTML = `<div class='total-profit'>Total earnings: ${totalEarnings.toFixed(2)} Pi</div>`;
+    const lang =
+  localStorage.getItem("appLanguage") || "en";
+
+totalBox.innerHTML =
+`<div class='total-profit'>
+${translations[lang].totalEarnings}: ${totalEarnings.toFixed(2)} Pi
+</div>`;
 document.getElementById("payoutBtn").disabled = totalEarnings < 5;
 
   } catch (e) {
@@ -2766,7 +2778,8 @@ salesTitle: "My Sales & Earnings",
     noBooks: "No books available.",
   bookPending:
     "✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",
-    ownBook: "✅ You Own This Book"
+    ownBook: "✅ You Own This Book",
+totalEarnings: "Total earnings"
   },
 
   ar: {
@@ -2811,7 +2824,8 @@ salesTitle: "مبيعاتي وأرباحي",
     noBooks: "لا توجد كتب.",
     bookPending:
     "✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه.",
-    ownBook: "✅ أنت تملك هذا الكتاب"
+   ownBook: "✅ أنت تملك هذا الكتاب",
+totalEarnings: "إجمالي الأرباح"
   },
 
   fr: {
@@ -2857,7 +2871,8 @@ salesTitle: "Mes ventes et revenus",
     noBooks: "Aucun livre disponible.",
      bookPending:
     "✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification et sera publié après approbation.",
-    ownBook: "✅ Vous possédez ce livre"
+    ownBook: "✅ Vous possédez ce livre",
+totalEarnings: "Gains totaux"
   },
 
   zh: {
@@ -2903,7 +2918,8 @@ salesTitle: "我的销售与收入",
     noBooks: "暂无书籍。",
     bookPending:
     "✅ 图书提交成功！\n\n您的图书正在审核中，通过审核后将发布。",
-    ownBook: "✅ 您拥有这本书"
+    ownBook: "✅ 您拥有这本书",
+totalEarnings: "总收益"
   }
 
 };
