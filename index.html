@@ -1160,7 +1160,7 @@ max-width:160px;
 
 <div id="sales" class="tab-content">
 
-  <h3>My Sales & Earnings</h3>
+ <h3 id="salesTitle">My Sales & Earnings</h3>
 
   <!-- TOP EARNINGS CARD -->
   <div style="
@@ -2018,9 +2018,9 @@ const userVote = null;
 
           </div>
 
-          <button onclick="downloadPdf('${b.id}')">
-            Download PDF
-          </button>
+         <button onclick="downloadPdf('${b.id}')">
+  ${translations[currentLang].download}
+</button>
 
         </div>
       `;
@@ -2760,7 +2760,8 @@ termsTitle: "Terms of Service",
     view: "View 📖",
 
     download: "Download PDF",
-
+salesTitle: "My Sales & Earnings",
+    requestPayout: "Request Payout",
     loadingBooks: "Loading books...",
     noBooks: "No books available.",
   bookPending:
@@ -2804,7 +2805,8 @@ termsTitle: "شروط الاستخدام",
     view: "عرض 📖",
 
     download: "تحميل PDF",
-
+salesTitle: "مبيعاتي وأرباحي",
+    requestPayout: "طلب سحب",
     loadingBooks: "جاري تحميل الكتب...",
     noBooks: "لا توجد كتب.",
     bookPending:
@@ -2849,7 +2851,8 @@ termsTitle: "Conditions d'utilisation",
     view: "Voir 📖",
 
     download: "Télécharger PDF",
-
+salesTitle: "Mes ventes et revenus",
+    requestPayout: "Demander un retrait",
     loadingBooks: "Chargement des livres...",
     noBooks: "Aucun livre disponible.",
      bookPending:
@@ -2894,7 +2897,8 @@ termsTitle: "服务条款",
     view: "查看 📖",
 
     download: "下载 PDF",
-
+salesTitle: "我的销售与收入",
+    requestPayout: "申请提现",
     loadingBooks: "正在加载书籍...",
     noBooks: "暂无书籍。",
     bookPending:
@@ -2924,6 +2928,12 @@ currentLang = lang;
   document.querySelector('button[onclick="openTab(\'store\')"]').innerText = t.store;
   document.querySelector('button[onclick="openTab(\'purchases\')"]').innerText = t.purchases;
   document.querySelector('button[onclick="openTab(\'sales\')"]').innerText = t.sales;
+
+  document.getElementById("salesTitle").innerText =
+  t.salesTitle;
+
+  document.getElementById("payoutBtn").innerText =
+  t.requestPayout;
 
   // STORE
   document.querySelector("#store h3").innerText = t.allBooks;
