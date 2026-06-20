@@ -1211,11 +1211,11 @@ max-width:160px;
   </div>
 
   <!-- PAYOUT NOTE -->
-  <div class="payout-note">
-    <strong>Instant payout:</strong>
-    Withdrawals are processed automatically and sent instantly
-    to your Pi wallet after approval.
-  </div>
+  <div class="payout-note" id="instantPayoutText">
+  <strong>Instant payout:</strong>
+  Withdrawals are processed automatically and sent instantly
+  to your Pi wallet after approval.
+</div>
 
   <!-- SALES BOOKS -->
   <div id="mySalesBooks"></div>
@@ -2781,6 +2781,8 @@ salesTitle: "My Sales & Earnings",
     ownBook: "✅ You Own This Book",
     platformFee: "Platform fee: 30% – You get 70% of each sale",
 minimumPayout: "Minimum payout: 5 Pi",
+    instantPayout:
+  "Instant payout: Withdrawals are processed automatically and sent instantly to your Pi wallet after approval.",
 totalEarnings: "Total earnings"
   },
 
@@ -2829,6 +2831,8 @@ salesTitle: "مبيعاتي وأرباحي",
    ownBook: "✅ أنت تملك هذا الكتاب",
     platformFee: "رسوم المنصة: 30٪ - تحصل على 70٪ من كل عملية بيع",
 minimumPayout: "الحد الأدنى للسحب: 5 Pi",
+    instantPayout:
+  "السحب الفوري: تتم معالجة عمليات السحب تلقائيًا وإرسالها فورًا إلى محفظة Pi الخاصة بك بعد الموافقة.",
 totalEarnings: "إجمالي الأرباح"
   },
 
@@ -2878,6 +2882,8 @@ salesTitle: "Mes ventes et revenus",
     ownBook: "✅ Vous possédez ce livre",
     platformFee: "Frais de plateforme : 30 % – Vous recevez 70 % de chaque vente",
 minimumPayout: "Retrait minimum : 5 Pi",
+    instantPayout:
+  "Paiement instantané : les retraits sont traités automatiquement et envoyés instantanément à votre portefeuille Pi après approbation.",
 totalEarnings: "Gains totaux"
   },
 
@@ -2927,6 +2933,8 @@ salesTitle: "我的销售与收入",
     ownBook: "✅ 您拥有这本书",
     platformFee: "平台费用：30％ - 您获得每笔销售的70％",
 minimumPayout: "最低提现金额：5 Pi",
+    instantPayout:
+  "即时付款：提款经批准后会自动处理，并立即发送到您的 Pi 钱包。",
 totalEarnings: "总收益"
   }
 
@@ -2965,6 +2973,9 @@ currentLang = lang;
 document.getElementById("minimumPayoutText").innerText =
   t.minimumPayout;
 
+document.getElementById("instantPayoutText").innerText =
+  t.instantPayout;
+  
   // STORE
   document.querySelector("#store h3").innerText = t.allBooks;
 
