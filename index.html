@@ -1148,7 +1148,7 @@ max-width:160px;
     
     <div class="books" id="books"></div>
 
-    <div class="disclaimer">
+    <div class="disclaimer" id="copyrightNotice">
   Copyright Notice: Authors may upload only content they own or have permission to distribute. If you believe that any content infringes your copyright, please contact us at
   <a href="mailto:spicylibrarysupport@gmail.com">
     spicylibrarysupport@gmail.com
@@ -2785,6 +2785,11 @@ salesTitle: "My Sales & Earnings",
     ownBook: "✅ You Own This Book",
     platformFee: "Platform fee: 30% – You get 70% of each sale",
 minimumPayout: "Minimum payout: 5 Pi",
+    copyrightNotice: `
+Copyright Notice: Authors may upload only content they own or have permission to distribute. If you believe that any content infringes your copyright, please contact us at
+<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.
+Reported content may be reviewed and removed if necessary.
+`,
     instantPayout:
   "Instant payout: Withdrawals are processed automatically and sent instantly to your Pi wallet after approval.",
 totalEarnings: "Total earnings"
@@ -2835,6 +2840,11 @@ salesTitle: "مبيعاتي وأرباحي",
    ownBook: "✅ أنت تملك هذا الكتاب",
     platformFee: "رسوم المنصة: 30٪ - تحصل على 70٪ من كل عملية بيع",
 minimumPayout: "الحد الأدنى للسحب: 5 Pi",
+    copyrightNotice: `
+إشعار حقوق النشر: يمكن للمؤلفين رفع المحتوى الذي يملكون حقوقه أو لديهم إذن بتوزيعه فقط. إذا كنت تعتقد أن أي محتوى ينتهك حقوق النشر الخاصة بك، يرجى التواصل معنا على
+<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.
+قد تتم مراجعة المحتوى المُبلغ عنه وإزالته عند الضرورة.
+`,
     instantPayout:
   "السحب الفوري: تتم معالجة عمليات السحب تلقائيًا وإرسالها فورًا إلى محفظة Pi الخاصة بك بعد الموافقة.",
 totalEarnings: "إجمالي الأرباح"
@@ -2886,6 +2896,11 @@ salesTitle: "Mes ventes et revenus",
     ownBook: "✅ Vous possédez ce livre",
     platformFee: "Frais de plateforme : 30 % – Vous recevez 70 % de chaque vente",
 minimumPayout: "Retrait minimum : 5 Pi",
+    copyrightNotice: `
+Avis de droit d'auteur : Les auteurs ne peuvent publier que du contenu dont ils possèdent les droits ou qu'ils sont autorisés à distribuer. Si vous pensez qu'un contenu enfreint vos droits d'auteur, veuillez nous contacter à
+<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.
+Le contenu signalé pourra être examiné et supprimé si nécessaire.
+`,
     instantPayout:
   "Paiement instantané : les retraits sont traités automatiquement et envoyés instantanément à votre portefeuille Pi après approbation.",
 totalEarnings: "Gains totaux"
@@ -2937,6 +2952,11 @@ salesTitle: "我的销售与收入",
     ownBook: "✅ 您拥有这本书",
     platformFee: "平台费用：30％ - 您获得每笔销售的70％",
 minimumPayout: "最低提现金额：5 Pi",
+    copyrightNotice: `
+版权声明：作者只能上传其拥有版权或已获得分发许可的内容。如果您认为任何内容侵犯了您的版权，请联系我们：
+<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>。
+被举报的内容可能会经过审核，并在必要时删除。
+`,
     instantPayout:
   "即时付款：提款经批准后会自动处理，并立即发送到您的 Pi 钱包。",
 totalEarnings: "总收益"
@@ -2979,6 +2999,8 @@ document.getElementById("minimumPayoutText").innerText =
 
 document.getElementById("instantPayoutText").innerText =
   t.instantPayout;
+  document.getElementById("copyrightNotice").innerHTML =
+  t.copyrightNotice;
   
   // STORE
   document.querySelector("#store h3").innerText = t.allBooks;
