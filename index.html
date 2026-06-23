@@ -2537,6 +2537,14 @@ function openModal(title, content) {
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
 
+  // إذا كانت نافذة تسجيل الدخول
+  if (window.modalType === "login") {
+    window.location.href = "https://spicylibrary.space";
+  }
+
+  window.modalType = null;
+}
+
   // إعادة تحميل الموقع فقط إذا كانت نافذة تسجيل الدخول
   if (window.modalType === "login") {
     window.location.href = "https://spicylibrary.online";
