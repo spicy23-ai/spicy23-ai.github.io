@@ -1380,19 +1380,20 @@ async function onIncompletePaymentFound(incompletePayment) {
   }
 }
 // ================= LOGIN =================
-async function login() {
-  try {
-    // تسجيل الدخول عبر Pi
-    const authResult = await Pi.authenticate(
-      ["username", "payments"],
+async function login(){
+  try{
+    const auth=await Pi.authenticate(
+      ["username","payments","wallet_address"],  // ← wallet_address مضاف هنا
       onIncompletePaymentFound
     );
-
-    user = authResult.user;
-    userUid = user.uid;
-    localStorage.setItem("userUid", user.uid);
-localStorage.setItem("username", user.username);
-    window.accessToken = authResult.accessToken;
+    user=auth.user;
+    userUid=user.uid;
+   
+    /* تخزين عنوان المحفظة إذا أتى مع نتيجة المصادقة */
+    userWalletAddress = auth.user?.wallet_address || null;
+    localStorage.setItem("userUid",user.uid);
+    localStorage.setItem("username",user.username);
+    window.accessToken=auth.accessToken;
 
    
 
@@ -2118,132 +2119,44 @@ document.getElementById("payoutBtn").disabled = totalEarnings < 5;
 }
 
 
-// ================= REQUEST PAYOUT (SIMULATED) =================
 async function requestPayout() {
-
-// فحص وجود محفظة محفوظة
-
-const walletRes = await fetch(`${BACKEND_URL}/get-wallet`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    userUid,
-    accessToken: window.accessToken
-  })
-});
-
-const walletData = await walletRes.json();
-
-if (!walletData.success) {
-  alert("Failed to check wallet");
-  return;
-}
-
-if (!walletData.walletAddress) {
-
-  openWalletModal();
-
-  document.getElementById("saveWalletBtn").onclick =
-  async function(){
-
-    let walletAddress =
-      document.getElementById("walletInput")
-      .value
-      .trim();
-
-    if(
-      walletAddress.length !== 56 ||
-      !walletAddress.startsWith("G")
-    ){
-      alert("Invalid Pi wallet address");
-      return;
-    }
-
-    const saveRes = await fetch(
-      `${BACKEND_URL}/save-wallet`,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          userUid,
-          accessToken:window.accessToken,
-          walletAddress
-        })
-      }
-    );
-
-    const saveData = await saveRes.json();
-
-    if(!saveData.success){
-      alert("Failed to save wallet");
-      return;
-    }
-
-    closeWalletModal();
-
-    requestPayout();
-  };
-
-  return;
-}
-    
-  
-const btn = document.getElementById("payoutBtn");
-
-  btn.disabled = true;
-
-  const oldText = btn.innerHTML;
-
-  btn.innerHTML = `Processing <span class="spinner"></span>`;
   if (totalEarnings < 5) {
     showToast("Minimum payout is 5 Pi");
     return;
   }
 
-
+  const btn = document.getElementById("payoutBtn");
+  btn.disabled = true;
+  const oldText = btn.innerHTML;
+  btn.innerHTML = `Processing <span class="spinner"></span>`;
 
   try {
-
-    const res = await fetch(
-      `${BACKEND_URL}/request-payout`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-body: JSON.stringify({
-  userUid: userUid,
-  accessToken: window.accessToken
-})
-      }
-    );
+    const res = await fetch(`${BACKEND_URL}/request-payout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userUid: userUid,
+        accessToken: window.accessToken
+      })
+    });
 
     const data = await res.json();
 
     if (!data.success) {
-      showToast(data.error || "Payout failed");
+      showToast("Error: " + (data.error || "Payout failed"));
       return;
     }
 
-   openModal("🎉 Payout Successful 🎉", `TXID:\n${data.txid}`);
-
+    openModal("🎉 Payout Successful 🎉", `✅ ${data.amount} Pi sent to your Pi wallet!\n\nTXID:\n${data.txid}`);
     loadMySales();
 
- } catch (e) {
-
-  console.error(e);
-
-  alert("Payout failed");
-
-} finally {
-
-  btn.disabled = false;
-
-  btn.innerHTML = oldText;
-
-}
+  } catch (e) {
+    console.error(e);
+    showToast("Network error. Please try again.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = oldText;
+  }
 }
 
 
@@ -2655,13 +2568,12 @@ window.addEventListener("message", async (event) => {
 
     try {
 
-      const authResult = await Pi.authenticate(
-        ["username", "payments"],
-        onIncompletePaymentFound
-      );
-
-      user = authResult.user;
-      userUid = user.uid;
+       const auth=await Pi.authenticate(
+      ["username","payments","wallet_address"],  // ← wallet_address مضاف هنا
+      onIncompletePaymentFound
+    );
+        user=auth.user; userUid=user.uid; window.accessToken=auth.accessToken;
+        userWalletAddress=auth.user?.wallet_address||null;
 
       document.getElementById("welcome").innerText =
         `Welcome, ${user.username}!`;
