@@ -1380,47 +1380,34 @@ async function onIncompletePaymentFound(incompletePayment) {
   }
 }
 // ================= LOGIN =================
-async function login(){
-  try{
-    const auth=await Pi.authenticate(
-      ["username","payments","wallet_address"],  // ← wallet_address مضاف هنا
+async function login() {
+  try {
+    const authResult = await Pi.authenticate(
+      ["username", "payments", "wallet_address"], // ← أضف wallet_address
       onIncompletePaymentFound
     );
-    user=auth.user;
-    userUid=user.uid;
-   
-    /* تخزين عنوان المحفظة إذا أتى مع نتيجة المصادقة */
-    userWalletAddress = auth.user?.wallet_address || null;
-    localStorage.setItem("userUid",user.uid);
-    localStorage.setItem("username",user.username);
-    window.accessToken=auth.accessToken;
 
-   
+    user = authResult.user;
+    userUid = user.uid;
+    window.userWalletAddress = authResult.user?.wallet_address || null; // ← احفظه
+    localStorage.setItem("userUid", user.uid);
+    localStorage.setItem("username", user.username);
+    window.accessToken = authResult.accessToken;
 
-    // تحديث واجهة المستخدم بعد تسجيل الدخول
-    document.getElementById("welcome").innerText =
-      `Welcome, ${user.username}!`;
+    document.getElementById("welcome").innerText = `Welcome, ${user.username}!`;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
 
-    // تحميل البيانات
     loadBooks();
-loadMyPurchases();
-loadMySales();
+    loadMyPurchases();
+    loadMySales();
+    checkNotifications();
 
-checkNotifications();
+  } catch (err) {
+    console.error(err);
+    window.modalType = "login";
+    openModal("⚠️ Login Required", "Please login again and ensure that you are accessing the app through Pi Browser");
 
- } catch (err) {
-  console.error(err);
-
- window.modalType = "login";
-
-openModal(
-  "⚠️ Login Required",
-  "Please login again and ensure that you are accessing the app through Pi Browser"
-);
-
-  // بعد الضغط على OK سيتم إعادة تحميل الموقع
  
 }
 }
@@ -2136,7 +2123,8 @@ async function requestPayout() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userUid: userUid,
-        accessToken: window.accessToken
+        accessToken: window.accessToken,
+        walletAddress: window.userWalletAddress || null
       })
     });
 
@@ -2147,7 +2135,7 @@ async function requestPayout() {
       return;
     }
 
-    openModal("🎉 Payout Successful 🎉", `✅ ${data.amount} Pi sent to your Pi wallet!\n\nTXID:\n${data.txid}`);
+    openModal("🎉 Payout Successful!", `✅ ${data.amount} Pi sent!\n\nTXID:\n${data.txid}`);
     loadMySales();
 
   } catch (e) {
