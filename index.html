@@ -234,6 +234,12 @@ async function login(){
 
     loadBooks(); loadMyPurchases(); loadMySales(); checkNotifications();
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedTab = urlParams.get("tab");
+    if(requestedTab && document.getElementById(requestedTab)){
+      openTab(requestedTab);
+    }
+
     cancelIncompletePiPayouts();
   }catch(err){
     console.error(err);
