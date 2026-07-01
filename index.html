@@ -503,14 +503,7 @@ function filterBooks(type,btn){
   renderBooks(f);
 }
 
-/* ================================================================
- *  FIX: فتح صفحة الكتاب في نفس التبويب بدل نافذة جديدة.
- *  السبب: Pi Browser لا يمرّر صلاحية الدفع (payment bridge) لنافذة
- *  مفتوحة عبر window.open(..., "_blank")، لذلك كان زر الشراء يفشل
- *  في book.html ويظهر "Please use Pi Browser to complete the purchase".
- *  فتحها في نفس النافذة (location.href) يحل المشكلة دون أي تغيير آخر.
- * ================================================================ */
-function openBook(id){location.href = `book.html?id=${id}`;}
+function openBook(id){window.open(`book.html?id=${id}`,"_blank");}
 
 window.addEventListener("load",()=>{
   const params=new URLSearchParams(window.location.search),buyId=params.get("buyBookId");
