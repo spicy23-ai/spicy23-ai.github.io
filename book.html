@@ -798,7 +798,7 @@ Pi.init({ version: "2.0", sandbox: false });
 let userUid = localStorage.getItem("userUid") || null;
 let accessToken = localStorage.getItem("accessToken") || null;
 let currentUsername = localStorage.getItem("username") || null;
-
+let sdkAuthenticated = false;
 const params = new URLSearchParams(window.location.search);
 const bookId = params.get("id");
 
@@ -958,16 +958,19 @@ async function loginPi(){
     localStorage.setItem("userUid", userUid);
     localStorage.setItem("username", currentUsername);
     localStorage.setItem("accessToken", accessToken);
+    sdkAuthenticated = true;
     updateLoginUI();
     return true;
   }catch(err){
     console.error("Pi login failed:", err);
+    sdkAuthenticated = false;
     return false;
   }
 }
 
 function clearSession(){
   userUid = null; accessToken = null; currentUsername = null;
+  sdkAuthenticated = false;
   localStorage.removeItem("userUid");
   localStorage.removeItem("accessToken");
   localStorage.removeItem("username");
@@ -1129,7 +1132,7 @@ async function sendVote(voteType){
 
 /* ================= Buy (now happens directly on this page) ================= */
 async function buyBook(book){
-  if(!userUid || !accessToken){
+  if(!sdkAuthenticated){
     const ok = await loginPi();
     if(!ok){
       openModal("⚠️", "Please login with Pi to buy this book.");
