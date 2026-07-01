@@ -833,7 +833,10 @@ const translations = {
     readLess: "Show Less ▲",
     noComments: "No comments yet.",
     writeCommentPlaceholder: "Write your comment...",
-    loginToComment: "Login to comment"
+    loginToComment: "Login to comment",
+    purchaseSuccessTitle: "🎉 Purchase Successful!",
+    purchaseSuccessMsg: "Your book has been purchased successfully!\n\nYou can find it anytime in \"My Purchases\", where you can read or download it.",
+    goToPurchasesBtn: "📚 Go to My Purchases"
   },
 
   ar: {
@@ -863,7 +866,10 @@ const translations = {
     readLess: "عرض أقل ▲",
     noComments: "لا توجد تعليقات بعد.",
     writeCommentPlaceholder: "اكتب تعليقك...",
-    loginToComment: "سجل الدخول للتعليق"
+    loginToComment: "سجل الدخول للتعليق",
+    purchaseSuccessTitle: "🎉 تم الشراء بنجاح!",
+    purchaseSuccessMsg: "تم شراء الكتاب بنجاح!\n\nيمكنك إيجاده في أي وقت داخل \"مشترياتي\"، حيث يمكنك قراءته أو تحميله.",
+    goToPurchasesBtn: "📚 الذهاب إلى مشترياتي"
   },
 
   fr: {
@@ -893,7 +899,10 @@ const translations = {
     readLess: "Voir moins ▲",
     noComments: "Aucun commentaire pour le moment.",
     writeCommentPlaceholder: "Écrivez votre commentaire...",
-    loginToComment: "Connectez-vous pour commenter"
+    loginToComment: "Connectez-vous pour commenter",
+    purchaseSuccessTitle: "🎉 Achat réussi !",
+    purchaseSuccessMsg: "Votre livre a été acheté avec succès !\n\nVous pouvez le retrouver à tout moment dans \"Mes achats\", où vous pourrez le lire ou le télécharger.",
+    goToPurchasesBtn: "📚 Aller à mes achats"
   },
 
   zh: {
@@ -923,7 +932,10 @@ const translations = {
     readLess: "收起 ▲",
     noComments: "暂无评论。",
     writeCommentPlaceholder: "写下你的评论...",
-    loginToComment: "登录以发表评论"
+    loginToComment: "登录以发表评论",
+    purchaseSuccessTitle: "🎉 购买成功！",
+    purchaseSuccessMsg: "您的图书已成功购买！\n\n您可以随时在“我的购买”中找到它进行阅读或下载。",
+    goToPurchasesBtn: "📚 前往我的购买"
   }
 };
 
@@ -1170,8 +1182,18 @@ async function buyBook(book){
             resetBtn();
             return;
           }
-          // نجاح الشراء: التوجه مباشرة إلى "مشترياتي"
-          window.location.href = `${APP_BASE}/index.html?tab=purchases`;
+          /* ============================================================
+           *  نجاح الشراء: عرض نافذة جميلة ومترجمة حسب اللغة المختارة
+           *  بدل التحويل الفوري إلى صفحة المشتريات.
+           * ============================================================ */
+          resetBtn();
+          const t = translations[currentLang];
+          openModal(
+            t.purchaseSuccessTitle,
+            `<p style="white-space:pre-line;margin-bottom:20px;">${t.purchaseSuccessMsg}</p>
+             <button onclick="window.location.href='${APP_BASE}/index.html?tab=purchases'">${t.goToPurchasesBtn}</button>`
+          );
+          loadBook();
         }catch(e){
           console.error(e);
           openModal("❌ Payment Failed", "The payment could not be completed.");
