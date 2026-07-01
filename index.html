@@ -542,7 +542,7 @@ function closeModal(){
 
 /* ── Messages from book.html ── */
 window.addEventListener("message",async(event)=>{
-  if(event.origin!=="https://spicy23-ai.github.io") return;
+  if(event.origin!=="https://spicylibrary.space") return;
   const msg=event.data;
   if(msg.type==="BUY_BOOK"){
     window.openedBook=event.source;
@@ -553,11 +553,11 @@ window.addEventListener("message",async(event)=>{
           onReadyForServerCompletion:async(pid,txid)=>{
             const res=await fetch(`${BACKEND_URL}/complete-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId:pid,txid})});
             const data=await res.json(); loadMyPurchases();
-            window.openedBook.postMessage({type:"PAYMENT_SUCCESS",bookId:msg.bookId},"https://spicy23-ai.github.io");
+            window.openedBook.postMessage({type:"PAYMENT_SUCCESS",bookId:msg.bookId},"https://spicylibrary.space");
             openTab("purchases"); showToast("Payment successful! 📚");
           },
-          onCancel:()=>window.openedBook.postMessage({type:"PAYMENT_CANCELLED"},"https://spicy23-ai.github.io"),
-          onError:err=>window.openedBook.postMessage({type:"PAYMENT_FAILED",error:err.message},"https://spicy23-ai.github.io")
+          onCancel:()=>window.openedBook.postMessage({type:"PAYMENT_CANCELLED"},"https://spicylibrary.space"),
+          onError:err=>window.openedBook.postMessage({type:"PAYMENT_FAILED",error:err.message},"https://spicylibrary.space")
         });
       }catch{alert("Payment failed");}
     };
