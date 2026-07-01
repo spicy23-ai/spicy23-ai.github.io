@@ -128,7 +128,7 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
     <div class="disclaimer" id="copyrightNotice">Copyright Notice: Authors may upload only content they own or have permission to distribute. If you believe that any content infringes your copyright, please contact us at <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>. Reported content may be reviewed and removed if necessary.</div>
   </div>
 
-  <div id="purchases" class="tab-content"><h3>My Purchased Books</h3><div class="books" id="myBooks"></div></div>
+  <div id="purchases" class="tab-content"><h3 id="purchasesTitle">My Purchased Books</h3><div class="books" id="myBooks"></div></div>
 
   <div id="sales" class="tab-content">
     <h3 id="salesTitle">My Sales & Earnings</h3>
@@ -160,15 +160,15 @@ document.getElementById("uploadCoverBtn").onclick=()=>{
   const fi=document.createElement("input"); fi.type="file"; fi.accept="image/*";
   fi.onchange=async e=>{
     const file=e.target.files[0]; if(!file) return;
-    btn.disabled=true; document.getElementById("coverStatus").innerText="⏳ Uploading cover...";
+    btn.disabled=true; document.getElementById("coverStatus").innerText=translations[currentLang].uploadingCover;
     const reader=new FileReader(); reader.readAsDataURL(file);
     reader.onload=async()=>{
       try{
         const res=await fetch(`${BACKEND_URL}/upload-cover`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken})});
         const data=await res.json();
-        if(data.success){coverUrl=data.url;document.getElementById("coverStatus").innerText="✅ Cover uploaded!";checkSaveReady();}
-        else alert("Upload failed");
-      }catch{document.getElementById("coverStatus").innerText="❌ Upload failed";}
+        if(data.success){coverUrl=data.url;document.getElementById("coverStatus").innerText=translations[currentLang].coverUploaded;checkSaveReady();}
+        else alert(translations[currentLang].uploadFailedAlert);
+      }catch{document.getElementById("coverStatus").innerText=translations[currentLang].uploadFailedShort;}
       finally{btn.disabled=false;}
     };
   }; fi.click();
@@ -180,15 +180,15 @@ document.getElementById("uploadPdfBtn").onclick=()=>{
   const fi=document.createElement("input"); fi.type="file"; fi.accept="application/pdf";
   fi.onchange=async e=>{
     const file=e.target.files[0]; if(!file) return;
-    btn.disabled=true; document.getElementById("pdfStatus").innerText="⏳ Uploading PDF...";
+    btn.disabled=true; document.getElementById("pdfStatus").innerText=translations[currentLang].uploadingPdf;
     const reader=new FileReader(); reader.readAsDataURL(file);
     reader.onload=async()=>{
       try{
         const res=await fetch(`${BACKEND_URL}/upload-pdf`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken})});
         const data=await res.json();
-        if(data.success){pdfUrl=data.url;pageCount=data.pages||"Unknown";document.getElementById("pdfStatus").innerText="✅ PDF uploaded!";checkSaveReady();}
-        else alert("Upload failed");
-      }catch{document.getElementById("pdfStatus").innerText="❌ Upload failed";}
+        if(data.success){pdfUrl=data.url;pageCount=data.pages||"Unknown";document.getElementById("pdfStatus").innerText=translations[currentLang].pdfUploaded;checkSaveReady();}
+        else alert(translations[currentLang].uploadFailedAlert);
+      }catch{document.getElementById("pdfStatus").innerText=translations[currentLang].uploadFailedShort;}
       finally{btn.disabled=false;}
     };
   }; fi.click();
@@ -207,7 +207,7 @@ async function onIncompletePaymentFound(payment){
   if(!txid) return;
   try{
     await fetch(`${BACKEND_URL}/complete-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId,txid})});
-    showToast("✅ Previous purchase completed!");
+    showToast(translations[currentLang].prevPurchaseCompleted);
     loadMyPurchases();
   }catch(e){console.error("Could not complete incomplete payment:",e);}
 }
@@ -244,7 +244,7 @@ async function login(){
   }catch(err){
     console.error(err);
     window.modalType="login";
-    openModal("⚠️ Login Required","Please login again and ensure that you are accessing the app through Pi Browser");
+    openModal(translations[currentLang].loginRequiredTitle,translations[currentLang].loginRequiredText);
   }
 }
 
@@ -272,7 +272,10 @@ async function checkNotifications(){
     const data=await res.json(); if(!data.success) return;
     for(const n of data.notifications){
       const key="review_"+n.id; if(localStorage.getItem(key)) continue;
-      openModal(n.approved?"✅ Book Approved":"❌ Book Rejected",`Your book "${n.title}" was ${n.approved?"approved":"rejected"}.\n\n${n.reviewMessage}`);
+      const t=translations[currentLang];
+      const statusText=n.approved?t.bookApprovedTitle:t.bookRejectedTitle;
+      const statusWord=n.approved?t.approvedWord:t.rejectedWord;
+      openModal(statusText,`${t.yourBookWas} "${n.title}" ${statusWord}.\n\n${n.reviewMessage}`);
       localStorage.setItem(key,"shown");
     }
   }catch(e){console.error(e);}
@@ -281,14 +284,15 @@ async function checkNotifications(){
 /* ── Save Book ── */
 document.getElementById("saveBookBtn").onclick=saveBook;
 async function saveBook(){
-  if(!user) return alert("Login required");
-  if(!document.getElementById("rights").checked) return alert("Confirm rights");
+  const t=translations[currentLang];
+  if(!user) return alert(t.loginRequiredAlert);
+  if(!document.getElementById("rights").checked) return alert(t.confirmRightsAlert);
   const title=document.getElementById("title").value.trim();
   const price=Number(document.getElementById("price").value);
   const description=document.getElementById("description").value.trim();
   const language=document.getElementById("language").value;
   const manualPages=document.getElementById("manualPages").value.trim();
-  if(!title||price<=0||!description||!language||!manualPages||!coverUrl||!pdfUrl) return alert("Please complete all required fields");
+  if(!title||price<=0||!description||!language||!manualPages||!coverUrl||!pdfUrl) return alert(t.completeFieldsAlert);
   const btn=document.getElementById("saveBookBtn"); btn.disabled=true; btn.innerText="Saving...";
   try{
     const res=await fetch(`${BACKEND_URL}/save-book`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,price,description,language,pageCount:manualPages||pageCount,cover:coverUrl,pdf:pdfUrl,owner:user.username,ownerUid:userUid,accessToken:window.accessToken})});
@@ -297,26 +301,27 @@ async function saveBook(){
     openTab("store"); coverUrl=pdfUrl="";
     document.getElementById("coverStatus").innerText=""; document.getElementById("pdfStatus").innerText="";
     checkSaveReady(); loadBooks(); loadMySales();
-  }catch{alert("Upload failed");}
+  }catch{alert(t.uploadFailedAlert);}
   finally{btn.disabled=false;btn.innerText="Save Book";}
 }
 
 /* ── Rate Book ── */
 async function rateBook(bookId,voteType,button){
-  if(!userUid) return alert("Login required");
+  if(!userUid) return alert(translations[currentLang].loginRequiredAlert);
   try{
     await fetch(`${BACKEND_URL}/rate-book`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bookId,voteType,userUid,accessToken:window.accessToken})});
     button.disabled=true;
     const sib=button.parentNode.querySelector(voteType==='like'?'.dislike-btn':'.like-btn');
     if(sib) sib.disabled=true;
     loadBooks(); loadMyPurchases();
-  }catch{alert("Rating failed");}
+  }catch{alert(translations[currentLang].ratingFailedAlert);}
 }
 
 /* ── Buy ── */
 async function buy(bookId,price){
-  if(!userUid) return alert("Login required");
-  if(!await showConfirm(`Buy this book for ${price} Pi?`)) return;
+  const t=translations[currentLang];
+  if(!userUid) return alert(t.loginRequiredAlert);
+  if(!await showConfirm(`${t.buyConfirmPrefix} ${price} Pi?`)) return;
   try{
     await Pi.createPayment({amount:price,memo:"Spicy Library - Book Purchase",metadata:{bookId,userUid}},{
       onReadyForServerApproval:async(paymentId)=>{
@@ -324,22 +329,23 @@ async function buy(bookId,price){
       },
       onReadyForServerCompletion:async(paymentId,txid)=>{
         const res=await fetch(`${BACKEND_URL}/complete-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId,txid})});
-        if(!res.ok){alert("Payment failed");return;}
+        if(!res.ok){alert(t.paymentFailedAlert);return;}
         const data=await res.json();
         window.open(data.pdfUrl,"_blank");
-        openModal("🎉 Purchase Successful","Your book is now available in My Purchases 📚");
+        openModal(t.purchaseSuccessTitle,t.purchaseSuccessText);
         await loadMyPurchases(); renderBooks(allBooksData); openTab("purchases");
       },
-      onCancel:()=>showToast("Payment cancelled"),
-      onError:(err)=>showToast("Payment error: "+err.message)
+      onCancel:()=>showToast(t.paymentCancelled),
+      onError:(err)=>showToast(t.paymentErrorPrefix+": "+err.message)
     });
-  }catch{alert("Use Pi Browser for payment.");}
+  }catch{alert(t.usePiBrowserAlert);}
 }
 
 async function downloadPdf(bookId){
+  const t=translations[currentLang];
   const res=await fetch(`${BACKEND_URL}/get-pdf`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bookId,userUid,accessToken:window.accessToken})});
   const data=await res.json();
-  if(!res.ok) return alert(data.error||"Access denied");
+  if(!res.ok) return alert(data.error||t.accessDeniedAlert);
   window.open(data.pdfUrl,"_blank");
 }
 
@@ -363,7 +369,7 @@ async function renderBooks(booksArray){
   const lang=localStorage.getItem("appLanguage")||"en",t=translations[lang];
   if(isRenderingBooks) return; isRenderingBooks=true;
   const box=document.getElementById("books"); box.innerHTML="";
-  if(!booksArray.length){box.innerHTML="<p>No books found.</p>";isRenderingBooks=false;return;}
+  if(!booksArray.length){box.innerHTML=`<p>${t.noBooks}</p>`;isRenderingBooks=false;return;}
   let html="";
   for(const b of booksArray){
     const likes=b.likes||0,dislikes=b.dislikes||0;
@@ -391,15 +397,16 @@ async function renderBooks(booksArray){
 
 let isLoadingPurchases=false;
 async function loadMyPurchases(){
+  const t=translations[currentLang];
   if(isLoadingPurchases) return; isLoadingPurchases=true;
-  const box=document.getElementById("myBooks"); box.innerHTML="<p>Loading purchases...</p>";
-  if(!userUid){box.innerHTML="<p>Please log in.</p>";isLoadingPurchases=false;return;}
+  const box=document.getElementById("myBooks"); box.innerHTML=`<p>${t.loadingPurchases}</p>`;
+  if(!userUid){box.innerHTML=`<p>${t.pleaseLogin}</p>`;isLoadingPurchases=false;return;}
   try{
     const res=await fetch(`${BACKEND_URL}/my-purchases`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid,accessToken:window.accessToken})});
     const json=await res.json(); if(!json.success) throw new Error(json.error);
     purchasedBookIds.clear(); json.books.forEach(b=>purchasedBookIds.add(b.id));
     box.innerHTML="";
-    if(!json.books.length){box.innerHTML="<p>No purchases yet.</p>";isLoadingPurchases=false;return;}
+    if(!json.books.length){box.innerHTML=`<p>${t.noPurchasesYet}</p>`;isLoadingPurchases=false;return;}
     let html="";
     for(const b of json.books){
       html+=`<div class="book">
@@ -417,7 +424,7 @@ async function loadMyPurchases(){
     }
     box.innerHTML=html; renderBooks(allBooksData);
   }catch{
-    box.innerHTML="<p>Error loading purchases. Retrying...</p>";
+    box.innerHTML=`<p>${t.errorLoadingPurchases}</p>`;
     setTimeout(()=>{isLoadingPurchases=false;loadMyPurchases();},5000); return;
   }
   isLoadingPurchases=false;
@@ -425,14 +432,15 @@ async function loadMyPurchases(){
 
 async function loadMySales(){
   const box=document.getElementById("mySalesBooks"),totalBox=document.getElementById("totalEarnings");
-  box.innerHTML="<p>Loading sales...</p>"; totalBox.innerHTML="";
-  if(!user) return box.innerHTML="<p>Please log in.</p>";
+  const t=translations[currentLang];
+  box.innerHTML=`<p>${t.loadingSales}</p>`; totalBox.innerHTML="";
+  if(!user) return box.innerHTML=`<p>${t.pleaseLogin}</p>`;
   try{
     const res=await fetch(`${BACKEND_URL}/my-sales`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid:user.uid,accessToken:window.accessToken})});
     const json=await res.json(); if(!json.success) throw new Error(json.error);
     const lang=localStorage.getItem("appLanguage")||"en";
     if(!json.books.length){
-      box.innerHTML="<p>No books uploaded.</p>";
+      box.innerHTML=`<p>${t.noBooksUploaded}</p>`;
       totalBox.innerHTML=`<div class='total-profit'>${translations[lang].totalEarnings}: 0 Pi</div>`;
       document.getElementById("payoutBtn").disabled=true; return;
     }
@@ -441,20 +449,21 @@ async function loadMySales(){
       const profit=Number(b.withdrawableEarnings||0); totalEarnings+=profit;
       box.innerHTML+=`<div class="sales-book">
         <img src="${b.cover}" style="width:150px;border-radius:6px;">
-        <h4>${b.title}</h4><p>Price: ${b.price} Pi</p><p>Sales: ${b.salesCount||0}</p>
-        <div class="profit">Your earnings: ${profit.toFixed(2)} Pi (70%)</div>
+        <h4>${b.title}</h4><p>${t.priceLabel}: ${b.price} Pi</p><p>${t.salesLabel}: ${b.salesCount||0}</p>
+        <div class="profit">${t.yourEarnings}: ${profit.toFixed(2)} Pi (70%)</div>
       </div>`;
     }
     totalBox.innerHTML=`<div class='total-profit'>${translations[lang].totalEarnings}: ${totalEarnings.toFixed(2)} Pi</div>`;
     document.getElementById("payoutBtn").disabled=totalEarnings<5;
-  }catch{box.innerHTML="<p>Error loading sales.</p>";}
+  }catch{box.innerHTML=`<p>${t.errorLoadingSales}</p>`;}
 }
 
 /* ================================================================
  *  requestPayout
  * ================================================================ */
 async function requestPayout(){
-  if(totalEarnings<5){showToast("Minimum payout is 5 Pi");return;}
+  const t=translations[currentLang];
+  if(totalEarnings<5){showToast(t.minPayoutToast);return;}
   const btn=document.getElementById("payoutBtn"); btn.disabled=true;
   const old=btn.innerHTML; btn.innerHTML=`Processing <span class="spinner"></span>`;
   try{
@@ -468,13 +477,13 @@ async function requestPayout(){
     });
     const data=await res.json();
     if(!data.success){
-      showToast("Error: "+(data.error||"Payout failed"));
+      showToast(t.errorPrefix+": "+(data.error||t.payoutFailed));
       return;
     }
-    openModal("🎉 Payout Successful!",`✅ ${data.amount} Pi sent to your Pi wallet!\n\nTransaction ID:\n${data.txid}`);
+    openModal(t.payoutSuccessTitle,`✅ ${data.amount} Pi ${t.payoutSuccessText}\n\n${t.transactionIdLabel}:\n${data.txid}`);
     loadMySales();
   }catch(e){
-    console.error(e); showToast("Network error. Please try again.");
+    console.error(e); showToast(t.networkErrorToast);
   }finally{btn.disabled=false;btn.innerHTML=old;}
 }
 
@@ -512,9 +521,9 @@ window.addEventListener("load",()=>{
       try{
         const res=await fetch(`${BACKEND_URL}/book?id=${buyId}`),data=await res.json();
         if(!data.success) throw new Error("Book not found");
-        if(!userUid){alert("⚠️ Please log in first.");return;}
-        if(confirm(`Buy "${data.book.title}" for ${data.book.price} Pi?`)) buy(data.book.id,data.book.price);
-      }catch(e){alert("Book not found.");}
+        if(!userUid){alert(translations[currentLang].pleaseLoginFirstAlert);return;}
+        if(confirm(`${translations[currentLang].buyConfirmPrefix2} "${data.book.title}" ${translations[currentLang].buyConfirmSuffix} ${data.book.price} Pi?`)) buy(data.book.id,data.book.price);
+      }catch(e){alert(translations[currentLang].bookNotFoundAlert);}
     };
     if(userUid) tryBuy();
     else document.getElementById("loginBtn").onclick=async()=>{await login();if(userUid) tryBuy();};
@@ -547,12 +556,12 @@ window.addEventListener("message",async(event)=>{
             const res=await fetch(`${BACKEND_URL}/complete-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId:pid,txid})});
             const data=await res.json(); loadMyPurchases();
             window.openedBook.postMessage({type:"PAYMENT_SUCCESS",bookId:msg.bookId},"https://spicylibrary.space");
-            openTab("purchases"); showToast("Payment successful! 📚");
+            openTab("purchases"); showToast(translations[currentLang].paymentSuccessToast);
           },
           onCancel:()=>window.openedBook.postMessage({type:"PAYMENT_CANCELLED"},"https://spicylibrary.space"),
           onError:err=>window.openedBook.postMessage({type:"PAYMENT_FAILED",error:err.message},"https://spicylibrary.space")
         });
-      }catch{alert("Payment failed");}
+      }catch{alert(translations[currentLang].paymentFailedAlert);}
     };
     if(!user){
       try{
@@ -565,7 +574,7 @@ window.addEventListener("message",async(event)=>{
         document.getElementById("welcome").innerText=`Welcome, ${user.username}!`;
         document.getElementById("login").classList.add("hidden"); document.getElementById("app").classList.remove("hidden");
         loadBooks(); loadMyPurchases(); loadMySales(); go();
-      }catch{alert("Login failed");}
+      }catch{alert(translations[currentLang].loginFailedAlert);}
     }else go();
   }
 });
@@ -588,10 +597,66 @@ function showConfirm(msg){
 /* ── Languages ── */
 let currentLang="en";
 const translations={
-  en:{loginNotice:"Login using Pi Network (must be in Pi Browser)",privacyPolicy:"Privacy Policy",termsService:"Terms of Service",loginBtn:"Login with Pi",addBook:"➕ Add Book",logout:"Logout",store:"Store",purchases:"My Purchases",sales:"My Sales",allBooks:"All Books",searchPlaceholder:"Search by book title...",filterAll:"All Books",filterLikes:"Most Liked",filterSales:"Best Sellers",filterNew:"Old Books",addBookTitle:"Add Book",bookTitle:"Book title",price:"Price (Pi)",description:"Book description",selectLanguage:"Select language",pages:"Number of pages",uploadCover:"Upload Cover",uploadPdf:"Upload PDF",rights:"I confirm that I own all rights to this book",saveBook:"Save Book",buy:"Buy with",view:"View 📖",download:"Download PDF",salesTitle:"My Sales & Earnings",requestPayout:"Request Payout",loadingBooks:"Loading books...",noBooks:"No books available.",bookPending:"✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",ownBook:"✅ You Own This Book",platformFee:"Platform fee: 30% – You get 70% of each sale",minimumPayout:"Minimum payout: 5 Pi",copyrightNotice:`Copyright Notice: Authors may upload only content they own. Contact us at <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"Instant payout: Withdrawals are sent directly to your Pi wallet.",totalEarnings:"Total earnings"},
-  ar:{loginNotice:"سجل الدخول باستخدام Pi Network",privacyPolicy:"سياسة الخصوصية",termsService:"شروط الاستخدام",loginBtn:"تسجيل الدخول عبر Pi",addBook:"➕ إضافة كتاب",logout:"تسجيل الخروج",store:"المتجر",purchases:"مشترياتي",sales:"مبيعاتي",allBooks:"كل الكتب",searchPlaceholder:"ابحث عن كتاب...",filterAll:"كل الكتب",filterLikes:"الأكثر إعجاباً",filterSales:"الأكثر مبيعاً",filterNew:"الكتب القديمة",addBookTitle:"إضافة كتاب",bookTitle:"عنوان الكتاب",price:"السعر (Pi)",description:"وصف الكتاب",selectLanguage:"اختر اللغة",pages:"عدد الصفحات",uploadCover:"رفع الغلاف",uploadPdf:"رفع PDF",rights:"أؤكد أنني أملك جميع حقوق هذا الكتاب",saveBook:"حفظ الكتاب",buy:"شراء عبر",view:"عرض 📖",download:"تحميل PDF",salesTitle:"مبيعاتي وأرباحي",requestPayout:"طلب سحب",loadingBooks:"جاري تحميل الكتب...",noBooks:"لا توجد كتب.",bookPending:"✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه.",ownBook:"✅ أنت تملك هذا الكتاب",platformFee:"رسوم المنصة: 30٪ - تحصل على 70٪ من كل عملية بيع",minimumPayout:"الحد الأدنى للسحب: 5 Pi",copyrightNotice:`إشعار حقوق النشر: يمكن للمؤلفين رفع المحتوى الذي يملكون حقوقه فقط. تواصل معنا على <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"السحب الفوري: يتم إرسال الأرباح مباشرة إلى محفظتك.",totalEarnings:"إجمالي الأرباح"},
-  fr:{loginNotice:"Connectez-vous avec Pi Network",privacyPolicy:"Politique de confidentialité",termsService:"Conditions d'utilisation",loginBtn:"Connexion avec Pi",addBook:"➕ Ajouter un livre",logout:"Déconnexion",store:"Boutique",purchases:"Mes achats",sales:"Mes ventes",allBooks:"Tous les livres",searchPlaceholder:"Rechercher un livre...",filterAll:"Tous les livres",filterLikes:"Les plus aimés",filterSales:"Meilleures ventes",filterNew:"Anciens livres",addBookTitle:"Ajouter un livre",bookTitle:"Titre du livre",price:"Prix (Pi)",description:"Description du livre",selectLanguage:"Choisir la langue",pages:"Nombre de pages",uploadCover:"Télécharger la couverture",uploadPdf:"Télécharger le PDF",rights:"Je confirme posséder tous les droits",saveBook:"Enregistrer le livre",buy:"Acheter avec",view:"Voir 📖",download:"Télécharger PDF",salesTitle:"Mes ventes et revenus",requestPayout:"Demander un retrait",loadingBooks:"Chargement des livres...",noBooks:"Aucun livre disponible.",bookPending:"✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification.",ownBook:"✅ Vous possédez ce livre",platformFee:"Frais de plateforme : 30 % – Vous recevez 70 %",minimumPayout:"Retrait minimum : 5 Pi",copyrightNotice:`Avis de droit d'auteur : contactez-nous à <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"Paiement instantané vers votre portefeuille Pi.",totalEarnings:"Gains totaux"},
-  zh:{loginNotice:"使用 Pi Network 登录",privacyPolicy:"隐私政策",termsService:"服务条款",loginBtn:"使用 Pi 登录",addBook:"➕ 添加书籍",logout:"退出登录",store:"商店",purchases:"我的购买",sales:"我的销售",allBooks:"所有书籍",searchPlaceholder:"搜索书籍...",filterAll:"所有书籍",filterLikes:"最受喜欢",filterSales:"畅销书",filterNew:"旧书",addBookTitle:"添加书籍",bookTitle:"书名",price:"价格 (Pi)",description:"书籍描述",selectLanguage:"选择语言",pages:"页数",uploadCover:"上传封面",uploadPdf:"上传 PDF",rights:"我确认拥有本书的全部版权",saveBook:"保存书籍",buy:"使用 购买",view:"查看 📖",download:"下载 PDF",salesTitle:"我的销售与收入",requestPayout:"申请提现",loadingBooks:"正在加载书籍...",noBooks:"暂无书籍。",bookPending:"✅ 图书提交成功！\n\n您的图书正在审核中。",ownBook:"✅ 您拥有这本书",platformFee:"平台费用：30％ - 您获得每笔销售的70％",minimumPayout:"最低提现金额：5 Pi",copyrightNotice:`版权声明：请联系我们：<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>。`,instantPayout:"即时付款：提款直接发送到您的钱包。",totalEarnings:"总收益"}
+  en:{loginNotice:"Login using Pi Network (must be in Pi Browser)",privacyPolicy:"Privacy Policy",termsService:"Terms of Service",loginBtn:"Login with Pi",addBook:"➕ Add Book",logout:"Logout",store:"Store",purchases:"My Purchases",sales:"My Sales",allBooks:"All Books",searchPlaceholder:"Search by book title...",filterAll:"All Books",filterLikes:"Most Liked",filterSales:"Best Sellers",filterNew:"Old Books",addBookTitle:"Add Book",bookTitle:"Book title",price:"Price (Pi)",description:"Book description",selectLanguage:"Select language",pages:"Number of pages",uploadCover:"Upload Cover",uploadPdf:"Upload PDF",rights:"I confirm that I own all rights to this book",saveBook:"Save Book",buy:"Buy with",view:"View 📖",download:"Download PDF",salesTitle:"My Sales & Earnings",requestPayout:"Request Payout",loadingBooks:"Loading books...",noBooks:"No books available.",bookPending:"✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",ownBook:"✅ You Own This Book",platformFee:"Platform fee: 30% – You get 70% of each sale",minimumPayout:"Minimum payout: 5 Pi",copyrightNotice:`Copyright Notice: Authors may upload only content they own. Contact us at <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"Instant payout: Withdrawals are sent directly to your Pi wallet.",totalEarnings:"Total earnings",
+    purchasesTitle:"My Purchased Books",noPurchasesYet:"No purchases yet.",loadingPurchases:"Loading purchases...",pleaseLogin:"Please log in.",errorLoadingPurchases:"Error loading purchases. Retrying...",
+    loadingSales:"Loading sales...",noBooksUploaded:"No books uploaded.",errorLoadingSales:"Error loading sales.",priceLabel:"Price",salesLabel:"Sales",yourEarnings:"Your earnings",
+    comments:"💬 Comments",noComments:"No comments yet.",writeCommentPlaceholder:"Write your comment...",addCommentBtn:"Add Comment",writeCommentAlert:"Write a comment",
+    loginRequiredTitle:"⚠️ Login Required",loginRequiredText:"Please login again and ensure that you are accessing the app through Pi Browser",
+    purchaseSuccessTitle:"🎉 Purchase Successful",purchaseSuccessText:"Your book is now available in My Purchases 📚",
+    bookApprovedTitle:"✅ Book Approved",bookRejectedTitle:"❌ Book Rejected",yourBookWas:"Your book was",approvedWord:"approved",rejectedWord:"rejected",
+    loginRequiredAlert:"Login required",confirmRightsAlert:"Confirm rights",completeFieldsAlert:"Please complete all required fields",uploadFailedAlert:"Upload failed",uploadFailedShort:"❌ Upload failed",
+    uploadingCover:"⏳ Uploading cover...",coverUploaded:"✅ Cover uploaded!",uploadingPdf:"⏳ Uploading PDF...",pdfUploaded:"✅ PDF uploaded!",
+    ratingFailedAlert:"Rating failed",buyConfirmPrefix:"Buy this book for",buyConfirmPrefix2:"Buy",buyConfirmSuffix:"for",paymentFailedAlert:"Payment failed",
+    paymentCancelled:"Payment cancelled",paymentErrorPrefix:"Payment error",usePiBrowserAlert:"Use Pi Browser for payment.",accessDeniedAlert:"Access denied",
+    prevPurchaseCompleted:"✅ Previous purchase completed!",pleaseLoginFirstAlert:"⚠️ Please log in first.",bookNotFoundAlert:"Book not found.",
+    minPayoutToast:"Minimum payout is 5 Pi",errorPrefix:"Error",payoutFailed:"Payout failed",payoutSuccessTitle:"🎉 Payout Successful!",payoutSuccessText:"sent to your Pi wallet!",
+    transactionIdLabel:"Transaction ID",networkErrorToast:"Network error. Please try again.",paymentSuccessToast:"Payment successful! 📚",loginFailedAlert:"Login failed"
+  },
+  ar:{loginNotice:"سجل الدخول باستخدام Pi Network",privacyPolicy:"سياسة الخصوصية",termsService:"شروط الاستخدام",loginBtn:"تسجيل الدخول عبر Pi",addBook:"➕ إضافة كتاب",logout:"تسجيل الخروج",store:"المتجر",purchases:"مشترياتي",sales:"مبيعاتي",allBooks:"كل الكتب",searchPlaceholder:"ابحث عن كتاب...",filterAll:"كل الكتب",filterLikes:"الأكثر إعجاباً",filterSales:"الأكثر مبيعاً",filterNew:"الكتب القديمة",addBookTitle:"إضافة كتاب",bookTitle:"عنوان الكتاب",price:"السعر (Pi)",description:"وصف الكتاب",selectLanguage:"اختر اللغة",pages:"عدد الصفحات",uploadCover:"رفع الغلاف",uploadPdf:"رفع PDF",rights:"أؤكد أنني أملك جميع حقوق هذا الكتاب",saveBook:"حفظ الكتاب",buy:"شراء عبر",view:"عرض 📖",download:"تحميل PDF",salesTitle:"مبيعاتي وأرباحي",requestPayout:"طلب سحب",loadingBooks:"جاري تحميل الكتب...",noBooks:"لا توجد كتب.",bookPending:"✅ تم إرسال الكتاب بنجاح.\n\nالكتاب الآن قيد المراجعة وسيتم نشره بعد الموافقة عليه.",ownBook:"✅ أنت تملك هذا الكتاب",platformFee:"رسوم المنصة: 30٪ - تحصل على 70٪ من كل عملية بيع",minimumPayout:"الحد الأدنى للسحب: 5 Pi",copyrightNotice:`إشعار حقوق النشر: يمكن للمؤلفين رفع المحتوى الذي يملكون حقوقه فقط. تواصل معنا على <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"السحب الفوري: يتم إرسال الأرباح مباشرة إلى محفظتك.",totalEarnings:"إجمالي الأرباح",
+    purchasesTitle:"كتبي المشتراة",noPurchasesYet:"لا توجد مشتريات بعد.",loadingPurchases:"جاري تحميل المشتريات...",pleaseLogin:"الرجاء تسجيل الدخول.",errorLoadingPurchases:"خطأ في تحميل المشتريات. إعادة المحاولة...",
+    loadingSales:"جاري تحميل المبيعات...",noBooksUploaded:"لم يتم رفع أي كتاب.",errorLoadingSales:"خطأ في تحميل المبيعات.",priceLabel:"السعر",salesLabel:"المبيعات",yourEarnings:"أرباحك",
+    comments:"💬 التعليقات",noComments:"لا توجد تعليقات بعد.",writeCommentPlaceholder:"اكتب تعليقك...",addCommentBtn:"إضافة تعليق",writeCommentAlert:"اكتب تعليقاً",
+    loginRequiredTitle:"⚠️ تسجيل الدخول مطلوب",loginRequiredText:"يرجى تسجيل الدخول مرة أخرى والتأكد من أنك تستخدم التطبيق عبر Pi Browser",
+    purchaseSuccessTitle:"🎉 تم الشراء بنجاح",purchaseSuccessText:"كتابك متاح الآن في مشترياتي 📚",
+    bookApprovedTitle:"✅ تمت الموافقة على الكتاب",bookRejectedTitle:"❌ تم رفض الكتاب",yourBookWas:"كتابك",approvedWord:"تمت الموافقة عليه",rejectedWord:"تم رفضه",
+    loginRequiredAlert:"يجب تسجيل الدخول",confirmRightsAlert:"يرجى تأكيد ملكية الحقوق",completeFieldsAlert:"يرجى إكمال جميع الحقول المطلوبة",uploadFailedAlert:"فشل الرفع",uploadFailedShort:"❌ فشل الرفع",
+    uploadingCover:"⏳ جاري رفع الغلاف...",coverUploaded:"✅ تم رفع الغلاف!",uploadingPdf:"⏳ جاري رفع PDF...",pdfUploaded:"✅ تم رفع PDF!",
+    ratingFailedAlert:"فشل التقييم",buyConfirmPrefix:"شراء هذا الكتاب مقابل",buyConfirmPrefix2:"شراء",buyConfirmSuffix:"مقابل",paymentFailedAlert:"فشلت عملية الدفع",
+    paymentCancelled:"تم إلغاء الدفع",paymentErrorPrefix:"خطأ في الدفع",usePiBrowserAlert:"يرجى استخدام Pi Browser لإتمام الدفع.",accessDeniedAlert:"تم رفض الوصول",
+    prevPurchaseCompleted:"✅ تم إكمال عملية الشراء السابقة!",pleaseLoginFirstAlert:"⚠️ يرجى تسجيل الدخول أولاً.",bookNotFoundAlert:"الكتاب غير موجود.",
+    minPayoutToast:"الحد الأدنى للسحب هو 5 Pi",errorPrefix:"خطأ",payoutFailed:"فشل السحب",payoutSuccessTitle:"🎉 تم السحب بنجاح!",payoutSuccessText:"تم إرسالها إلى محفظتك على Pi!",
+    transactionIdLabel:"رقم المعاملة",networkErrorToast:"خطأ في الشبكة. حاول مرة أخرى.",paymentSuccessToast:"تم الدفع بنجاح! 📚",loginFailedAlert:"فشل تسجيل الدخول"
+  },
+  fr:{loginNotice:"Connectez-vous avec Pi Network",privacyPolicy:"Politique de confidentialité",termsService:"Conditions d'utilisation",loginBtn:"Connexion avec Pi",addBook:"➕ Ajouter un livre",logout:"Déconnexion",store:"Boutique",purchases:"Mes achats",sales:"Mes ventes",allBooks:"Tous les livres",searchPlaceholder:"Rechercher un livre...",filterAll:"Tous les livres",filterLikes:"Les plus aimés",filterSales:"Meilleures ventes",filterNew:"Anciens livres",addBookTitle:"Ajouter un livre",bookTitle:"Titre du livre",price:"Prix (Pi)",description:"Description du livre",selectLanguage:"Choisir la langue",pages:"Nombre de pages",uploadCover:"Télécharger la couverture",uploadPdf:"Télécharger le PDF",rights:"Je confirme posséder tous les droits",saveBook:"Enregistrer le livre",buy:"Acheter avec",view:"Voir 📖",download:"Télécharger PDF",salesTitle:"Mes ventes et revenus",requestPayout:"Demander un retrait",loadingBooks:"Chargement des livres...",noBooks:"Aucun livre disponible.",bookPending:"✅ Livre envoyé avec succès !\n\nVotre livre est en cours de vérification.",ownBook:"✅ Vous possédez ce livre",platformFee:"Frais de plateforme : 30 % – Vous recevez 70 %",minimumPayout:"Retrait minimum : 5 Pi",copyrightNotice:`Avis de droit d'auteur : contactez-nous à <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"Paiement instantané vers votre portefeuille Pi.",totalEarnings:"Gains totaux",
+    purchasesTitle:"Mes livres achetés",noPurchasesYet:"Aucun achat pour le moment.",loadingPurchases:"Chargement des achats...",pleaseLogin:"Veuillez vous connecter.",errorLoadingPurchases:"Erreur lors du chargement des achats. Nouvelle tentative...",
+    loadingSales:"Chargement des ventes...",noBooksUploaded:"Aucun livre téléchargé.",errorLoadingSales:"Erreur lors du chargement des ventes.",priceLabel:"Prix",salesLabel:"Ventes",yourEarnings:"Vos revenus",
+    comments:"💬 Commentaires",noComments:"Aucun commentaire pour le moment.",writeCommentPlaceholder:"Écrivez votre commentaire...",addCommentBtn:"Ajouter un commentaire",writeCommentAlert:"Écrivez un commentaire",
+    loginRequiredTitle:"⚠️ Connexion requise",loginRequiredText:"Veuillez vous reconnecter et vérifier que vous utilisez l'application via Pi Browser",
+    purchaseSuccessTitle:"🎉 Achat réussi",purchaseSuccessText:"Votre livre est maintenant disponible dans Mes achats 📚",
+    bookApprovedTitle:"✅ Livre approuvé",bookRejectedTitle:"❌ Livre refusé",yourBookWas:"Votre livre",approvedWord:"a été approuvé",rejectedWord:"a été refusé",
+    loginRequiredAlert:"Connexion requise",confirmRightsAlert:"Veuillez confirmer les droits",completeFieldsAlert:"Veuillez compléter tous les champs requis",uploadFailedAlert:"Échec du téléchargement",uploadFailedShort:"❌ Échec du téléchargement",
+    uploadingCover:"⏳ Téléchargement de la couverture...",coverUploaded:"✅ Couverture téléchargée !",uploadingPdf:"⏳ Téléchargement du PDF...",pdfUploaded:"✅ PDF téléchargé !",
+    ratingFailedAlert:"Échec de l'évaluation",buyConfirmPrefix:"Acheter ce livre pour",buyConfirmPrefix2:"Acheter",buyConfirmSuffix:"pour",paymentFailedAlert:"Échec du paiement",
+    paymentCancelled:"Paiement annulé",paymentErrorPrefix:"Erreur de paiement",usePiBrowserAlert:"Veuillez utiliser Pi Browser pour effectuer le paiement.",accessDeniedAlert:"Accès refusé",
+    prevPurchaseCompleted:"✅ Achat précédent terminé !",pleaseLoginFirstAlert:"⚠️ Veuillez d'abord vous connecter.",bookNotFoundAlert:"Livre introuvable.",
+    minPayoutToast:"Le retrait minimum est de 5 Pi",errorPrefix:"Erreur",payoutFailed:"Échec du retrait",payoutSuccessTitle:"🎉 Retrait réussi !",payoutSuccessText:"envoyé à votre portefeuille Pi !",
+    transactionIdLabel:"ID de transaction",networkErrorToast:"Erreur réseau. Veuillez réessayer.",paymentSuccessToast:"Paiement réussi ! 📚",loginFailedAlert:"Échec de la connexion"
+  },
+  zh:{loginNotice:"使用 Pi Network 登录",privacyPolicy:"隐私政策",termsService:"服务条款",loginBtn:"使用 Pi 登录",addBook:"➕ 添加书籍",logout:"退出登录",store:"商店",purchases:"我的购买",sales:"我的销售",allBooks:"所有书籍",searchPlaceholder:"搜索书籍...",filterAll:"所有书籍",filterLikes:"最受喜欢",filterSales:"畅销书",filterNew:"旧书",addBookTitle:"添加书籍",bookTitle:"书名",price:"价格 (Pi)",description:"书籍描述",selectLanguage:"选择语言",pages:"页数",uploadCover:"上传封面",uploadPdf:"上传 PDF",rights:"我确认拥有本书的全部版权",saveBook:"保存书籍",buy:"使用 购买",view:"查看 📖",download:"下载 PDF",salesTitle:"我的销售与收入",requestPayout:"申请提现",loadingBooks:"正在加载书籍...",noBooks:"暂无书籍。",bookPending:"✅ 图书提交成功！\n\n您的图书正在审核中。",ownBook:"✅ 您拥有这本书",platformFee:"平台费用：30％ - 您获得每笔销售的70％",minimumPayout:"最低提现金额：5 Pi",copyrightNotice:`版权声明：请联系我们：<a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>。`,instantPayout:"即时付款：提款直接发送到您的钱包。",totalEarnings:"总收益",
+    purchasesTitle:"我购买的书籍",noPurchasesYet:"暂无购买记录。",loadingPurchases:"正在加载购买记录...",pleaseLogin:"请登录。",errorLoadingPurchases:"加载购买记录出错，正在重试...",
+    loadingSales:"正在加载销售数据...",noBooksUploaded:"尚未上传书籍。",errorLoadingSales:"加载销售数据出错。",priceLabel:"价格",salesLabel:"销量",yourEarnings:"您的收益",
+    comments:"💬 评论",noComments:"暂无评论。",writeCommentPlaceholder:"写下你的评论...",addCommentBtn:"添加评论",writeCommentAlert:"请输入评论",
+    loginRequiredTitle:"⚠️ 需要登录",loginRequiredText:"请重新登录，并确保您是通过 Pi Browser 访问该应用",
+    purchaseSuccessTitle:"🎉 购买成功",purchaseSuccessText:"您的书籍现已出现在我的购买中 📚",
+    bookApprovedTitle:"✅ 书籍已通过审核",bookRejectedTitle:"❌ 书籍被拒绝",yourBookWas:"您的书籍",approvedWord:"已通过审核",rejectedWord:"已被拒绝",
+    loginRequiredAlert:"需要登录",confirmRightsAlert:"请确认版权",completeFieldsAlert:"请填写所有必填项",uploadFailedAlert:"上传失败",uploadFailedShort:"❌ 上传失败",
+    uploadingCover:"⏳ 正在上传封面...",coverUploaded:"✅ 封面上传成功！",uploadingPdf:"⏳ 正在上传 PDF...",pdfUploaded:"✅ PDF 上传成功！",
+    ratingFailedAlert:"评分失败",buyConfirmPrefix:"以此价格购买本书：",buyConfirmPrefix2:"购买",buyConfirmSuffix:"，价格为",paymentFailedAlert:"支付失败",
+    paymentCancelled:"支付已取消",paymentErrorPrefix:"支付错误",usePiBrowserAlert:"请使用 Pi Browser 完成支付。",accessDeniedAlert:"访问被拒绝",
+    prevPurchaseCompleted:"✅ 之前的购买已完成！",pleaseLoginFirstAlert:"⚠️ 请先登录。",bookNotFoundAlert:"未找到书籍。",
+    minPayoutToast:"最低提现金额为 5 Pi",errorPrefix:"错误",payoutFailed:"提现失败",payoutSuccessTitle:"🎉 提现成功！",payoutSuccessText:"已发送到您的 Pi 钱包！",
+    transactionIdLabel:"交易编号",networkErrorToast:"网络错误，请重试。",paymentSuccessToast:"支付成功！📚",loginFailedAlert:"登录失败"
+  }
 };
 
 function changeLanguage(){
@@ -604,6 +669,7 @@ function changeLanguage(){
   document.querySelector('button[onclick="openTab(\'store\')"]').innerText=t.store;
   document.querySelector('button[onclick="openTab(\'purchases\')"]').innerText=t.purchases;
   document.querySelector('button[onclick="openTab(\'sales\')"]').innerText=t.sales;
+  document.getElementById("purchasesTitle").innerText=t.purchasesTitle;
   document.getElementById("salesTitle").innerText=t.salesTitle;
   document.getElementById("payoutBtn").innerText=t.requestPayout;
   document.getElementById("platformFeeText").innerText=t.platformFee;
@@ -624,6 +690,9 @@ function changeLanguage(){
   document.querySelector("#addBook label").lastChild.textContent=" "+t.rights;
   document.body.style.direction=lang==="ar"?"rtl":"ltr";
   renderBooks(allBooksData);
+  // إعادة تحميل المشتريات والمبيعات بنفس اللغة الجديدة إن كانت التبويبات مفتوحة
+  if(document.getElementById("purchases").classList.contains("active")) loadMyPurchases();
+  if(document.getElementById("sales").classList.contains("active")) loadMySales();
 }
 
 window.addEventListener("load",()=>{
@@ -648,22 +717,24 @@ async function loadCommentsCount(book){
 }
 
 async function showComments(bookId){
+  const t=translations[currentLang];
   try{
     const [res,checkRes]=await Promise.all([fetch(`${BACKEND_URL}/comments?bookId=${bookId}`),fetch(`${BACKEND_URL}/has-comment?bookId=${bookId}&userUid=${userUid}`)]);
     const [data,checkData]=[await res.json(),await checkRes.json()];
     let html="";
     if(checkData.success&&!checkData.commented){
-      html+=`<div style="margin-bottom:15px;"><textarea id="newComment" placeholder="Write your comment..." style="width:100%;height:80px;border-radius:12px;padding:10px;"></textarea><button style="margin-top:10px;" onclick="addComment('${bookId}')">Add Comment</button></div>`;
+      html+=`<div style="margin-bottom:15px;"><textarea id="newComment" placeholder="${t.writeCommentPlaceholder}" style="width:100%;height:80px;border-radius:12px;padding:10px;"></textarea><button style="margin-top:10px;" onclick="addComment('${bookId}')">${t.addCommentBtn}</button></div>`;
     }
-    if(!data.success||!data.comments.length){html+="<div style='padding:20px;text-align:center;'>No comments yet.</div>";}
+    if(!data.success||!data.comments.length){html+=`<div style='padding:20px;text-align:center;'>${t.noComments}</div>`;}
     else data.comments.forEach(c=>{html+=`<div style="margin:0;padding:0;"><div style="color:#00f5ff;font-weight:bold;font-size:13px;">${c.username}</div><div style="color:white;margin-bottom:6px;">${c.text}</div></div>`;});
-    openModal("Comments",html);
-  }catch{openModal("Comments","<div style='padding:20px;text-align:center;'>Failed to load comments.</div>");}
+    openModal(t.comments,html);
+  }catch{openModal(t.comments,`<div style='padding:20px;text-align:center;'>Failed to load comments.</div>`);}
 }
 
 async function addComment(bookId){
+  const t=translations[currentLang];
   const text=document.getElementById("newComment").value.trim();
-  if(!text){alert("Write a comment");return;}
+  if(!text){alert(t.writeCommentAlert);return;}
   const res=await fetch(`${BACKEND_URL}/add-comment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bookId,userUid,accessToken:window.accessToken,text})});
   const data=await res.json();
   if(data.success){showComments(bookId);loadCommentsCount({id:bookId});}
