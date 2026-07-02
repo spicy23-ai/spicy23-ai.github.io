@@ -1,257 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Terms of Service - Spicy Library</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Terms of Service - Spicy Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-  <style>
-    *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+:root{
+  --c1:#00f5ff;
+  --c2:#8b5cf6;
+  --c3:#ff4ecd;
+  --warn:#ff5470;
+  --ink:#e2e8f0;
+  --muted:#94a3b8;
+  --glass:rgba(255,255,255,0.05);
+  --glass-brd:rgba(255,255,255,0.08);
 }
+
+html{scroll-behavior:smooth;}
 
 body{
-  font-family:'Segoe UI',Tahoma,sans-serif;
-  background:
-    linear-gradient(135deg,#0f172a,#111827,#1e1b4b);
+  font-family:'Segoe UI',sans-serif;
+  background:radial-gradient(circle at top left,#172554 0%,#0f172a 35%,#020617 100%);
+  color:var(--ink);
   min-height:100vh;
-  padding:40px 20px;
-  color:white;
-  line-height:1.9;
+  line-height:1.75;
+  overflow-x:hidden;
 }
 
-/* LOGO */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:20px;}
 
+h1,h2,h3{font-family:'Space Grotesk','Segoe UI',sans-serif;}
+
+a{color:var(--c1);text-decoration:none;transition:.25s;}
+a:hover{color:var(--c3);}
+
+/* ===== ambient glow blobs ===== */
+body::before,body::after{
+  content:"";position:fixed;border-radius:50%;filter:blur(170px);z-index:-1;
+  animation:floatGlow 14s ease-in-out infinite;
+}
+body::before{width:480px;height:480px;background:var(--c2);opacity:.16;top:-140px;right:-140px;}
+body::after{width:420px;height:420px;background:var(--c1);opacity:.12;bottom:-120px;left:-120px;animation-delay:2s;}
+@keyframes floatGlow{0%{transform:translate(0,0);}50%{transform:translate(30px,-25px);}100%{transform:translate(0,0);}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes ringSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+/* ===== top bar ===== */
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:980px;margin:0 auto;padding:22px 20px 0;
+  flex-wrap:wrap;gap:14px;
+}
 .top-logo{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  margin-bottom:25px;
-  cursor:pointer;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
 }
-
 .top-logo img{
-  width:60px;
-  height:60px;
-  border-radius:16px;
-  box-shadow:0 0 20px rgba(0,245,255,.3);
+  width:50px;height:50px;border-radius:14px;
+  box-shadow:0 0 20px rgba(139,92,246,.4);
+  transition:.3s;
 }
-
+.top-logo:hover img{transform:scale(1.08) rotate(-3deg);}
 .top-logo span{
-  font-size:32px;
-  font-weight:900;
-  background:linear-gradient(
-    to right,
-    #00f5ff,
-    #8b5cf6,
-    #ff4ecd
-  );
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  font-size:24px;font-weight:700;
+  background:linear-gradient(to right,var(--c1),var(--c2),var(--c3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 
-/* CARD */
+.lang-switch{
+  display:flex;gap:6px;background:var(--glass);border:1px solid var(--glass-brd);
+  padding:5px;border-radius:14px;backdrop-filter:blur(14px);
+}
+.lang-switch button{
+  border:none;background:transparent;color:var(--muted);
+  padding:8px 12px;border-radius:10px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:.25s;
+}
+.lang-switch button.active{
+  background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));
+  color:white;box-shadow:0 0 16px rgba(139,92,246,.4);
+}
+.lang-switch button:not(.active):hover{color:white;}
 
-.container{
-  max-width:950px;
-  margin:auto;
-  padding:40px;
-  border-radius:30px;
+/* ===== hero ===== */
+.hero{
+  max-width:980px;margin:35px auto 10px;padding:0 20px;text-align:center;
+  animation:fadeUp .7s ease;
+}
+.hero .eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--c1);
+  background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.25);
+  padding:7px 14px;border-radius:100px;margin-bottom:18px;
+}
+.hero h1{
+  font-size:clamp(34px,6vw,54px);font-weight:700;margin-bottom:14px;
+  background:linear-gradient(to right,var(--c1),var(--c2),var(--c3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 30px rgba(139,92,246,.2);
+}
+.hero p.lede{color:var(--muted);font-size:16px;max-width:620px;margin:0 auto 6px;}
+.hero .updated{font-size:13px;color:var(--muted);}
+.hero .updated strong{color:var(--ink);}
 
-  background:rgba(255,255,255,.05);
-
-  backdrop-filter:blur(18px);
-
-  border:1px solid rgba(255,255,255,.08);
-
-  box-shadow:
-  0 0 40px rgba(0,245,255,.12),
-  0 0 80px rgba(139,92,246,.18);
-
+/* ===== quick nav chips ===== */
+.quicknav{
+  max-width:980px;margin:28px auto 10px;padding:0 20px;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
   animation:fadeUp .8s ease;
 }
+.chip{
+  display:flex;align-items:center;gap:7px;
+  background:var(--glass);border:1px solid var(--glass-brd);
+  color:var(--ink);font-size:13px;font-weight:600;
+  padding:9px 14px;border-radius:100px;cursor:pointer;
+  backdrop-filter:blur(10px);transition:.25s;
+}
+.chip:hover{transform:translateY(-2px);border-color:rgba(0,245,255,.4);box-shadow:0 0 16px rgba(0,245,255,.2);}
+.chip.warn{border-color:rgba(255,84,112,.4);color:#ffb3c0;}
+.chip.warn:hover{box-shadow:0 0 16px rgba(255,84,112,.3);}
 
-/* TITLES */
+/* ===== sections ===== */
+.wrap{max-width:980px;margin:20px auto 60px;padding:0 20px;display:flex;flex-direction:column;gap:22px;}
 
-h1{
-  text-align:center;
-  font-size:48px;
-  margin-bottom:20px;
+.section{
+  background:var(--glass);border:1px solid var(--glass-brd);
+  border-radius:26px;padding:30px 30px 30px 96px;position:relative;
+  backdrop-filter:blur(18px);box-shadow:0 0 30px rgba(139,92,246,.12);
+  opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;
+}
+.section.in-view{opacity:1;transform:translateY(0);}
 
-  background:linear-gradient(
-    to right,
-    #00f5ff,
-    #8b5cf6,
-    #ff4ecd
-  );
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+.badge{
+  position:absolute;left:26px;top:28px;width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:white;
+  background:#0f172a;
+}
+.badge::before{
+  content:"";position:absolute;inset:-3px;border-radius:50%;z-index:-1;
+  background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c1));
+  animation:ringSpin 6s linear infinite;
+}
+.badge::after{
+  content:"";position:absolute;inset:2px;border-radius:50%;background:#0f172a;z-index:-1;
 }
 
-h2{
-  color:#00f5ff;
-  margin-top:30px;
-  margin-bottom:10px;
-  font-size:24px;
+.section h2{
+  font-size:21px;color:white;margin-bottom:12px;display:flex;align-items:center;gap:10px;
+}
+.section h2 .ico{font-size:19px;}
+.section p{color:var(--ink);margin-bottom:8px;}
+.section ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px;}
+.section ul li{
+  position:relative;padding-left:22px;color:var(--ink);
+}
+.section ul li::before{
+  content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+}
+.section strong{color:white;}
+
+/* prohibited-content emphasis */
+.section.danger{
+  border-color:rgba(255,84,112,.35);
+  box-shadow:0 0 34px rgba(255,84,112,.16);
+}
+.section.danger .badge::before{background:conic-gradient(from 0deg,var(--warn),#ff8a3d,var(--warn));}
+.section.danger h2{color:#ffd7de;}
+.section.danger ul li::before{background:linear-gradient(135deg,var(--warn),#ff8a3d);}
+.section.danger .tag{
+  display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:#ffb3c0;
+  background:rgba(255,84,112,.12);border:1px solid rgba(255,84,112,.35);
+  padding:5px 11px;border-radius:100px;margin-bottom:14px;
 }
 
-h2:hover{
-  color:#ff4ecd;
+/* contact footer card */
+.contact-card{
+  text-align:center;padding:40px 30px;
+}
+.contact-card .badge{position:static;margin:0 auto 16px;}
+.contact-card{padding-left:30px;}
+.mail-btn{
+  display:inline-block;margin-top:14px;padding:14px 30px;border-radius:16px;
+  background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));color:white!important;
+  font-weight:700;box-shadow:0 0 24px rgba(139,92,246,.4);transition:.3s;
+}
+.mail-btn:hover{transform:translateY(-3px) scale(1.03);color:white!important;}
+
+.back-home{
+  display:block;text-align:center;margin:10px auto 40px;color:var(--muted);font-size:14px;
+}
+.back-home:hover{color:var(--c1);}
+
+@media(max-width:640px){
+  .section{padding:26px 20px 26px 78px;}
+  .badge{width:42px;height:42px;left:18px;top:24px;font-size:14px;}
+  .hero h1{font-size:30px;}
 }
 
-/* TEXT */
-
-p,li{
-  color:#e5e7eb;
-  font-size:17px;
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  html{scroll-behavior:auto;}
 }
-
-ul{
-  padding-right:25px;
-}
-
-li{
-  margin-bottom:8px;
-}
-
-/* CONTACT */
-
-a{
-  color:#00f5ff;
-  text-decoration:none;
-}
-
-a:hover{
-  color:#ff4ecd;
-}
-
-/* DATE BOX */
-
-.update-box{
-  background:rgba(255,255,255,.08);
-  padding:12px;
-  border-radius:12px;
-  text-align:center;
-  margin-bottom:25px;
-}
-
-/* ANIMATION */
-
-@keyframes fadeUp{
-  from{
-    opacity:0;
-    transform:translateY(30px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-  .container{
-    padding:25px;
-  }
-
-  h1{
-    font-size:34px;
-  }
-
-  h2{
-    font-size:21px;
-  }
-
-  .top-logo span{
-    font-size:24px;
-  }
-}
-  </style>
+</style>
 </head>
-
 <body>
 
-<div class="top-logo" onclick="window.location.href='https://spicylibrary.online'">
-  <img src="banner.png">
-  <span>Spicy Library</span>
+<div class="top-bar">
+  <div class="top-logo" onclick="window.location.href='https://spicylibrary.space'">
+    <img src="banner.png" alt="Spicy Library">
+    <span>Spicy Library</span>
+  </div>
+  <div class="lang-switch">
+    <button class="active" onclick="window.location.href='terms-en.html'">🇬🇧 EN</button>
+    <button onclick="window.location.href='terms-ar.html'">🇸🇦 AR</button>
+    <button onclick="window.location.href='terms-fr.html'">🇫🇷 FR</button>
+    <button onclick="window.location.href='terms-zh.html'">🇨🇳 ZH</button>
+  </div>
 </div>
 
-<div class="container">
-
-<h1>Terms of Service</h1>
-
-<div class="update-box">
-<strong>Last Updated:</strong> 05-01-2026
+<div class="hero">
+  <span class="eyebrow">⚡ Powered by Pi Network</span>
+  <h1>Terms of Service</h1>
+  <p class="lede">The rules that keep Spicy Library fair, safe, and running smoothly for every reader and author.</p>
+  <p class="updated"><strong>Last Updated:</strong> 05-01-2026</p>
 </div>
-<p>By using <strong>Spicy Library</strong>, you agree to the following terms.</p>
 
-<h2>1. Service Description</h2>
-<p>Spicy Library is a digital platform for buying and selling ebooks using Pi Network currency.</p>
+<div class="quicknav" id="quicknav">
+  <div class="chip" data-target="s1">🧾 Service</div>
+  <div class="chip" data-target="s2">👤 Account</div>
+  <div class="chip" data-target="s3">©️ Copyright</div>
+  <div class="chip warn" data-target="s4">🚫 Prohibited Content</div>
+  <div class="chip" data-target="s5">💳 Payments</div>
+  <div class="chip" data-target="s6">💰 Earnings</div>
+  <div class="chip" data-target="s7">⛔ Prohibited Activities</div>
+  <div class="chip" data-target="s8">⚠️ Suspension</div>
+  <div class="chip" data-target="s9">📄 Disclaimer</div>
+  <div class="chip" data-target="s10">🔄 Changes</div>
+  <div class="chip" data-target="s11">📩 Report Infringement</div>
+  <div class="chip" data-target="s12">📧 Contact</div>
+</div>
 
-<h2>2. Account</h2>
-<ul>
-  <li>Login is exclusively via Pi Network</li>
-  <li>Users are responsible for all activity on their account</li>
-</ul>
+<div class="wrap">
 
-<h2>3. Content & Copyright</h2>
+<section class="section" id="s1">
+  <div class="badge">1</div>
+  <h2><span class="ico">🧾</span>Service Description</h2>
+  <p>Spicy Library is a digital platform for buying and selling ebooks using Pi Network currency.</p>
+</section>
 
-<ul>
+<section class="section" id="s2">
+  <div class="badge">2</div>
+  <h2><span class="ico">👤</span>Account</h2>
+  <ul>
+    <li>Login is exclusively via Pi Network</li>
+    <li>Users are responsible for all activity on their account</li>
+  </ul>
+</section>
 
-<li>Authors must upload only content that they own or have legal permission to distribute.</li>
+<section class="section" id="s3">
+  <div class="badge">3</div>
+  <h2><span class="ico">©️</span>Content &amp; Copyright</h2>
+  <ul>
+    <li>Authors must upload only content that they own or have legal permission to distribute.</li>
+    <li>By uploading content, authors confirm that they own the necessary rights.</li>
+    <li>If a copyright infringement report is received, the reported content may be removed or disabled while it is reviewed.</li>
+    <li>Users can report copyright violations by emailing <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.</li>
+    <li>Accounts that repeatedly upload infringing content may be suspended or permanently removed.</li>
+  </ul>
+</section>
 
-<li>By uploading content, authors confirm that they own the necessary rights.</li>
+<section class="section danger" id="s4">
+  <div class="badge">4</div>
+  <span class="tag">⚠ Zero tolerance</span>
+  <h2><span class="ico">🚫</span>Prohibited Content (Sexual / Pornographic Material)</h2>
+  <p>Uploading sexual, pornographic, or sexually explicit content of any kind — including text, images, book covers, or any other material — is strictly prohibited on Spicy Library.</p>
+  <ul>
+    <li>Any book submission that contains sexual, pornographic, or sexually explicit content will <strong>not be approved</strong> and will be rejected during the review process.</li>
+    <li>If such content is discovered after approval, the book will be immediately removed from the platform.</li>
+    <li>Content that sexually depicts or involves minors in any way is absolutely forbidden and will be reported to the relevant authorities in addition to permanent account removal.</li>
+    <li>Accounts that repeatedly attempt to upload prohibited sexual or explicit content may be suspended or permanently banned from the platform.</li>
+    <li>The name "Spicy Library" refers only to a general, varied collection of books and does not imply or permit adult, sexual, or explicit content.</li>
+  </ul>
+</section>
 
-<li>If a copyright infringement report is received, the reported content may be removed or disabled while it is reviewed.</li>
+<section class="section" id="s5">
+  <div class="badge">5</div>
+  <h2><span class="ico">💳</span>Purchases &amp; Payments</h2>
+  <ul>
+    <li>Payments are made exclusively in Pi currency</li>
+    <li>All purchases are final and non-refundable</li>
+  </ul>
+</section>
 
-<li>Users can report copyright violations by emailing
-<a href="mailto:spicylibrarysupport@gmail.com">
-spicylibrarysupport@gmail.com
-</a>.
-</li>
+<section class="section" id="s6">
+  <div class="badge">6</div>
+  <h2><span class="ico">💰</span>Earnings &amp; Withdrawals</h2>
+  <ul>
+    <li>Authors receive 70% of the sale price</li>
+    <li>Minimum withdrawal is 5 Pi</li>
+    <li>Withdrawals are processed instantly in most cases. However, in exceptional situations or technical issues, processing may take up to 1–2 business days.</li>
+  </ul>
+</section>
 
-<li>Accounts that repeatedly upload infringing content may be suspended or permanently removed.</li>
+<section class="section" id="s7">
+  <div class="badge">7</div>
+  <h2><span class="ico">⛔</span>Prohibited Activities</h2>
+  <ul>
+    <li>Uploading stolen content</li>
+    <li>Uploading sexual, pornographic, or sexually explicit content (see Section 4)</li>
+    <li>Manipulating payments</li>
+    <li>Attempting to hack the system</li>
+  </ul>
+</section>
 
-</ul>
+<section class="section" id="s8">
+  <div class="badge">8</div>
+  <h2><span class="ico">⚠️</span>Account Suspension</h2>
+  <p>We reserve the right to suspend or delete any account violating these terms without prior notice.</p>
+</section>
 
-<h2>4. Purchases & Payments</h2>
-<ul>
-  <li>Payments are made exclusively in Pi currency</li>
-  <li>All purchases are final and non-refundable</li>
-</ul>
+<section class="section" id="s9">
+  <div class="badge">9</div>
+  <h2><span class="ico">📄</span>Disclaimer</h2>
+  <p>The app is provided "as is" without any warranties.</p>
+</section>
 
-<h2>5. Earnings & Withdrawals</h2>
-<ul>
-  <li>Authors receive 70% of the sale price</li>
-  <li>Minimum withdrawal is 5 Pi</li>
-  <li>Withdrawals are processed instantly in most cases. However, in exceptional situations or technical issues, processing may take up to 1–2 business days.</li>
-</ul>
+<section class="section" id="s10">
+  <div class="badge">10</div>
+  <h2><span class="ico">🔄</span>Changes to Terms</h2>
+  <p>Terms may be updated at any time. Continued use constitutes acceptance.</p>
+</section>
 
-<h2>6. Prohibited Activities</h2>
-<ul>
-  <li>Uploading stolen content</li>
-  <li>Manipulating payments</li>
-  <li>Attempting to hack the system</li>
-</ul>
+<section class="section" id="s11">
+  <div class="badge">11</div>
+  <h2><span class="ico">📩</span>Reporting Copyright Infringement</h2>
+  <p>If you believe that content available on Spicy Library infringes your copyright, please send an email to <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a> including:</p>
+  <ul>
+    <li>Your name and contact information</li>
+    <li>A description of the copyrighted work</li>
+    <li>The link or title of the reported content</li>
+    <li>A statement that you believe the use is unauthorized</li>
+  </ul>
+  <p>We will review all reports and may remove or disable access to the reported content if appropriate.</p>
+</section>
 
-<h2>7. Account Suspension</h2>
-<p>We reserve the right to suspend or delete accounts violating terms.</p>
-
-<h2>8. Disclaimer</h2>
-<p>The app is provided "as is" without warranties.</p>
-
-<h2>9. Changes</h2>
-<p>Terms may change at any time.</p>
-
-<h2>10. Contact</h2>
-<p>📧 spicylibrarysupport@gmail.com</p>
+<section class="section contact-card" id="s12">
+  <div class="badge">12</div>
+  <h2 style="justify-content:center;"><span class="ico">📧</span>Contact</h2>
+  <p>Questions about these terms? Reach out any time.</p>
+  <a class="mail-btn" href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>
+</section>
 
 </div>
+
+<a class="back-home" href="https://spicylibrary.space">← Back to Spicy Library</a>
+
+<script>
+/* smooth-scroll quick nav chips */
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    const target=document.getElementById(chip.dataset.target);
+    if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+/* reveal-on-scroll for section cards */
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in-view');io.unobserve(e.target);}
+  });
+},{threshold:0.12});
+document.querySelectorAll('.section').forEach(s=>io.observe(s));
+</script>
+
 </body>
 </html>
