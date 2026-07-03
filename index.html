@@ -227,7 +227,7 @@ async function login(){
     localStorage.setItem("userUid",user.uid);
     localStorage.setItem("username",user.username);
     window.accessToken=auth.accessToken;
-
+fetch(`${BACKEND_URL}/register-user`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid:user.uid,accessToken:auth.accessToken,username:user.username})}).catch(()=>{});
     document.getElementById("welcome").innerText=`Welcome, ${user.username}!`;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
