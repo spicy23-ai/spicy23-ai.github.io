@@ -967,6 +967,7 @@ async function loginPi(){
     userUid = auth.user.uid;
     currentUsername = auth.user.username;
     accessToken = auth.accessToken;
+    fetch(`${BACKEND_URL}/register-user`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid,accessToken,username:currentUsername})}).catch(()=>{});
     localStorage.setItem("userUid", userUid);
     localStorage.setItem("username", currentUsername);
     localStorage.setItem("accessToken", accessToken);
