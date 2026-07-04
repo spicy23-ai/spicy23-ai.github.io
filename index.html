@@ -19,6 +19,7 @@ input:focus,textarea:focus,select:focus{border:1px solid #00f5ff;box-shadow:0 0 
 textarea{resize:none;}::placeholder{color:#cbd5e1;}
 .books{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;margin-top:25px;}
 .book{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(18px);border-radius:24px;padding:18px;width:240px;transition:0.4s;position:relative;overflow:hidden;box-shadow:0 0 25px rgba(0,245,255,0.08);}
+  .featured-badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#facc15,#f97316);color:#1e293b;font-size:11px;font-weight:800;padding:5px 10px;border-radius:12px;box-shadow:0 0 12px rgba(250,204,21,0.5);z-index:2;}
 .book:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 0 35px rgba(139,92,246,0.35);}
 .book img{width:100%;border-radius:16px;transition:0.4s;}.book:hover img{transform:scale(1.03);}
 .book h4{margin:14px 0 8px;font-size:20px;color:white;}
@@ -374,6 +375,7 @@ async function renderBooks(booksArray){
   for(const b of booksArray){
     const likes=b.likes||0,dislikes=b.dislikes||0;
     html+=`<div class="book">
+      ${b.featured?'<span class="featured-badge">⭐ Featured</span>':''}
       <img src="${b.cover}" alt="Cover">
       <h4>${b.title}</h4>
       <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
