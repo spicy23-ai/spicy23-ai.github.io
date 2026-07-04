@@ -351,7 +351,13 @@ async function downloadPdf(bookId){
 }
 
 let allBooksData=[],purchasedBookIds=new Set();
-
+function shuffleFeaturedFirst(arr){
+  const featured=arr.filter(b=>b.featured);
+  const others=arr.filter(b=>!b.featured);
+  for(let i=featured.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[featured[i],featured[j]]=[featured[j],featured[i]];}
+  for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+  return [...featured,...others];
+}
 async function loadBooks(){
   const box=document.getElementById("books"),lang=localStorage.getItem("appLanguage")||"en";
   box.innerHTML=`<p>${translations[lang].loadingBooks}</p>`;
