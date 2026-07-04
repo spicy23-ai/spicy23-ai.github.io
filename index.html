@@ -367,7 +367,7 @@ async function loadBooks(){
     allBooksData=json.books; allBooksData.forEach(b=>{b.likesCount=b.likesCount||0;});
     box.innerHTML="";
     if(!json.books.length) return box.innerHTML=`<p>${translations[lang].noBooks}</p>`;
-    renderBooks(json.books);
+    renderBooks(shuffleFeaturedFirst(json.books));
   }catch{box.innerHTML="<p>Error loading books. Retrying...</p>";setTimeout(loadBooks,5000);}
 }
 
@@ -517,6 +517,7 @@ function filterBooks(type,btn){
   if(type==="likes") f.sort((a,b)=>(b.likesCount||0)-(a.likesCount||0));
   else if(type==="sales") f.sort((a,b)=>(b.salesCount||0)-(a.salesCount||0));
   else if(type==="new") f.reverse();
+  else if(type==="all") f=shuffleFeaturedFirst(f);
   renderBooks(f);
 }
 
