@@ -222,6 +222,8 @@ overflow:hidden;
 .book-card:hover::before{
   left:150%;
 }
+
+.featured-badge-page{display:inline-block;margin-top:18px;background:linear-gradient(135deg,#facc15,#f97316);color:#1e293b;font-size:13px;font-weight:800;padding:7px 16px;border-radius:14px;box-shadow:0 0 15px rgba(250,204,21,0.5);}
   
 /* Title */
 
@@ -1046,7 +1048,9 @@ async function loadBook(){
     <span id="userLabel"></span>
   </div>
 
-  <img src="${b.cover}" class="book-cover">
+ <img src="${b.cover}" class="book-cover">
+
+  ${b.featured?'<div class="featured-badge-page">⭐ Featured Book</div>':''}
 
   <h1 class="book-title">${b.title}</h1>
 
