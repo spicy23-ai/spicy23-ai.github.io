@@ -196,7 +196,10 @@ document.getElementById("uploadPdfBtn").onclick=()=>{
 };
 
 function checkSaveReady(){document.getElementById("saveBookBtn").disabled=!(coverUrl&&pdfUrl&&user);}
-
+document.getElementById("price").addEventListener("blur",function(){
+  const v=Number(this.value);
+  if(this.value!==""&&(isNaN(v)||v<0.0000001)) this.value="0.0000001";
+});
 /* ================================================================
  *  onIncompletePaymentFound
  *  تُستدعى فقط لدفعات U2A (شراء كتاب)
@@ -287,7 +290,7 @@ document.getElementById("saveBookBtn").onclick=saveBook;
 async function saveBook(){
   const t=translations[currentLang];
   if(!user) return alert(t.loginRequiredAlert);
-  if(!document.getElementById("rights").checked) return alert(t.confirmRightsAlert);
+  if(!document.getElementById("rights").checked) return openModal("⚠️",t.confirmRightsAlert);
   const title=document.getElementById("title").value.trim();
   const price=Number(document.getElementById("price").value);
   const description=document.getElementById("description").value.trim();
