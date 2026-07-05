@@ -293,7 +293,7 @@ async function saveBook(){
   const description=document.getElementById("description").value.trim();
   const language=document.getElementById("language").value;
   const manualPages=document.getElementById("manualPages").value.trim();
-  if(!title||price<=0||!description||!language||!manualPages||!coverUrl||!pdfUrl) return alert(t.completeFieldsAlert);
+  if(!title||price<0.0000001||!description||!language||!manualPages||!coverUrl||!pdfUrl) return alert(t.completeFieldsAlert);
   const btn=document.getElementById("saveBookBtn"); btn.disabled=true; btn.innerText="Saving...";
   try{
     const res=await fetch(`${BACKEND_URL}/save-book`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title,price,description,language,pageCount:manualPages||pageCount,cover:coverUrl,pdf:pdfUrl,owner:user.username,ownerUid:userUid,accessToken:window.accessToken})});
