@@ -74,6 +74,12 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
 .book-actions{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;}
 .comments-link{color:#00f5ff;cursor:pointer;font-size:14px;font-weight:bold;transition:0.3s;}
 .comments-link:hover{color:#ff4ecd;text-decoration:underline;}
+  .app-header-bar{display:flex;align-items:center;justify-content:flex-start;max-width:900px;margin:0 auto 15px;padding:0 10px;}
+.app-logo-group{display:flex;align-items:center;gap:10px;}
+.app-logo-img{width:44px;height:44px;border-radius:12px;box-shadow:0 0 15px rgba(0,245,255,0.25);}
+.app-logo-name{font-size:20px;font-weight:800;background:linear-gradient(90deg,#00f5ff,#8b5cf6,#ff4ecd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.welcome-text{font-size:16px;font-weight:600;color:#e2e8f0;margin:10px 0;display:flex;align-items:center;justify-content:center;gap:6px;}
+.verified-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:linear-gradient(135deg,#00f5ff,#8b5cf6);border-radius:50%;color:white;font-size:11px;font-weight:900;box-shadow:0 0 8px rgba(139,92,246,0.5);flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -89,6 +95,12 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
 
   
 <div id="app" class="hidden">
+  <div class="app-header-bar">
+    <div class="app-logo-group">
+      <img src="./logo.png" alt="Spicy Library" class="app-logo-img">
+      <span class="app-logo-name">Spicy Library</span>
+    </div>
+  </div>
   <div id="addBookPage" class="tab-content">
     <div id="addBook">
       <h3>Add Book</h3>
@@ -109,7 +121,7 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
     </div>
   </div>
 
-  <h3 id="welcome"></h3>
+ <h3 id="welcome" class="welcome-text"></h3>
   <button onclick="logout()">Logout</button>
   <div>
     <button class="tab-btn active" onclick="openTab('store')">Store</button>
@@ -238,7 +250,7 @@ async function login(){
     localStorage.setItem("username",user.username);
     window.accessToken=auth.accessToken;
 fetch(`${BACKEND_URL}/register-user`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid:user.uid,accessToken:auth.accessToken,username:user.username})}).catch(()=>{});
-    document.getElementById("welcome").innerText=`Welcome, ${user.username}!`;
+    document.getElementById("welcome").innerHTML=`Welcome, ${user.username} <span class="verified-badge" title="Verified">✔</span>`;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
 
@@ -629,7 +641,7 @@ window.addEventListener("message",async(event)=>{
         );
         user=auth.user; userUid=user.uid; window.accessToken=auth.accessToken;
         userWalletAddress=auth.user?.wallet_address||null;
-        document.getElementById("welcome").innerText=`Welcome, ${user.username}!`;
+        document.getElementById("welcome").innerHTML=`Welcome, ${user.username} <span class="verified-badge" title="Verified">✔</span>`;
         document.getElementById("login").classList.add("hidden"); document.getElementById("app").classList.remove("hidden");
         loadBooks(); loadMyPurchases(); loadMySales(); go();
       }catch{alert(translations[currentLang].loginFailedAlert);}
