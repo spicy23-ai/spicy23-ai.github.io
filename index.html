@@ -519,7 +519,7 @@ async function loadMyUploadedBooks(){
 
 function copyBookLink(bookId){
   const t=translations[currentLang];
-  const url=`https://spicylibrary.online/book.html?id=${bookId}`;
+  const url=`https://spicylibrary.space/book.html?id=${bookId}`;
   navigator.clipboard.writeText(url).then(()=>{
     showToast(t.linkCopied);
   }).catch(()=>{
