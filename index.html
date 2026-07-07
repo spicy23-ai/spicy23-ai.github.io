@@ -80,6 +80,7 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
 .app-logo-name{font-size:20px;font-weight:800;background:linear-gradient(90deg,#00f5ff,#8b5cf6,#ff4ecd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .welcome-text{font-size:16px;font-weight:600;color:#e2e8f0;margin:10px 0 28px;display:flex;align-items:center;justify-content:center;gap:6px;}
 .verified-badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:#1d9bf0;border-radius:50%;color:white;font-size:10px;font-weight:900;box-shadow:0 0 6px rgba(29,155,240,0.6);flex-shrink:0;line-height:1;}
+.price-highlight{color:#facc15;font-weight:900;text-shadow:0 0 6px rgba(250,204,21,0.6);}
 </style>
 </head>
 <body>
@@ -414,7 +415,7 @@ async function renderBooks(booksArray){
         <button class="like-btn" onclick="rateBook('${b.id}','like',this)" ${!user?'disabled':''}>👍</button> ${likes}
         <button class="dislike-btn" onclick="rateBook('${b.id}','dislike',this)" ${!user?'disabled':''}>👎</button> ${dislikes}
       </div>
-      ${purchasedBookIds.has(b.id)?`<button onclick="openTab('purchases')" style="background:#16a34a;">${t.ownBook}</button>`:`<button onclick="buy('${b.id}',${b.price})" ${!user?'disabled':''}>${t.buy} ${b.price} Pi</button>`}
+     ${purchasedBookIds.has(b.id)?`<button onclick="openTab('purchases')" style="background:#16a34a;">${t.ownBook}</button>`:`<button onclick="buy('${b.id}',${b.price})" ${!user?'disabled':''}>${t.buy} <span class="price-highlight">${b.price} Pi</span></button>`}
       <div class="book-actions">
         <button onclick="openBook('${b.id}')">${t.view}</button>
         <span class="comments-link" id="comments-count-${b.id}" onclick="showComments('${b.id}')">💬 ...</span>
