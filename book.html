@@ -1175,7 +1175,7 @@ async function buyBook(book){
           body: JSON.stringify({ paymentId })
         });
       },
-      onReadyForServerCompletion: async (paymentId, txid) => {
+     onReadyForServerCompletion: async (paymentId, txid) => {
         try{
           const res = await fetch(`${BACKEND_URL}/complete-payment`, {
             method:"POST", headers:{"Content-Type":"application/json"},
@@ -1188,9 +1188,9 @@ async function buyBook(book){
             return;
           }
           /* ============================================================
-           *  نجاح الشراء: عرض نافذة جميلة ومترجمة حسب اللغة المختارة
-           *  بدل التحويل الفوري إلى صفحة المشتريات.
+           *  نجاح الشراء: تحميل الكتاب تلقائياً + عرض نافذة جميلة ومترجمة
            * ============================================================ */
+          if(data.pdfUrl) window.open(data.pdfUrl, "_blank");
           resetBtn();
           const t = translations[currentLang];
           openModal(
