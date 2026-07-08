@@ -354,11 +354,11 @@ async function buy(bookId,price){
       onReadyForServerApproval:async(paymentId)=>{
         await fetch(`${BACKEND_URL}/approve-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId})});
       },
-      onReadyForServerCompletion:async(paymentId,txid)=>{
+     onReadyForServerCompletion:async(paymentId,txid)=>{
         const res=await fetch(`${BACKEND_URL}/complete-payment`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId,txid})});
         if(!res.ok){alert(t.paymentFailedAlert);return;}
         const data=await res.json();
-        window.open(data.pdfUrl,"_blank");
+        downloadFile(data.pdfUrl);
         openModal(t.purchaseSuccessTitle,t.purchaseSuccessText);
         await loadMyPurchases(); renderBooks(allBooksData); openTab("purchases");
       },
@@ -743,6 +743,17 @@ window.addEventListener("message",async(event)=>{
   }
 });
 
+function downloadFile(url){
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="";
+  a.target="_blank";
+  a.rel="noopener";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}  
+  
 function showToast(msg){
   const t=document.getElementById("toast"); t.innerText=msg; t.classList.remove("hidden");
   setTimeout(()=>t.classList.add("hidden"),2500);
