@@ -45,6 +45,8 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
 #addBook input[type="checkbox"]{width:18px;height:18px;accent-color:#8b5cf6;}
 #saveBookBtn{width:100%;margin-top:20px;padding:18px;font-size:17px;border-radius:18px;font-weight:800;letter-spacing:0.5px;}
 .upload-status{color:#00f5ff;font-size:14px;margin-top:5px;}
+  .progress-container{width:90%;max-width:400px;height:10px;background:rgba(255,255,255,0.08);border-radius:10px;margin:8px auto;overflow:hidden;display:none;}
+.progress-bar{height:100%;width:0%;background:linear-gradient(135deg,#00f5ff,#8b5cf6,#ff4ecd);border-radius:10px;transition:width 0.2s ease;}
 @keyframes addBookAnim{from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
 #searchInput{width:80%;max-width:520px;margin:18px auto;display:block;}
 .disclaimer{font-size:13px;color:#94a3b8;margin:25px;padding:16px;border-top:1px solid rgba(255,255,255,0.08);}
@@ -123,8 +125,10 @@ textarea{resize:none;}::placeholder{color:#cbd5e1;}
         <option value="German">German</option><option value="Other">Other</option>
       </select>
       <p>Number of pages</p><input id="manualPages" type="number" placeholder="e.g. 250" min="1" required>
-      <p>📷 Book Cover (Images only • Maximum size: 5 MB)</p><button id="uploadCoverBtn">Upload Cover</button><p id="coverStatus" class="upload-status"></p>
+     <p>📷 Book Cover (Images only • Maximum size: 5 MB)</p><button id="uploadCoverBtn">Upload Cover</button><p id="coverStatus" class="upload-status"></p>
+<div class="progress-container" id="coverProgressContainer"><div class="progress-bar" id="coverProgressBar"></div></div>
       <p>📄 Book File (PDF only • Maximum size: 20 MB)</p><button id="uploadPdfBtn">Upload PDF</button><p id="pdfStatus" class="upload-status"></p>
+<div class="progress-container" id="pdfProgressContainer"><div class="progress-bar" id="pdfProgressBar"></div></div>
       <br><br>
       <label class="notice"><input type="checkbox" id="rights"> I confirm that I own all rights to this book</label><br><br>
       <button id="saveBookBtn" disabled>Save Book</button>
@@ -190,16 +194,46 @@ document.getElementById("uploadCoverBtn").onclick=()=>{
   const fi=document.createElement("input"); fi.type="file"; fi.accept="image/*";
   fi.onchange=async e=>{
     const file=e.target.files[0]; if(!file) return;
-    btn.disabled=true; document.getElementById("coverStatus").innerText=translations[currentLang].uploadingCover;
+    btn.disabled=true;
+    const progressContainer=document.getElementById("coverProgressContainer");
+    const progressBar=document.getElementById("coverProgressBar");
+    progressContainer.style.display="block"; progressBar.style.width="0%";
+    document.getElementById("coverStatus").innerText=translations[currentLang].uploadingCover;
     const reader=new FileReader(); reader.readAsDataURL(file);
-    reader.onload=async()=>{
-      try{
-        const res=await fetch(`${BACKEND_URL}/upload-cover`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken})});
-        const data=await res.json();
-        if(data.success){coverUrl=data.url;document.getElementById("coverStatus").innerText=translations[currentLang].coverUploaded;checkSaveReady();}
-        else alert(translations[currentLang].uploadFailedAlert);
-      }catch{document.getElementById("coverStatus").innerText=translations[currentLang].uploadFailedShort;}
-      finally{btn.disabled=false;}
+    reader.onload=()=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open("POST",`${BACKEND_URL}/upload-cover`);
+      xhr.setRequestHeader("Content-Type","application/json");
+      xhr.upload.onprogress=(evt)=>{
+        if(evt.lengthComputable){
+          const percent=Math.round((evt.loaded/evt.total)*100);
+          progressBar.style.width=percent+"%";
+          document.getElementById("coverStatus").innerText=`${translations[currentLang].uploadingCover} ${percent}%`;
+        }
+      };
+      xhr.onload=()=>{
+        btn.disabled=false;
+        try{
+          const data=JSON.parse(xhr.responseText);
+          if(xhr.status===200&&data.success){
+            coverUrl=data.url;
+            progressBar.style.width="100%";
+            document.getElementById("coverStatus").innerText=translations[currentLang].coverUploaded;
+            checkSaveReady();
+          }else{
+            document.getElementById("coverStatus").innerText=translations[currentLang].uploadFailedShort;
+          }
+        }catch{
+          document.getElementById("coverStatus").innerText=translations[currentLang].uploadFailedShort;
+        }
+        setTimeout(()=>{progressContainer.style.display="none";},1200);
+      };
+      xhr.onerror=()=>{
+        btn.disabled=false;
+        document.getElementById("coverStatus").innerText=translations[currentLang].uploadFailedShort;
+        progressContainer.style.display="none";
+      };
+      xhr.send(JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken}));
     };
   }; fi.click();
 };
@@ -210,16 +244,46 @@ document.getElementById("uploadPdfBtn").onclick=()=>{
   const fi=document.createElement("input"); fi.type="file"; fi.accept="application/pdf";
   fi.onchange=async e=>{
     const file=e.target.files[0]; if(!file) return;
-    btn.disabled=true; document.getElementById("pdfStatus").innerText=translations[currentLang].uploadingPdf;
+    btn.disabled=true;
+    const progressContainer=document.getElementById("pdfProgressContainer");
+    const progressBar=document.getElementById("pdfProgressBar");
+    progressContainer.style.display="block"; progressBar.style.width="0%";
+    document.getElementById("pdfStatus").innerText=translations[currentLang].uploadingPdf;
     const reader=new FileReader(); reader.readAsDataURL(file);
-    reader.onload=async()=>{
-      try{
-        const res=await fetch(`${BACKEND_URL}/upload-pdf`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken})});
-        const data=await res.json();
-        if(data.success){pdfUrl=data.url;pageCount=data.pages||"Unknown";document.getElementById("pdfStatus").innerText=translations[currentLang].pdfUploaded;checkSaveReady();}
-        else alert(translations[currentLang].uploadFailedAlert);
-      }catch{document.getElementById("pdfStatus").innerText=translations[currentLang].uploadFailedShort;}
-      finally{btn.disabled=false;}
+    reader.onload=()=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open("POST",`${BACKEND_URL}/upload-pdf`);
+      xhr.setRequestHeader("Content-Type","application/json");
+      xhr.upload.onprogress=(evt)=>{
+        if(evt.lengthComputable){
+          const percent=Math.round((evt.loaded/evt.total)*100);
+          progressBar.style.width=percent+"%";
+          document.getElementById("pdfStatus").innerText=`${translations[currentLang].uploadingPdf} ${percent}%`;
+        }
+      };
+      xhr.onload=()=>{
+        btn.disabled=false;
+        try{
+          const data=JSON.parse(xhr.responseText);
+          if(xhr.status===200&&data.success){
+            pdfUrl=data.url; pageCount=data.pages||"Unknown";
+            progressBar.style.width="100%";
+            document.getElementById("pdfStatus").innerText=translations[currentLang].pdfUploaded;
+            checkSaveReady();
+          }else{
+            document.getElementById("pdfStatus").innerText=translations[currentLang].uploadFailedShort;
+          }
+        }catch{
+          document.getElementById("pdfStatus").innerText=translations[currentLang].uploadFailedShort;
+        }
+        setTimeout(()=>{progressContainer.style.display="none";},1200);
+      };
+      xhr.onerror=()=>{
+        btn.disabled=false;
+        document.getElementById("pdfStatus").innerText=translations[currentLang].uploadFailedShort;
+        progressContainer.style.display="none";
+      };
+      xhr.send(JSON.stringify({file:reader.result,userUid,accessToken:window.accessToken}));
     };
   }; fi.click();
 };
