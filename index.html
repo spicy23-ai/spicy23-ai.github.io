@@ -422,8 +422,9 @@ async function login(){
     window.accessToken=auth.accessToken;
 fetch(`${BACKEND_URL}/register-user`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userUid:user.uid,accessToken:auth.accessToken,username:user.username})}).catch(()=>{});
    document.getElementById("welcome").innerHTML=`${translations[currentLang].welcomeMsg}, ${user.username} <span class="verified-badge" title="Verified">✔</span>`;
-    document.getElementById("login").classList.add("hidden");
+        document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
+    window.scrollTo(0, 0);
 
     loadBooks(); loadMyPurchases(); loadMySales(); checkNotifications();
 
@@ -915,7 +916,8 @@ window.addEventListener("message",async(event)=>{
         user=auth.user; userUid=user.uid; window.accessToken=auth.accessToken;
         userWalletAddress=auth.user?.wallet_address||null;
         document.getElementById("welcome").innerHTML=`${translations[currentLang].welcomeMsg}, ${user.username} <span class="verified-badge" title="Verified">✔</span>`;
-        document.getElementById("login").classList.add("hidden"); document.getElementById("app").classList.remove("hidden");
+               document.getElementById("login").classList.add("hidden"); document.getElementById("app").classList.remove("hidden");
+        window.scrollTo(0, 0);
         loadBooks(); loadMyPurchases(); loadMySales(); go();
       }catch{alert(translations[currentLang].loginFailedAlert);}
     }else go();
