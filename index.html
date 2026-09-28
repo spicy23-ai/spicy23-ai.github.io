@@ -889,6 +889,12 @@ async function loadBooks(){
   }catch{box.innerHTML="<p>Error loading books. Retrying...</p>";setTimeout(loadBooks,5000);}
 }
 
+function thumb(url){
+  return url && url.includes("/upload/")
+    ? url.replace("/upload/","/upload/w_400,q_auto,f_auto/")
+    : url;
+}
+                       
 let isRenderingBooks=false;
 async function renderBooks(booksArray,page){
   const lang=localStorage.getItem("appLanguage")||"en",t=translations[lang];
@@ -913,7 +919,7 @@ async function renderBooks(booksArray,page){
     const likes=b.likes||0,dislikes=b.dislikes||0;
     html+=`<div class="book">
       ${b.featured?'<span class="featured-badge">⭐ Featured</span>':''}
-      <img src="${b.cover}" alt="Cover">
+      <img src="${thumb(b.cover)}" alt="Cover" loading="lazy">
       <h4>${b.title}</h4>
       <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
       <div class="owner">By: ${b.owner}</div>
@@ -968,7 +974,7 @@ async function loadMyPurchases(){
     let html="";
     for(const b of json.books){
       html+=`<div class="book">
-        <img src="${b.cover}" alt="Cover"><h4>${b.title}</h4>
+        <img src="${thumb(b.cover)}" alt="Cover" loading="lazy"><h4>${b.title}</h4>
         <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
         <div class="owner">By: ${b.owner}</div>
         <div class="language">${b.language?"Language: "+b.language:""}</div>
@@ -1006,7 +1012,7 @@ async function loadMySales(){
     for(const b of json.books){
       const profit=Number(b.withdrawableEarnings||0); totalEarnings+=profit;
       box.innerHTML+=`<div class="sales-book">
-        <img src="${b.cover}" style="width:150px;border-radius:6px;">
+        <img src="${thumb(b.cover)}" style="width:150px;border-radius:6px;">
         <h4>${b.title}</h4><p>${t.priceLabel}: ${b.price} Pi</p><p>${t.salesLabel}: ${b.salesCount||0}</p>
         <div class="profit">${t.yourEarnings}: ${profit.toFixed(2)} Pi (70%)</div>
       </div>`;
@@ -1029,7 +1035,7 @@ async function loadMyUploadedBooks(){
     let html="";
     for(const b of json.books){
       html+=`<div class="book">
-        <img src="${b.cover}" alt="Cover">
+        <img src="${thumb(b.cover)}" alt="Cover" loading="lazy">
         <h4>${b.title}</h4>
         <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
         <div class="language">${b.language?"Language: "+b.language:""}</div>
