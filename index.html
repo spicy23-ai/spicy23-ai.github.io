@@ -420,6 +420,40 @@ select option{background:#150a2b;color:var(--ink);}
   html{scroll-behavior:auto;}
 }
 </style>
+
+/* ===== ترتيب أزرار التبويب في سطرين ===== */
+.tab-bar{
+  position:static !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px !important;
+  width:100% !important;
+  max-width:460px !important;
+  margin:14px auto 22px !important;
+  padding:10px !important;
+  border-radius:22px !important;
+  overflow:visible !important;
+}
+.tab-bar .tab-btn{
+  white-space:normal !important;
+  padding:11px 6px !important;
+  font-size:13px !important;
+  line-height:1.3;
+  border-radius:14px !important;
+  background:rgba(255,255,255,.06) !important;
+  border:1px solid var(--glass-border) !important;
+  color:var(--ink) !important;
+}
+.tab-bar .tab-btn.active{
+  background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep)) !important;
+  color:#241207 !important;
+  border-color:transparent !important;
+}
+.tab-bar .tab-btn:nth-child(1){order:1;}
+.tab-bar .tab-btn:nth-child(3){order:2;}
+.tab-bar .tab-btn:nth-child(2){order:3;}
+.tab-bar .tab-btn:nth-child(4){order:4;}
+.tab-bar .tab-btn:nth-child(5){order:5;grid-column:span 2;}
    
 </head>
 <body>
