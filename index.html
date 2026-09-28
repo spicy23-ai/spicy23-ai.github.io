@@ -1371,6 +1371,10 @@ function changeLanguage(){
   document.querySelector("#saveBookBtn").innerText=t.saveBook;
   document.querySelector("#addBook label").lastChild.textContent=" "+t.rights;
   document.body.style.direction=lang==="ar"?"rtl":"ltr";
+
+     document.getElementById("privacyBtn").innerText=t.privacyPolicy;
+  document.getElementById("termsBtn").innerText=t.termsService;
+   
   renderBooks(allBooksData);
   // إعادة تحميل المشتريات والمبيعات بنفس اللغة الجديدة إن كانت التبويبات مفتوحة
   if(document.getElementById("purchases").classList.contains("active")) loadMyPurchases();
