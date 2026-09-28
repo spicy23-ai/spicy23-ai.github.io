@@ -217,6 +217,185 @@ textarea{resize:none;}::placeholder{color:var(--muted-soft);}
 @media(max-width:480px){.sp-name{font-size:28px;}.sp-logo{width:85px;height:85px;}.sp-ring-2{display:none;}}
    
 </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style id="web3-upgrade">
+:root{
+  --neon-gold:#ffc85a; --neon-violet:#8f6bff; --neon-cyan:#5ee7ff;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false;}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;}
+
+/* Arabic gets a proper Arabic typeface (the app sets direction:rtl inline) */
+body[style*="rtl"], body[style*="rtl"] h1, body[style*="rtl"] h3, body[style*="rtl"] h4,
+body[style*="rtl"] button, body[style*="rtl"] input, body[style*="rtl"] select, body[style*="rtl"] textarea{
+  font-family:'Cairo','Manrope',sans-serif;
+}
+
+/* ---------- Background: faint chain grid + live network canvas ---------- */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(154,114,240,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(154,114,240,.07) 1px,transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 80%);
+          mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 80%);
+}
+#web3-bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;}
+
+/* ---------- Type ---------- */
+h1{
+  background:linear-gradient(95deg,#f4efe6 10%,var(--gold-soft) 50%,var(--neon-violet) 95%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:none;filter:drop-shadow(0 0 22px rgba(242,181,68,.25));
+}
+.price-highlight,.profit,.total-profit,.sales{font-variant-numeric:tabular-nums;}
+
+/* ---------- Buttons: pill, glow, light sweep, tap ripple ---------- */
+button{
+  border-radius:999px;letter-spacing:.2px;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),filter .3s,background .3s,color .3s,border-color .3s;
+}
+button::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.42) 50%,transparent 70%);
+  transform:translateX(-130%);transition:transform .8s var(--ease);
+}
+button:hover:not(:disabled)::after{transform:translateX(130%);}
+button:hover:not(:disabled){filter:saturate(1.1);box-shadow:0 0 0 1px rgba(255,200,90,.35),0 10px 30px rgba(242,181,68,.42),0 0 42px rgba(143,107,255,.25);}
+button::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at var(--bx,50%) var(--by,50%),rgba(255,255,255,.65),transparent 60%);
+}
+button.rip::before{animation:btnRip .6s ease-out;}
+@keyframes btnRip{
+  0%{opacity:1;clip-path:circle(0% at var(--bx,50%) var(--by,50%));}
+  100%{opacity:0;clip-path:circle(150% at var(--bx,50%) var(--by,50%));}
+}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--neon-cyan);outline-offset:2px;}
+
+/* ghost logout */
+button[onclick="logout()"]{
+  background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--glass-border);box-shadow:none;padding:9px 20px;font-size:13px;
+}
+button[onclick="logout()"]:hover:not(:disabled){color:var(--ink);border-color:rgba(248,113,113,.5);box-shadow:0 0 22px rgba(248,113,113,.2);}
+button[onclick="logout()"]::after{display:none;}
+
+/* ---------- Tabs: floating glass dock ---------- */
+.tab-bar{
+  position:sticky;top:10px;z-index:50;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
+  width:fit-content;max-width:100%;margin:14px auto 24px;padding:6px;border-radius:999px;
+  background:rgba(18,9,38,.62);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--glass-border);box-shadow:0 12px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-bar .tab-btn{flex-shrink:0;white-space:nowrap;margin:0;border:none;background:transparent;padding:10px 18px;}
+.tab-bar .tab-btn:hover:not(.active){background:rgba(255,255,255,.07);}
+.tab-bar .tab-btn.active{background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep));box-shadow:0 0 22px rgba(242,181,68,.45);}
+
+/* ---------- Filters / pagination ---------- */
+.filter-btn.active{box-shadow:0 0 0 1px rgba(154,114,240,.6),0 8px 22px rgba(123,74,226,.45);}
+.page-btn{border-radius:12px;}
+.page-btn.active{box-shadow:0 0 18px rgba(242,181,68,.5);}
+
+/* ---------- Book cards: glass, spotlight, rotating gradient border ---------- */
+.book,.sales-book{
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  -webkit-backdrop-filter:blur(18px);
+}
+.book{
+  --rx:0deg;--ry:0deg;
+  transition:transform .28s var(--ease),box-shadow .35s,border-color .35s;
+  animation:cardIn .55s var(--ease) both;
+}
+.book:nth-child(2){animation-delay:.04s}.book:nth-child(3){animation-delay:.08s}
+.book:nth-child(4){animation-delay:.12s}.book:nth-child(5){animation-delay:.16s}
+.book:nth-child(n+6){animation-delay:.2s}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.book:hover{
+  transform:perspective(900px) translateY(-8px) rotateX(var(--rx)) rotateY(var(--ry));
+  box-shadow:0 22px 50px rgba(123,74,226,.35),0 0 0 1px rgba(255,200,90,.18);
+}
+.book::before{padding:1.5px;}
+.book:hover::before{
+  background:conic-gradient(from var(--ang),var(--neon-gold),var(--neon-violet),var(--neon-cyan),var(--neon-gold));
+  animation:angSpin 3.2s linear infinite;
+}
+@keyframes angSpin{to{--ang:360deg;}}
+.book::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(255,200,90,.16),transparent 62%);
+}
+.book:hover::after{opacity:1;}
+.book img{border:1px solid rgba(255,255,255,.08);}
+.featured-badge{animation:badgePulse 2.4s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{box-shadow:0 4px 12px rgba(242,181,68,.45);}50%{box-shadow:0 0 22px rgba(242,181,68,.9);}}
+.price-highlight{background:rgba(24,10,4,.88);color:var(--gold-soft);border:1px solid rgba(255,200,90,.35);}
+
+/* ratings */
+.like-btn:hover:not(:disabled){box-shadow:0 0 16px rgba(74,222,128,.45);}
+.dislike-btn:hover:not(:disabled){box-shadow:0 0 16px rgba(248,113,113,.45);}
+.like-btn::after,.dislike-btn::after{display:none;}
+
+/* ---------- Inputs ---------- */
+input,textarea,select{transition:border-color .25s,box-shadow .25s,background .25s;}
+input:focus,textarea:focus,select:focus{background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(242,181,68,.12),0 0 26px rgba(143,107,255,.22);}
+#searchInput{border-radius:999px;padding-inline:24px;}
+select option{background:#150a2b;color:var(--ink);}
+
+/* ---------- Forms, earnings, notes ---------- */
+#addBook,.sales-book,.payout-note{-webkit-backdrop-filter:blur(20px);}
+.progress-bar{box-shadow:0 0 12px rgba(242,181,68,.7);}
+.total-profit{
+  background:linear-gradient(90deg,var(--gold-soft),var(--neon-violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.welcome-text{
+  width:fit-content;margin:6px auto 14px;padding:8px 18px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+}
+.app-logo-img,.app-banner{transition:box-shadow .4s;}
+.app-logo-img{animation:logoGlow 4s ease-in-out infinite;}
+@keyframes logoGlow{0%,100%{box-shadow:0 4px 16px rgba(242,181,68,.3);}50%{box-shadow:0 4px 26px rgba(143,107,255,.6);}}
+
+/* ---------- Toast / modals ---------- */
+.toast{
+  background:rgba(18,9,38,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--card-border);border-inline-start:3px solid var(--gold);
+}
+.modal-box,#modal .modal-content-box{box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 60px rgba(123,74,226,.22);}
+#modal .modal-content-box > div[style*="sticky"]{background:transparent !important;}
+#modal .modal-content-box button[onclick="closeModal()"]{
+  background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep)) !important;color:#241207 !important;border-radius:999px !important;
+}
+
+/* ---------- Loading text pulse ---------- */
+.books > p,.sales-book + p{width:100%;color:var(--muted);animation:softPulse 1.4s ease-in-out infinite;}
+@keyframes softPulse{50%{opacity:.45;}}
+
+/* ---------- Web3 status pill (injected by JS) ---------- */
+.net-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;
+  color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+}
+.net-pill i{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:live 1.8s infinite;}
+@keyframes live{70%{box-shadow:0 0 0 9px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+.app-header-bar .net-pill{margin-inline-start:auto;}
+#login .net-pill{margin-bottom:6px;}
+
+::-webkit-scrollbar-track{background:transparent;}
+
+@media(max-width:700px){
+  .tab-bar{top:6px;}
+  .book:hover{transform:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+   
 </head>
 <body>
 
@@ -1217,6 +1396,78 @@ async function addComment(bookId){
     },400);
   }
   setTimeout(next,850);
+})();
+</script>
+
+<script id="web3-upgrade-js">
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* 1) Status pills (pure additions) */
+  function pill(){var s=document.createElement("span");s.className="net-pill";s.innerHTML="<i></i>Pi Mainnet";return s;}
+  var bar = document.querySelector(".app-header-bar"); if(bar) bar.appendChild(pill());
+  var loginH1 = document.querySelector("#login h1"); if(loginH1) loginH1.insertAdjacentElement("afterend", pill());
+
+  /* 2) Tabs become a floating dock (class only, markup untouched) */
+  var firstTab = document.querySelector(".tab-btn");
+  if(firstTab && firstTab.parentElement) firstTab.parentElement.classList.add("tab-bar");
+
+  /* 3) Button tap ripple — no DOM inserted, so innerHTML/innerText logic stays intact */
+  document.addEventListener("pointerdown", function(e){
+    var b = e.target.closest && e.target.closest("button");
+    if(!b || b.disabled || reduce) return;
+    var r = b.getBoundingClientRect();
+    b.style.setProperty("--bx", (e.clientX - r.left) + "px");
+    b.style.setProperty("--by", (e.clientY - r.top) + "px");
+    b.classList.remove("rip"); void b.offsetWidth; b.classList.add("rip");
+    setTimeout(function(){ b.classList.remove("rip"); }, 650);
+  }, {passive:true});
+
+  /* 4) Card tilt + cursor spotlight (mouse only; works on re-rendered cards via delegation) */
+  document.addEventListener("pointermove", function(e){
+    if(e.pointerType !== "mouse" || reduce) return;
+    var c = e.target.closest && e.target.closest(".book"); if(!c) return;
+    var r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    c.style.setProperty("--mx", x + "px"); c.style.setProperty("--my", y + "px");
+    c.style.setProperty("--ry", ((x / r.width - .5) * 8).toFixed(2) + "deg");
+    c.style.setProperty("--rx", ((.5 - y / r.height) * 8).toFixed(2) + "deg");
+  }, {passive:true});
+
+  /* 5) Live "network" canvas: floating nodes linked like a blockchain graph */
+  var cv = document.createElement("canvas"); cv.id = "web3-bg"; cv.setAttribute("aria-hidden","true");
+  document.body.insertBefore(cv, document.body.firstChild);
+  var ctx = cv.getContext("2d"), W=0, H=0, dpr=Math.min(window.devicePixelRatio||1,1.5), nodes=[], raf=null;
+  var LINK = 130;
+  function size(){
+    W = innerWidth; H = innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    var n = Math.max(18, Math.min(60, Math.floor(W*H/24000)));
+    nodes = [];
+    for(var i=0;i<n;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,g:Math.random()<.3});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<nodes.length;i++){
+      var a = nodes[i];
+      if(!reduce){ a.x+=a.vx; a.y+=a.vy; if(a.x<0||a.x>W)a.vx*=-1; if(a.y<0||a.y>H)a.vy*=-1; }
+      for(var j=i+1;j<nodes.length;j++){
+        var b = nodes[j], dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<LINK){
+          ctx.strokeStyle = "rgba(154,114,240,"+(0.22*(1-d/LINK)).toFixed(3)+")";
+          ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+      ctx.fillStyle = a.g ? "rgba(248,205,122,.85)" : "rgba(154,114,240,.7)";
+      ctx.beginPath(); ctx.arc(a.x,a.y,a.g?2.2:1.6,0,6.283); ctx.fill();
+    }
+    if(!reduce) raf = requestAnimationFrame(draw);
+  }
+  size(); draw();
+  addEventListener("resize", function(){ size(); if(reduce) draw(); });
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden){ cancelAnimationFrame(raf); } else if(!reduce){ raf = requestAnimationFrame(draw); }
+  });
 })();
 </script>
    
