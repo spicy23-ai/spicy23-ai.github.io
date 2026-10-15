@@ -1175,7 +1175,9 @@ function searchBooks(){
   const filtered=allBooksData.filter(b=>
     (b.title||"").toLowerCase().includes(q) ||
     (b.owner||"").toLowerCase().includes(q) ||
-    (b.language||"").toLowerCase().includes(q)
+        (b.language||"").toLowerCase().includes(q) ||
+    (b.category||"").toLowerCase().includes(q) ||
+    (b.category ? catName(b.category).toLowerCase().includes(q) : false)
   );
   renderBooks(filtered,1);
 }
