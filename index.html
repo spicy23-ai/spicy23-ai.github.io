@@ -1081,7 +1081,7 @@ function copyBookLink(bookId){
   if(!b) return;
   const langOptions=["English","Arabic","French","Chinese","Spanish","German","Other"];
   let optionsHtml="";
-  langOptions.forEach(l=>{ optionsHtml+=`<option value="${l}" ${b.language===l?"selected":""}>${l}</option>`; });
+  langOptions.forEach(l=>{ optionsHtml+=`<option value="${l}" ${b.language===l?"selected":""}>${langName(l)}</option>`; });
   const html=`
     <input id="editTitle" value="${(b.title||"").replace(/"/g,'&quot;')}" placeholder="${t.bookTitle}">
     <input id="editPrice" type="number" min="0.0000001" step="0.0000001" value="${b.price}" placeholder="${t.price}">
@@ -1177,7 +1177,8 @@ function searchBooks(){
     (b.owner||"").toLowerCase().includes(q) ||
         (b.language||"").toLowerCase().includes(q) ||
     (b.category||"").toLowerCase().includes(q) ||
-    (b.category ? catName(b.category).toLowerCase().includes(q) : false)
+        (b.category ? catName(b.category).toLowerCase().includes(q) : false) ||
+    (b.language ? langName(b.language).toLowerCase().includes(q) : false)
   );
   renderBooks(filtered,1);
 }
