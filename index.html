@@ -538,10 +538,10 @@ h1 .h1-emoji{
         <option value="German">German</option><option value="Other">Other</option>
       </select>
        <select id="category" required></select>
-      <p>Number of pages</p><input id="manualPages" type="number" placeholder="e.g. 250" min="1" required>
-      <p>📷 Book Cover (Images only • Maximum size: 5 MB)</p><button id="uploadCoverBtn">Upload Cover</button><p id="coverStatus" class="upload-status"></p>
+      <p id="pagesLabel">Number of pages</p><input id="manualPages" type="number" placeholder="e.g. 250" min="1" required>
+      <p id="coverLabel">📷 Book Cover (Images only • Maximum size: 5 MB)</p><button id="uploadCoverBtn">Upload Cover</button><p id="coverStatus" class="upload-status"></p>
 <div class="progress-container" id="coverProgressContainer"><div class="progress-bar" id="coverProgressBar"></div></div>
-     <p>📄 Book File (PDF only • Maximum size: 20 MB)</p><button id="uploadPdfBtn">Upload PDF</button><p id="pdfStatus" class="upload-status"></p>
+     <p id="pdfLabel">📄 Book File (PDF only • Maximum size: 20 MB)</p><button id="uploadPdfBtn">Upload PDF</button><p id="pdfStatus" class="upload-status"></p>
 <div class="progress-container" id="pdfProgressContainer"><div class="progress-bar" id="pdfProgressBar"></div></div>
       <br><br>
       <label class="notice"><input type="checkbox" id="rights"> I confirm that I own all rights to this book</label><br><br>
@@ -927,15 +927,15 @@ async function renderBooks(booksArray,page){
   for(const b of pageBooks){
     const likes=b.likes||0,dislikes=b.dislikes||0;
     html+=`<div class="book">
-      ${b.featured?'<span class="featured-badge">⭐ Featured</span>':''}
+      ${b.featured?'<span class="featured-badge">'+xt("featured")+'</span>':''}
       <img src="${thumb(b.cover)}" alt="Cover" loading="lazy">
       <h4>${b.title}</h4>
-      <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
-      <div class="owner">By: ${b.owner}</div>
+      <div class="description">${b.description?b.description.substring(0,100)+"...":xt("noDesc")}</div>
+      <div class="owner">${xt("byLabel")}: ${b.owner}</div>
       <div class="language">${b.category?"🏷️ "+catName(b.category):""}</div>
-      <div class="language">${b.language?"Language: "+b.language:""}</div>
-      <div class="pages">${b.pageCount!=="Unknown"?"Pages: "+b.pageCount:""}</div>
-      <div class="sales">${b.salesCount>0?"Sales: "+b.salesCount:""}</div>
+      <div class="language">${b.language?xt("languageLabel")+": "+langName(b.language):""}</div>
+      <div class="pages">${b.pageCount!=="Unknown"?xt("pagesLabel")+": "+b.pageCount:""}</div>
+      <div class="sales">${b.salesCount>0?xt("salesShort")+": "+b.salesCount:""}</div>
       <div class="ratings">
         <button class="like-btn" onclick="rateBook('${b.id}','like',this)" ${!user?'disabled':''}>👍</button> ${likes}
         <button class="dislike-btn" onclick="rateBook('${b.id}','dislike',this)" ${!user?'disabled':''}>👎</button> ${dislikes}
@@ -985,10 +985,10 @@ async function loadMyPurchases(){
     for(const b of json.books){
       html+=`<div class="book">
         <img src="${thumb(b.cover)}" alt="Cover" loading="lazy"><h4>${b.title}</h4>
-        <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
-        <div class="owner">By: ${b.owner}</div>
-        <div class="language">${b.language?"Language: "+b.language:""}</div>
-        <div class="pages">${b.pageCount!=="Unknown"?"Pages: "+b.pageCount:""}</div>
+        <div class="description">${b.description?b.description.substring(0,100)+"...":xt("noDesc")}</div>
+        <div class="owner">${xt("byLabel")}: ${b.owner}</div>
+        <div class="language">${b.language?xt("languageLabel")+": "+langName(b.language):""}</div>
+        <div class="pages">${b.pageCount!=="Unknown"?xt("pagesLabel")+": "+b.pageCount:""}</div>
         <div class="ratings">
           <button class="like-btn" onclick="rateBook('${b.id}','like',this)">👍</button> ${b.likes||0}
           <button class="dislike-btn" onclick="rateBook('${b.id}','dislike',this)">👎</button> ${b.dislikes||0}
@@ -1047,9 +1047,9 @@ async function loadMyUploadedBooks(){
       html+=`<div class="book">
         <img src="${thumb(b.cover)}" alt="Cover" loading="lazy">
         <h4>${b.title}</h4>
-        <div class="description">${b.description?b.description.substring(0,100)+"...":"No description"}</div>
-        <div class="language">${b.language?"Language: "+b.language:""}</div>
-        <div class="pages">${b.pageCount!=="Unknown"?"Pages: "+b.pageCount:""}</div>
+        <div class="description">${b.description?b.description.substring(0,100)+"...":xt("noDesc")}</div>
+        <div class="language">${b.language?xt("languageLabel")+": "+langName(b.language):""}</div>
+        <div class="pages">${b.pageCount!=="Unknown"?xt("pagesLabel")+": "+b.pageCount:""}</div>
         <div class="book-actions">
           <button onclick="openBook('${b.id}')">${t.view}</button>
           <button onclick="copyBookLink('${b.id}')">${t.copyLink}</button>
@@ -1310,6 +1310,34 @@ function applyCategoryFilter(){
   const c=document.getElementById("categoryFilter").value;
   renderBooks(c==="all"?shuffleFeaturedFirst(allBooksData):allBooksData.filter(b=>b.category===c),1);
 }
+
+const extraT={
+  en:{pagesLabel:"Pages",languageLabel:"Language",byLabel:"By",salesShort:"Sales",featured:"⭐ Featured",noDesc:"No description",numPages:"Number of pages",pagesPh:"e.g. 250",coverLabel:"📷 Book Cover (Images only • Maximum size: 5 MB)",pdfLabel:"📄 Book File (PDF only • Maximum size: 20 MB)"},
+  ar:{pagesLabel:"الصفحات",languageLabel:"اللغة",byLabel:"بواسطة",salesShort:"المبيعات",featured:"⭐ مميز",noDesc:"لا يوجد وصف",numPages:"عدد الصفحات",pagesPh:"مثال: 250",coverLabel:"📷 غلاف الكتاب (صور فقط • الحد الأقصى: 5 ميغابايت)",pdfLabel:"📄 ملف الكتاب (PDF فقط • الحد الأقصى: 20 ميغابايت)"},
+  fr:{pagesLabel:"Pages",languageLabel:"Langue",byLabel:"Par",salesShort:"Ventes",featured:"⭐ En vedette",noDesc:"Aucune description",numPages:"Nombre de pages",pagesPh:"ex. 250",coverLabel:"📷 Couverture du livre (images uniquement • Taille max : 5 Mo)",pdfLabel:"📄 Fichier du livre (PDF uniquement • Taille max : 20 Mo)"},
+  zh:{pagesLabel:"页数",languageLabel:"语言",byLabel:"作者",salesShort:"销量",featured:"⭐ 精选",noDesc:"暂无描述",numPages:"页数",pagesPh:"例如 250",coverLabel:"📷 书籍封面（仅限图片 • 最大 5 MB）",pdfLabel:"📄 书籍文件（仅限 PDF • 最大 20 MB）"}
+};
+const langNames={
+  en:{English:"English",Arabic:"Arabic",French:"French",Chinese:"Chinese",Spanish:"Spanish",German:"German",Other:"Other"},
+  ar:{English:"الإنجليزية",Arabic:"العربية",French:"الفرنسية",Chinese:"الصينية",Spanish:"الإسبانية",German:"الألمانية",Other:"أخرى"},
+  fr:{English:"Anglais",Arabic:"Arabe",French:"Français",Chinese:"Chinois",Spanish:"Espagnol",German:"Allemand",Other:"Autre"},
+  zh:{English:"英语",Arabic:"阿拉伯语",French:"法语",Chinese:"中文",Spanish:"西班牙语",German:"德语",Other:"其他"}
+};
+function xt(k){return (extraT[currentLang]||extraT.en)[k];}
+function langName(v){return (langNames[currentLang]||langNames.en)[v]||v;}
+function fillLanguageSelect(){
+  const s=document.getElementById("language"); if(!s) return;
+  const v=s.value;
+  s.innerHTML=`<option value="">${translations[currentLang].selectLanguage}</option>`+Object.keys(langNames.en).map(k=>`<option value="${k}">${langName(k)}</option>`).join("");
+  s.value=v;
+}
+function applyStaticLabels(){
+  const a=document.getElementById("pagesLabel"); if(a) a.innerText=xt("numPages");
+  const b=document.getElementById("coverLabel"); if(b) b.innerText=xt("coverLabel");
+  const c=document.getElementById("pdfLabel"); if(c) c.innerText=xt("pdfLabel");
+  const d=document.getElementById("manualPages"); if(d) d.placeholder=xt("pagesPh");
+}
+   
 const translations={
   en:{loginNotice:"Login using Pi Network (must be in Pi Browser)",tagline:"A general book marketplace — no adult content",privacyPolicy:"Privacy Policy",termsService:"Terms of Service",loginBtn:"Login with Pi",addBook:"➕ Add Book",logout:"Logout",store:"Store",purchases:"My Purchases",sales:"My Sales",allBooks:"All Books",searchPlaceholder:"Search by book title...",filterAll:"All Books",filterLikes:"Most Liked",filterSales:"Best Sellers",filterNew:"Old Books",addBookTitle:"Add Book",bookTitle:"Book title",price:"Price (Pi)",description:"Book description",selectLanguage:"Select language",pages:"Number of pages",uploadCover:"Upload Cover",uploadPdf:"Upload PDF",rights:"I confirm that I own all rights to this book",saveBook:"Save Book",buy:"Buy with",view:"View 📖",download:"Download PDF",salesTitle:"My Sales & Earnings",requestPayout:"Request Payout",loadingBooks:"Loading books...",noBooks:"No books available.",bookPending:"✅ Book submitted successfully!\n\nYour book is under review and will be published after approval.",ownBook:"✅ You Own This Book",platformFee:"Platform fee: 30% – You get 70% of each sale",minimumPayout:"Minimum payout: 5 Pi",copyrightNotice:`Copyright Notice: Authors may upload only content they own. Contact us at <a href="mailto:spicylibrarysupport@gmail.com">spicylibrarysupport@gmail.com</a>.`,instantPayout:"Instant payout: Withdrawals are sent directly to your Pi wallet.",totalEarnings:"Total earnings",
     purchasesTitle:"My Purchased Books",noPurchasesYet:"No purchases yet.",loadingPurchases:"Loading purchases...",pleaseLogin:"Please log in.",errorLoadingPurchases:"Error loading purchases. Retrying...",
@@ -1422,6 +1450,7 @@ function changeLanguage(){
      document.getElementById("privacyBtn").innerText=t.privacyPolicy;
   document.getElementById("termsBtn").innerText=t.termsService;
    fillCategorySelects();
+   fillLanguageSelect(); applyStaticLabels();
   renderBooks(allBooksData);
   // إعادة تحميل المشتريات والمبيعات بنفس اللغة الجديدة إن كانت التبويبات مفتوحة
   if(document.getElementById("purchases").classList.contains("active")) loadMyPurchases();
