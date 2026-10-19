@@ -480,6 +480,33 @@ h1 .h1-emoji{
   border:2px solid rgba(255,255,255,0.35);
   border-top:2px solid #f8cd7a;
 }
+
+/* ===== زر التواصل الاجتماعي الصغير ===== */
+#socialMiniBtn{
+  position:absolute;top:14px;right:14px;z-index:60;
+  width:34px;height:34px;padding:0;margin:0;font-size:16px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.07);color:var(--gold-soft);
+  border:1px solid var(--glass-border);box-shadow:none;
+}
+#socialMiniBtn:hover:not(:disabled){transform:scale(1.1);box-shadow:0 0 16px rgba(242,181,68,.4);}
+#socialMiniBtn::after{display:none;}
+body[style*="rtl"] #socialMiniBtn{right:auto;left:14px;}
+#socialModal{display:none;position:fixed;inset:0;background:rgba(4,2,10,.72);backdrop-filter:blur(4px);z-index:999999;align-items:center;justify-content:center;padding:16px;}
+#socialModal .social-box{
+  background:linear-gradient(180deg,#1c1034,#100821);border:1px solid var(--card-border);
+  border-radius:24px;padding:26px 22px;width:100%;max-width:400px;max-height:85vh;overflow-y:auto;
+  text-align:center;box-shadow:0 25px 60px rgba(0,0,0,.55);animation:fadeUp .3s ease;
+}
+#socialModal h2{font-family:'Fraunces',serif;font-size:22px;margin-bottom:8px;}
+#socialModal .social-info{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+#socialModal .social-link{
+  display:block;margin:8px 0;padding:12px 16px;border-radius:14px;text-decoration:none;
+  color:var(--ink);font-weight:700;font-size:14px;
+  background:rgba(255,255,255,.06);border:1px solid var(--glass-border);transition:.25s;
+}
+#socialModal .social-link:hover{border-color:var(--gold);background:rgba(242,181,68,.12);}
    
 </style> 
 </head>
@@ -505,6 +532,17 @@ h1 .h1-emoji{
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<button id="socialMiniBtn" onclick="openSocial()" title="Social" aria-label="Social">💬</button>
+
+<div id="socialModal" onclick="if(event.target===this)closeSocial()">
+  <div class="social-box">
+    <h2 id="socialTitle">Follow Us</h2>
+    <p class="social-info" id="socialInfo"></p>
+    <div id="socialLinks"></div>
+    <button onclick="closeSocial()" id="socialCloseBtn" style="margin-top:14px;">Close</button>
   </div>
 </div>
    
@@ -1637,6 +1675,42 @@ async function addComment(bookId){
     if(document.hidden){ cancelAnimationFrame(raf); } else if(!reduce){ raf = requestAnimationFrame(draw); }
   });
 })();
+</script>
+
+<script>
+/* ===== Social button (additive, does not touch existing code) ===== */
+const SOCIAL_LINKS = [
+  // ✏️ عدّل الروابط هنا. احذف السطر الذي لا تحتاجه.
+  {name:"Telegram",  icon:"✈️", url:"https://t.me/spicylibrary"},
+  {name:"X (Twitter)",icon:"🐦", url:"https://x.com/spicy_library"},
+  {name:"YouTube",   icon:"▶️", url:"https://youtube.com/@spicy_library"}
+];
+const SOCIAL_EMAIL = "spicylibrarysupport@gmail.com";
+
+const socialT = {
+  en:{title:"Follow Us", info:"Spicy Library is a general book marketplace powered by Pi Network. Follow us for news and updates, or contact us for support.", email:"Email Support", close:"Close"},
+  ar:{title:"تابعنا", info:"Spicy Library هو سوق كتب عام يعمل عبر شبكة Pi. تابعنا للأخبار والتحديثات أو تواصل معنا للدعم.", email:"راسلنا عبر البريد", close:"إغلاق"},
+  fr:{title:"Suivez-nous", info:"Spicy Library est une librairie généraliste propulsée par Pi Network. Suivez-nous pour les actualités ou contactez-nous pour de l'aide.", email:"Contacter le support", close:"Fermer"},
+  zh:{title:"关注我们", info:"Spicy Library 是由 Pi Network 驱动的通用图书市场。关注我们获取最新动态，或联系我们获得支持。", email:"邮件联系客服", close:"关闭"}
+};
+
+function openSocial(){
+  const l = (typeof currentLang !== "undefined" && socialT[currentLang]) ? currentLang : "en";
+  const t = socialT[l];
+  document.getElementById("socialTitle").innerText = t.title;
+  document.getElementById("socialInfo").innerText = t.info;
+  document.getElementById("socialCloseBtn").innerText = t.close;
+  let html = "";
+  SOCIAL_LINKS.forEach(s=>{
+    html += `<a class="social-link" href="${s.url}" target="_blank" rel="noopener">${s.icon} ${s.name}</a>`;
+  });
+  html += `<a class="social-link" href="mailto:${SOCIAL_EMAIL}">✉️ ${t.email}</a>`;
+  document.getElementById("socialLinks").innerHTML = html;
+  document.getElementById("socialModal").style.display = "flex";
+}
+function closeSocial(){
+  document.getElementById("socialModal").style.display = "none";
+}
 </script>
    
 </body>
